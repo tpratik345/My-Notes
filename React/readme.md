@@ -414,10 +414,10 @@ export default function Home() {
 ```
 
 How it works:
-- createContext() creates a shared context.
-- ThemeProvider stores the state and provides it to child components.
-- useTheme() is a custom hook to access the context easily.
-- Any component inside ThemeProvider can access theme and toggleTheme.
+1. createContext() creates a shared context.
+2. ThemeProvider stores the state and provides it to child components.
+3. useTheme() is a custom hook to access the context easily.
+4. Any component inside ThemeProvider can access theme and toggleTheme.
 
 ---
 
@@ -425,11 +425,14 @@ How it works:
 
 ### Webpack
 
-A module bundler that bundles JS, CSS, images, etc.
+Webpack is a module bundler — it bundles JS, CSS, and assets into optimized files for browsers.
+It supports loaders (e.g., Babel loader) and plugins for optimizations like tree shaking and minification.
 
 ### Polyfill
 
 Adds support for features not available in older browsers.
+It fill the gap for missing browser features — e.g., adding Promise support in IE11.
+You can use Babel + core-js or specific polyfills to ensure backward compatibility.
 
 Example:
 
@@ -442,20 +445,55 @@ import 'core-js/stable';
 ## 14. What are Pure Components?
 
 PureComponent only re-renders when props or state change.
-
 It performs shallow comparison.
+However, shallow comparison doesn’t detect deep object changes, so always maintain immutability.
+
+`React.PureComponent` and `React.memo` are performance optimization tools that skip re-renders if props and state haven’t changed.
 
 ```js
 class MyComponent extends React.PureComponent {}
 ```
 
+Shallow Comparison:
+* Shallow comparison in PureComponent is an optimization technique that checks if props or state have changed by comparing only the top-level keys and values, rather than nested structures.
+* It uses Object.is for primitives (numbers, strings) and reference equality for objects/arrays (comparing memory addresses, not content), ensuring faster performance by avoiding deep tree traversal
+
+How Shallow Comparison Works in Pure Components:
+* Primitive Types (Strings, Numbers, Booleans):
+  - The comparison checks if the values are identical (e.g., 5 === 5 is true).
+* Complex Types (Objects, Arrays):
+  - The comparison checks if the objects reference the exact same spot in memory.
+  - If a new object is created with the same content, shallow comparison treats them as different.
+* The Process:
+  - PureComponent iterates over the keys of props/state. If all top-level keys return true for Object.is, the component does not re-render.
+
+`If you pass a new object reference, even if inner values are identical, PureComponent will wrongly assume it is a change and re-render.`
+
+Example:
+```js
+// Prev props: { a: 1, b: { c: 2 } }
+// Next props: { a: 1, b: { c: 2 } }
+// Shallow comparison sees:
+// 1 === 1 (true)
+// b !== b (false, if a new object was created)
+```
+
+
 ---
 
 ## 15. What are Error Boundaries?
 
-Error Boundaries catch JavaScript errors in child components.
+Error boundaries are special components that catch JavaScript errors in their child component tree.
+They use lifecycle methods like `getDerivedStateFromError` and `componentDidCatch`.
+If an error occurs, they display a fallback UI instead of breaking the entire app.
+They don’t catch errors in event handlers or async code, only during rendering or lifecycle.
+You can use them for graceful degradation — e.g., show an error message instead of a blank screen.
 
 ```js
+<ErrorBoundary>
+  <MyComponent />
+</ErrorBoundary>
+
 componentDidCatch(error, info) {}
 ```
 
@@ -472,10 +510,64 @@ They do not catch:
 React Fiber is React's reconciliation engine introduced in React 16.
 
 Benefits:
-
 * Better rendering performance
 * Pause and resume rendering
 * Prioritize updates
+
+How it Works: Fiber represents a unit of work for a specific component. It uses a two-phase process:
+  - Render Phase: Asynchronous and interruptible. React builds a "work-in-progress" tree and identifies changes without affecting the UI.
+  - Commit Phase: Synchronous and uninterruptible. React applies the calculated changes to the DOM and swaps the internal tree pointers (Double Buffering).
+
+Key Benefits:
+  - Prioritization: Urgent updates (like typing or clicking) can "jump" ahead of low-priority tasks (like background data fetching).
+  - Concurrency: Enables Concurrent Mode features like Suspense and transitions by allowing React to pause and resume work.
+  - Smoothness: Prevents long rendering tasks from "locking" the main thread, which keeps animations and input responsive.
+
+
+### What Problem Does Fiber Solve?
+Rendering the page, responding to user actions, running Javascript and much more are all handled by the browser’s main thread.
+If at any time our main thread gets blocked, the user’s experience can become laggy and slow.
+
+We can safely move some of these things to another thread safely using Web Workers, however, they can’t access the DOM and manipulate it.
+That means you can only move heavy computations or lengthy network request calls, however, you can’t change what’s on the screen without ease with a Web Worker. There are workarounds, however, they tend not to be the best practice.
+
+Since our React code runs on Javascript, the browser’s main thread handles executing the rendering loop. Let’s see what it looked like before Fiber.
+
+
+### React Before Fiber
+The following is the process that React took before Fiber in order to render items on the screen:
+1. React will create a tree of nodes when the user interface renders for the very first time. Each node in the tree represents some React element.
+2. A virtual tree (called virtualDOM) is created which is a clone of the rendered tree.
+3. Traversing the virtual DOM tree, React will update the DOM on whichever classes or elements need to be updated whenever a change occurs.
+4. After any state change, React will compare every node from the two trees and pass on the changes to the renderer which ultimately draws it out on the screen.
+This whole process would happen synchronously, meaning that once it was started, it could not be interrupted by another process until it was done.
+
+### React After Fiber
+No longer is reconciliation and rendering done in the same process. By doing so, Fiber can help you prioritize different updates that can happen.
+React calls this incremental rendering, which splits rendering work into chunks that can then be spread out over multiple frames.
+
+It can do this by breaking up the computation of the virtual DOM tree into nodes, or “units” of work, that it can commit at any time.
+This allows you to pause, resume or restart computation for various components.
+
+### Process
+The reconciliation and rendering no longer happen at the same time and so the new process is broken down into two phases.
+
+* Phase 1 — Reconciliation
+  - React makes a list of all the changes that need to be processed and then rendered to the UI.
+  - During this time, React can jump to processing another change as  well.
+  - Once this list is computed, React will then schedule the changes to be executed in the next phase.
+* Phase 2 — Commit
+  - Out of the scheduled changes that come out of the reconciliation process, React can choose to render a specific set of changes.
+  - Once committed, React notifies the DOM to render the changes that were found while in the reconciliation process.
+While the reconciliation phase can be interrupted, the commit phase cannot.
+
+By splitting things up into two phases, React is then able to prioritize which changes to make first.
+
+### The Benefits of Fiber
+1. First of all, you get improved performance. By being able to break the limits of the call stack and not having to wait on it to be clear, React is able to pause or start rendering work whenever required.
+2. You can handle errors in a much cleaner fashion. Instead of showing the white screen of death whenever a Javascript runtime error occurs, you are able to set up error boundaries, which allows you to show a backup screen in case something wrong happens.
+3. You get support for returning new render types such as fragments and strings. You can also return multiple elements from a render function as well.
+4. It increases the performance of your user interface, allowing you to create advanced elements with animations, layouts, gestures and more.
 
 ---
 
@@ -483,8 +575,8 @@ Benefits:
 
 Memoization avoids unnecessary calculations or renders.
 
-* `useMemo` memoizes values
-* `useCallback` memoizes functions
+* `useMemo` caches a computed value (e.g., expensive calculations).
+* `useCallback` caches a function reference to prevent child re-renders.
 * `React.memo` memoizes components
 
 ```js
@@ -496,10 +588,13 @@ const value = useMemo(() => expensiveFunction(a), [a]);
 ## 18. What are PropTypes?
 
 PropTypes validate props passed to a component.
+It helps catch bugs early during development.
+In modern React, TypeScript provides compile-time safety and is preferred, but PropTypes are still useful for JS-only projects.
 
 ```js
 MyComponent.propTypes = {
-  name: PropTypes.string
+  name: PropTypes.string.isRequired,
+  age: PropTypes.number,
 }
 ```
 
