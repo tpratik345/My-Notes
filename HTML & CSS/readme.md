@@ -2,45 +2,45 @@
 
 ## Index
 
-| #  | Question                                                                       | Link                                                                            |
-| -- | ------------------------------------------------------------------------------ | ------------------------------------------------------------------------------- |
-| 1  | What is the difference between preload and prefetch in the `<link>` tag?       | [Go](#1-what-is-the-difference-between-preload-and-prefetch-in-the-link-tag)    |
-| 2  | What are pseudo classes and pseudo elements?                                   | [Go](#2-what-are-pseudo-classes-and-pseudo-elements)                            |
-| 3  | What is `preventDefault()`?                                                    | [Go](#3-what-is-preventdefault)                                                 |
-| 4  | What is `stopPropagation()`?                                                   | [Go](#4-what-is-stoppropagation)                                                |
-| 5  | Explain the CSS Box Model                                                      | [Go](#5-explain-the-css-box-model)                                              |
-| 6  | What is a CSS Sprite?                                                          | [Go](#6-what-is-a-css-sprite)                                                   |
-| 7  | What are CSS Preprocessors?                                                    | [Go](#7-what-are-css-preprocessors)                                             |
-| 8  | What are Mixins?                                                               | [Go](#8-what-are-mixins)                                                        |
-| 9  | Explain CSS Specificity                                                        | [Go](#9-explain-css-specificity)                                                |
-| 10 | What is `!important`?                                                          | [Go](#10-what-is-important)                                                     |
-| 11 | What are CSS Combinators?                                                      | [Go](#11-what-are-css-combinators)                                              |
-| 12 | What does `::before` do?                                                       | [Go](#12-what-does-before-do)                                                   |
-| 13 | Difference between `visibility: hidden` and `display: none`                    | [Go](#13-difference-between-visibility-hidden-and-display-none)                 |
-| 14 | Explain CSS Position Values                                                    | [Go](#14-explain-css-position-values)                                           |
-| 15 | Difference between `box-sizing: border-box` and `content-box`                  | [Go](#15-difference-between-box-sizing-border-box-and-content-box)              |
-| 16 | Difference between inline, inline-block and block                              | [Go](#16-difference-between-inline-inline-block-and-block)                      |
-| 17 | Flexbox vs Grid                                                                | [Go](#17-flexbox-vs-grid)                                                       |
-| 18 | What are HTML Entities?                                                        | [Go](#18-what-are-html-entities)                                                |
-| 19 | What are Semantic Elements?                                                    | [Go](#19-what-are-semantic-elements)                                            |
-| 20 | What are Meta Tags?                                                            | [Go](#20-what-are-meta-tags)                                                    |
-| 21 | localStorage vs sessionStorage                                                 | [Go](#21-localstorage-vs-sessionstorage)                                        |
-| 22 | What are Web Workers?                                                          | [Go](#22-what-are-web-workers)                                                  |
-| 23 | What are HTML Attributes?                                                      | [Go](#23-what-are-html-attributes)                                              |
-| 24 | What are Data Attributes?                                                      | [Go](#24-what-are-data-attributes)                                              |
-| 25 | What is CSS Reset?                                                             | [Go](#25-what-is-css-reset)                                                     |
-| 26 | How do you select elements by attribute in CSS?                                | [Go](#26-how-do-you-select-elements-by-attribute-in-css)                        |
-| 27 | Difference between HTML and HTML5                                              | [Go](#27-difference-between-html-and-html5)                                     |
-| 28 | Relative vs Static Position                                                    | [Go](#28-relative-vs-static-position)                                           |
-| 29 | What does the `target` attribute do in an anchor tag?                          | [Go](#29-what-does-the-target-attribute-do-in-an-anchor-tag)                    |
-| 30 | What is Tabindex?                                                              | [Go](#30-what-is-tabindex)                                                      |
-| 31 | What are CSS Variables?                                                        | [Go](#31-what-are-css-variables)                                                |
-| 32 | Difference between Section and Span in HTML                                    | [Go](#32-difference-between-section-and-span-in-html)                           |
-| 33 | What is the `<noscript>` tag?                                                  | [Go](#33-what-is-the-noscript-tag)                                              |
-| 34 | What are Backticks in JavaScript Template Literals?                            | [Go](#34-what-are-backticks-in-javascript-template-literals)                    |
-| 35 | What is a `<textarea>` tag?                                                    | [Go](#35-what-is-a-textarea-tag)                                                |
-| 36 | Difference between `mouseenter` and `mouseover`                                | [Go](#36-difference-between-mouseenter-and-mouseover)                           |
-| 37 | Difference between `offsetHeight`, `offsetWidth` and `getBoundingClientRect()` | [Go](#37-difference-between-offsetheight-offsetwidth-and-getboundingclientrect) |
+| #  | Question                                                                                                                                                    |
+| -- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1  | [What is the difference between preload and prefetch in the `<link>` tag?](#1-what-is-the-difference-between-preload-and-prefetch-in-the-link-tag)          |
+| 2  | [What are pseudo classes and pseudo elements?](#2-what-are-pseudo-classes-and-pseudo-elements)                                                              |
+| 3  | [What is `preventDefault()`?](#3-what-is-preventdefault)                                                                                                    |
+| 4  | [What is `stopPropagation()`?](#4-what-is-stoppropagation)                                                                                                  |
+| 5  | [Explain the CSS Box Model](#5-explain-the-css-box-model)                                                                                                   |
+| 6  | [What is a CSS Sprite?](#6-what-is-a-css-sprite)                                                                                                            |
+| 7  | [What are CSS Preprocessors?](#7-what-are-css-preprocessors)                                                                                                |
+| 8  | [What are Mixins?](#8-what-are-mixins)                                                                                                                      |
+| 9  | [Explain CSS Specificity](#9-explain-css-specificity)                                                                                                       |
+| 10 | [What is `!important`?](#10-what-is-important)                                                                                                              |
+| 11 | [What are CSS Combinators?](#11-what-are-css-combinators)                                                                                                   |
+| 12 | [What does `::before` do?](#12-what-does-before-do)                                                                                                         |
+| 13 | [Difference between `visibility: hidden` and `display: none`](#13-difference-between-visibility-hidden-and-display-none)                                    |
+| 14 | [Explain CSS Position Values](#14-explain-css-position-values)                                                                                              |
+| 15 | [Difference between `box-sizing: border-box` and `content-box`](#15-difference-between-box-sizing-border-box-and-content-box)                               |
+| 16 | [Difference between inline, inline-block and block](#16-difference-between-inline-inline-block-and-block)                                                   |
+| 17 | [Flexbox vs Grid](#17-flexbox-vs-grid)                                                                                                                      |
+| 18 | [What are HTML Entities?](#18-what-are-html-entities)                                                                                                       |
+| 19 | [What are Semantic Elements?](#19-what-are-semantic-elements)                                                                                               |
+| 20 | [What are Meta Tags?](#20-what-are-meta-tags)                                                                                                               |
+| 21 | [localStorage vs sessionStorage](#21-localstorage-vs-sessionstorage)                                                                                        |
+| 22 | [What are Web Workers?](#22-what-are-web-workers)                                                                                                           |
+| 23 | [What are HTML Attributes?](#23-what-are-html-attributes)                                                                                                   |
+| 24 | [What are Data Attributes?](#24-what-are-data-attributes)                                                                                                   |
+| 25 | [What is CSS Reset?](#25-what-is-css-reset)                                                                                                                 |
+| 26 | [How do you select elements by attribute in CSS?](#26-how-do-you-select-elements-by-attribute-in-css)                                                       |
+| 27 | [Difference between HTML and HTML5](#27-difference-between-html-and-html5)                                                                                  |
+| 28 | [Relative vs Static Position](#28-relative-vs-static-position)                                                                                              |
+| 29 | [What does the `target` attribute do in an anchor tag?](#29-what-does-the-target-attribute-do-in-an-anchor-tag)                                             |
+| 30 | [What is Tabindex?](#30-what-is-tabindex)                                                                                                                   |
+| 31 | [What are CSS Variables?](#31-what-are-css-variables)                                                                                                       |
+| 32 | [Difference between Section and Span in HTML](#32-difference-between-section-and-span-in-html)                                                              |
+| 33 | [What is the `<noscript>` tag?](#33-what-is-the-noscript-tag)                                                                                               |
+| 34 | [What are Backticks in JavaScript Template Literals?](#34-what-are-backticks-in-javascript-template-literals)                                               |
+| 35 | [What is a `<textarea>` tag?](#35-what-is-a-textarea-tag)                                                                                                   |
+| 36 | [Difference between `mouseenter` and `mouseover`](#36-difference-between-mouseenter-and-mouseover)                                                          |
+| 37 | [Difference between `offsetHeight`, `offsetWidth` and `getBoundingClientRect()`](#37-difference-between-offsetheight-offsetwidth-and-getboundingclientrect) |
 
 ---
 
