@@ -186,10 +186,12 @@ Important components:
 Types:
 * BrowserRouter:
   - The standard for modern web apps.
+  - Updates the URL in address bar.
   - It uses the HTML5 History API `(pushState, replaceState)` to create clean, SEO-friendly URLs without hash fragments (e.g., /about).
 * MemoryRouter:
-  - Keeps the history of your "URL" in memory instead of the browser's address bar.
-  - It is primarily used for unit testing or non-browser environments like React Native.
+  - Does NOT updates the URL.
+  - Keeps the history of your "URL" in memory stack instead of the browser's address bar.
+  - Mostly used for unit testing or non-browser environments like React Native.
 * HashRouter:
   - Used for legacy browser support or environments where you cannot configure the server to handle all paths.
   - It uses the hash portion of the URL (e.g., /#/about) to keep the UI in sync with the location.
