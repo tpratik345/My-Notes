@@ -758,7 +758,7 @@ const location = useLocation();
 
 StrictMode highlights potential problems.
 
-```js
+```jsx
 <React.StrictMode>
   <App />
 </React.StrictMode>
