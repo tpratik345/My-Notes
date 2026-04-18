@@ -1,5 +1,73 @@
 # JavaScript Interview Question Bank – Detailed Questions & Answers
 
+
+## JavaScript Interview Question Bank – Index
+
+| #  | Question                                                                                             |
+| -- | ---------------------------------------------------------------------------------------------------- |
+| 1  | [What is Hoisting?](#1-what-is-hoisting)                                                             |
+| 2  | [Difference between var, let and const](#2-difference-between-var-let-and-const)                     |
+| 3  | [What is a Regular Expression?](#3-what-is-a-regular-expression)                                     |
+| 4  | [What is Promise.resolve()?](#4-what-is-promiseresolve)                                              |
+| 5  | [Explain async and await](#5-explain-async-and-await)                                                |
+| 6  | [What are Callbacks and Callback Hell?](#6-what-are-callbacks-and-callback-hell)                     |
+| 7  | [What is Debounce and Throttle?](#7-what-is-debounce-and-throttle)                                   |
+| 8  | [Explain Event Bubbling and Event Capturing](#8-explain-event-bubbling-and-event-capturing)          |
+| 9  | [What is Closure?](#9-what-is-closure)                                                               |
+| 10 | [What are First Class Functions?](#10-what-are-first-class-functions)                                |
+| 11 | [Explain Event Loop](#11-explain-event-loop)                                                         |
+| 12 | [What is Callback Queue?](#12-what-is-callback-queue)                                                |
+| 13 | [What is Event Delegation?](#13-what-is-event-delegation)                                            |
+| 14 | [What is Currying?](#14-what-is-currying)                                                            |
+| 15 | [What are Microtasks?](#15-what-are-microtasks)                                                      |
+| 16 | [What is Prototype?](#16-what-is-prototype)                                                          |
+| 17 | [Difference between bind, call and apply](#17-difference-between-bind-call-and-apply)                |
+| 18 | [Difference between Shallow Copy and Deep Copy](#18-difference-between-shallow-copy-and-deep-copy)   |
+| 19 | [What is Encapsulation?](#19-what-is-encapsulation)                                                  |
+| 20 | [How to Compare Two Objects?](#20-how-to-compare-two-objects)                                        |
+| 21 | [Pass by Value vs Pass by Reference](#21-pass-by-value-vs-pass-by-reference)                         |
+| 22 | [Prototype Inheritance vs Classical Inheritance](#22-prototype-inheritance-vs-classical-inheritance) |
+| 23 | [What is Memoization?](#23-what-is-memoization)                                                      |
+| 24 | [Static Method vs Instance Method](#24-static-method-vs-instance-method)                             |
+| 25 | [What is `this` Keyword?](#25-what-is-this-keyword)                                                  |
+| 26 | [What is Type Coercion?](#26-what-is-type-coercion)                                                  |
+| 27 | [What is an IIFE?](#27-what-is-an-iife)                                                              |
+| 28 | [What is an Anonymous Function?](#28-what-is-an-anonymous-function)                                  |
+| 29 | [What are Higher Order Functions?](#29-what-are-higher-order-functions)                              |
+| 30 | [What is Constructor and super?](#30-what-is-constructor-and-super)                                  |
+| 31 | [Arrow Function vs Normal Function](#31-arrow-function-vs-normal-function)                           |
+| 32 | [Difference between DOM and BOM](#32-difference-between-dom-and-bom)                                 |
+| 33 | [Rest vs Spread Operator](#33-rest-vs-spread-operator)                                               |
+| 34 | [What is Generator Function?](#34-what-is-generator-function)                                        |
+| 35 | [Difference between Set and WeakSet](#35-difference-between-set-and-weakset)                         |
+| 36 | [Difference between Map and WeakMap](#36-difference-between-map-and-weakmap)                         |
+| 37 | [What is Temporal Dead Zone?](#37-what-is-temporal-dead-zone)                                        |
+| 38 | [What are Design Patterns in JavaScript?](#38-what-are-design-patterns-in-javascript)                |
+| 39 | [Difference between defer, async and script tag](#39-difference-between-defer-async-and-script-tag)  |
+| 40 | [What is Window Object?](#40-what-is-window-object)                                                  |
+| 41 | [What is Strict Mode?](#41-what-is-strict-mode)                                                      |
+| 42 | [What are Typed Arrays?](#42-what-are-typed-arrays)                                                  |
+| 43 | [Difference between Java and JavaScript](#43-difference-between-java-and-javascript)                 |
+| 44 | [What is delete operator?](#44-what-is-delete-operator)                                              |
+| 45 | [Difference between slice and splice](#45-difference-between-slice-and-splice)                       |
+| 46 | [Difference between ES5 and ES6](#46-difference-between-es5-and-es6)                                 |
+| 47 | [Compile Time Error vs Runtime Error](#47-compile-time-error-vs-runtime-error)                       |
+| 48 | [Difference between setTimeout and setInterval](#48-difference-between-settimeout-and-setinterval)   |
+| 49 | [What is Execution Context?](#49-what-is-execution-context)                                          |
+| 50 | [Strongly Typed vs Loosely Typed](#50-strongly-typed-vs-loosely-typed)                               |
+| 51 | [Difference between Object and Array](#51-difference-between-object-and-array)                       |
+| 52 | [sort() with and without compare function](#52-sort-with-and-without-compare-function)               |
+| 53 | [What is localeCompare()?](#53-what-is-localecompare)                                                |
+| 54 | [What are Interceptors?](#54-what-are-interceptors)                                                  |
+| 55 | [Difference between undefined and null](#55-difference-between-undefined-and-null)                   |
+| 56 | [What are Polyfills?](#56-what-are-polyfills)                                                        |
+| 57 | [What is Axios?](#57-what-is-axios)                                                                  |
+| 58 | [What are Implicit Global Variables?](#58-what-are-implicit-global-variables)                        |
+| 59 | [Why does `typeof null` return `object`?](#59-why-does-typeof-null-return-object)                    |
+| 60 | [What is Nullish Coalescing Operator?](#60-what-is-nullish-coalescing-operator)                      |
+| 61 | [What are preventDefault() and stopPropagation()?](#61-what-are-preventdefault-and-stoppropagation)  |
+| 62 | [Difference between for...of and for...in](#62-difference-between-forof-and-forin)                   |
+
 # 1. What is Hoisting?
 
 Hoisting is JavaScript's default behavior of moving declarations to the top of their scope before code execution.
