@@ -797,19 +797,20 @@ Fragments allow grouping multiple elements without adding extra DOM node.
 
 ## 33. How to Optimize a React Application?
 
-* Use React.memo
-* Use useMemo and useCallback
-* Lazy load components
-* Avoid unnecessary re-renders
-* Use code splitting
-* Virtualize long lists
+To optimize React apps, you can:
+* Use `React.memo`, `useMemo`, and `useCallback` to prevent unnecessary re-renders.
+* Implement code-splitting with `React.lazy()` and `Suspense`.
+* Avoid creating new functions or objects inside render.
+* Use key props correctly.
+* Memoize expensive computations.
+* Use profiling tools like `React Profiler` & `LightHouse`.
+Remember: optimize based on profiling, not guessing — premature optimization can complicate code.
 
 ---
 
 ## 34. What is WebKit?
 
 WebKit is a browser rendering engine used in Safari.
-
 It converts HTML/CSS into visible UI.
 
 ---
@@ -817,14 +818,14 @@ It converts HTML/CSS into visible UI.
 ## 35. What is Web Optimization?
 
 Web optimization improves performance.
-
 Techniques:
-
-* Minify files
-* Lazy load images
-* Compress assets
-* Caching
-* CDN
+* Minify and bundle JS/CSS
+* Use tree-shaking to remove dead code
+* Implement lazy loading
+* Compress images and use next-gen formats (WebP/AVIF)
+* Cache assets with service workers
+* Use SSR or static site generation for faster first paint
+* Use CDNs
 
 ---
 
@@ -839,27 +840,34 @@ Techniques:
 
 ## 37. What is React Reconciliation?
 
-Reconciliation is React's process of comparing old Virtual DOM and new Virtual DOM.
-
-React updates only changed nodes.
+Reconciliation is React’s internal process of comparing the Virtual DOM tree with its previous version to determine what changes are needed.
+It’s powered by the Fiber architecture, which makes this process efficient and asynchronous.
+React uses keys and types to decide whether to reuse or replace elements.
+This process ensures minimal DOM updates and smooth UI transitions.
 
 ---
 
 ## 38. What is Diffing?
 
 Diffing is the algorithm React uses during reconciliation.
-
 Rules:
-
 * Different element type -> re-create subtree
 * Same type -> update only changed attributes
 * Keys help identify list items
+
+React’s diffing algorithm compares old and new virtual DOM trees.
+Instead of comparing every node (which is slow), it assumes elements of different types generate different trees.
+It reuses nodes with the same keys and types, making list rendering efficient.
+That’s why using stable, unique keys in lists is critical — it helps React match elements accurately and avoid UI bugs.
 
 ---
 
 ## 39. What is Redux Saga?
 
-Redux Saga handles asynchronous actions using generator functions.
+Redux-Saga is a middleware for handling side effects in Redux using generator functions.
+It helps organize complex async logic — like fetching data, cancelling requests, or chaining actions.
+Sagas run in the background and can listen for dispatched actions (takeEvery, takeLatest).
+They improve readability and make async flow easier to test and debug compared to nested thunks or callbacks.
 
 ```js
 function* fetchData() {
@@ -869,11 +877,11 @@ function* fetchData() {
 
 ---
 
-## 40. What is `forwardRef`?
+### 40. What is `forwardRef`?
 
 `forwardRef` passes a ref from parent to child.
 
-```js
+```jsx
 const Input = React.forwardRef((props, ref) => (
   <input ref={ref} />
 ));
