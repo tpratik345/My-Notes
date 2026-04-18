@@ -63,7 +63,7 @@
 | 57 | [What is `useImperativeHandle`?](#57-what-is-useimperativehandle)                                                                                           |
 | 58 | [What is the difference between Class Components and Functional Components?](#58-what-is-the-difference-between-class-components-and-functional-components) |
 | 59 | [Explain Event Handling in React](#59-explain-event-handling-in-react)                                                                                      |
-| 60 | [What is Synthetic Event?](#60-what-is-synthetic-event)                                                                                                     |
+| 60 | [Synthetic Event vs Native DOM Event](#60-synthetic-event-vs-native-dom-event)                                                                                                     |
 | 61 | [What is Batching in React?](#61-what-is-batching-in-react)                                                                                                 |
 | 62 | [What is the use of `key` prop?](#62-what-is-the-use-of-key-prop)                                                                                           |
 | 63 | [What is the use of `dangerouslySetInnerHTML`?](#63-what-is-the-use-of-dangerouslysetinnerhtml)                                                             |
@@ -863,6 +863,7 @@ That’s why using stable, unique keys in lists is critical — it helps React m
 ---
 
 ## 39. What is Redux Saga?
+
 Redux-Saga is a middleware for handling side effects in Redux using generator functions.
 It helps organize complex async logic — like fetching data, cancelling requests, or chaining actions.
 Sagas run in the background and can listen for dispatched actions (takeEvery, takeLatest).
@@ -876,7 +877,7 @@ function* fetchData() {
 
 ---
 
-### 40. What is `forwardRef`?
+## 40. What is `forwardRef`?
 
 `forwardRef` passes a ref from parent to child.
 
@@ -890,11 +891,14 @@ const Input = React.forwardRef((props, ref) => (
 
 ## 41. What are Render Props?
 
-Render Props means sharing code using a prop whose value is a function.
+Render Props means sharing code using a prop whose value is a `function`.
 
 ```js
 <MyComponent render={(data) => <h1>{data}</h1>} />
 ```
+
+It allows sharing logic between components without HOCs.
+While it was popular before hooks, now we achieve similar reusability using custom hooks, which are cleaner and easier to reason about.
 
 ---
 
@@ -908,36 +912,81 @@ Render Props means sharing code using a prop whose value is a function.
 
 ---
 
-## 43. How to Call Child Function from Parent?
+## 43. How to call `child` function from `parent`?
 
 Use `forwardRef` and `useImperativeHandle`.
 
-```js
-useImperativeHandle(ref, () => ({
-  showAlert
-}));
+```jsx
+// Child.jsx
+import { forwardRef, useImperativeHandle } from "react";
+
+const Child = forwardRef((props, ref) => {
+  const sayHello = () => {
+    console.log("Hello from child");
+  };
+
+  useImperativeHandle(ref, () => ({
+    sayHello,
+  }));
+
+  return <div>Child</div>;
+});
+
+export default Child;
 ```
+
+```jsx
+// Parent.jsx
+import { useRef } from "react";
+import Child from "./Child";
+
+function Parent() {
+  const childRef = useRef();
+
+  return (
+    <>
+      <Child ref={childRef} />
+      <button onClick={() => childRef.current.sayHello()}>
+        Call Child
+      </button>
+    </>
+  );
+}
+```
+
+Note: forwardRef is is deprecated but not yet fully removed in React 19
 
 ---
 
 ## 44. Difference between Library and Framework
 
-| Library          | Framework               |
-| ---------------- | ----------------------- |
-| You control flow | Framework controls flow |
-| Example: React   | Example: Angular        |
+| Library                | Framework               |
+| ---------------------- | ----------------------- |
+| You control flow       | Framework controls flow |
+| Routing is not present | Routing is Present      |
+| Example: React         | Example: Angular        |
 
-React is a library.
+
+| Feature        | React       | Angular                     |
+| -------------- | ----------- | --------------------------- |
+| Language       | JavaScript  | TypeScript (mandatory)      |
+| DOM            | Virtual DOM | Real DOM + change detection |
+| Data binding   | One-way     | Two-way                     |
+| Learning curve | Medium      | High                        |
+| Size           | Smaller     | Larger                      |
+
+React is a UI library that focuses only on the view layer, while Angular is a full-fledged framework that provides complete structure and built-in solutions like routing, HTTP, and dependency injection.
 
 ---
 
 ## 45. One-way vs Two-way Data Binding
 
-| One-way                    | Two-way              |
-| -------------------------- | -------------------- |
-| Data flows parent -> child | Data flows both ways |
-| Easier to debug            | More automatic       |
-| React uses one-way         | Angular uses two-way |
+| Feature        | One-Way       | Two-Way         |
+| -------------- | ------------- | --------------- |
+| Direction      | One direction | Both directions |
+| Debugging      | Easier        | Harder          |
+| Predictability | High          | Medium          |
+| Used in        | React         | Angular         |
 
 ---
 
@@ -974,13 +1023,23 @@ const total = useMemo(() => a + b, [a, b]);
 const handleClick = useCallback(() => {}, []);
 ```
 
+useCallback: memoizes a function so that React does not recreate it on every render.
+When you pass an empty dependency array ([]), it means:
+* The function is created only once (on initial render)
+* It will never change across re-renders
+* Risk of stale data (will not get the updated data)
+
+With [dependency]
+* Function updates when dependency updates
+* Always uses latest dependency
+* No stale closure for dependency
 ---
 
 ## 49. What is Code Splitting?
 
 Code splitting breaks application bundle into smaller chunks.
 
-```js
+```jsx
 const Dashboard = lazy(() => import('./Dashboard'));
 ```
 
@@ -990,6 +1049,7 @@ Improves loading speed.
 
 ## 50. Why should we not mutate state directly?
 
+Because direct mutation does not trigger re-render.
 Bad:
 
 ```js
@@ -1001,8 +1061,6 @@ Good:
 ```js
 setState({ count: 10 });
 ```
-
-Direct mutation does not trigger re-render.
 
 ---
 
@@ -1023,7 +1081,6 @@ Always prefer `===`.
 ## 52. What is Hydration in React?
 
 Hydration attaches React event listeners to server-rendered HTML.
-
 Used in SSR frameworks like Next.js.
 
 ---
@@ -1042,7 +1099,6 @@ Benefits:
 ## 54. What is Client Side Rendering (CSR)?
 
 CSR renders content in browser using JavaScript.
-
 React applications usually use CSR.
 
 ---
@@ -1072,8 +1128,8 @@ dispatch((dispatch) => {
 ## 57. What is `useImperativeHandle`?
 
 It customizes the value exposed when using `ref`.
-
 Used with `forwardRef`.
+Refer [How to Call Child Function from Parent?](#43-how-to-call-child-function-from-parent)
 
 ---
 
@@ -1097,9 +1153,38 @@ React uses camelCase for events.
 
 ---
 
-## 60. What is Synthetic Event?
+## 60. Synthetic Event vs Native DOM Event?
 
+### SyntheticEvent
 React wraps browser events into a cross-browser event object called SyntheticEvent.
+
+```jsx
+function App() {
+  const handleClick = (e) => {
+    console.log(e); // SyntheticEvent
+  };
+
+  return <button onClick={handleClick}>Click</button>;
+}
+```
+
+### Native DOM Event
+The actual browser event.
+
+```js
+document.querySelector("button").addEventListener("click", (e) => {
+  console.log(e); // Native MouseEvent
+});
+```
+
+| Feature             | SyntheticEvent         | Native Event     |
+| ------------------- | ---------------------- | ---------------- |
+| Source              | React                  | Browser          |
+| Cross-browser       | Yes                    | Depends          |
+| Performance         | Optimized (delegation) | Less optimized   |
+| Access native event | `e.nativeEvent`        | Already native   |
+| Usage               | JSX handlers           | addEventListener |
+
 
 ---
 
@@ -1116,6 +1201,8 @@ React groups multiple state updates into one re-render for better performance.
 ```js
 <li key={item.id}>{item.name}</li>
 ```
+
+Refer [Why are Keys Important in React Lists?](#47-why-are-keys-important-in-react-lists)
 
 ---
 
@@ -1350,5 +1437,33 @@ In short:
 * Concurrent Rendering = smarter scheduling
 * Incremental Rendering = gradual rendering
 
+---
 
-## 7. Why using string mode in react calls `useEffect` 2 times?
+## 7. Why using strict mode in react calls `useEffect` 2 times?
+
+In React 18+, when your app is wrapped in `StrictMode`, React intentionally mounts, unmounts, and mounts your component again in development. That means a useEffect with [] dependencies runs like this:
+
+```jsx
+<React.StrictMode>
+  <App />
+</React.StrictMode>
+```
+
+Component mounts → effect runs
+Component unmounts → cleanup runs
+Component mounts again → effect runs again
+
+This is done only in development, not in production. React does it to help you catch bugs such as:
+* Missing cleanup functions
+* Memory leaks
+* Effects that assume they only ever run once
+
+For example:
+```jsx
+useEffect(() => {
+  const socket = connect();
+
+  return () => socket.disconnect();
+}, []);
+```
+If you forget the cleanup, the extra mount in `StrictMode` exposes the bug immediately because you end up with two connections.
