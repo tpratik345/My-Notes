@@ -121,7 +121,7 @@ Flow:
 
 Example:
 
-```js
+```jsx
 const action = { type: 'INCREMENT', payload: 10 };
 
 function reducer(state = 0, action) {
@@ -140,7 +140,7 @@ function reducer(state = 0, action) {
 
 A Higher Order Component is a function that takes a component and returns a new component.
 
-```js
+```jsx
 function withAuth(WrappedComponent) {
   return function AuthComponent(props) {
     const isAuthenticated = localStorage.getItem('token');
@@ -170,7 +170,7 @@ Use cases:
 * Permission handling
 * Error handling
 
-Important Rules of HOCs (Interview Gold 🏆)
+Important Rules of HOCs:
 * Do not modify the original component
 * Always pass props using {...props}
 * Name HOCs with withSomething
@@ -214,7 +214,7 @@ function Greeting({ name }) {
 
 React Router is used for navigation in React apps without refreshing the page.
 
-```js
+```jsx
 // Browser Router
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
@@ -224,13 +224,20 @@ function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/about" element={<About />} />
+
+        <Route element={<ProtectedRoute role='admin' />}>
+          <Route path='/admin' element={<Admin />} />
+        </Route>
+
+        <Route path='/unathorized' element={<Unathorized />} />
+        <Route path="*" element={<p>Page Not Found!</p>} />
       </Routes>
     </BrowserRouter>
   );
 }
 ```
 
-```js
+```jsx
 // Memory Router
 import { MemoryRouter, Routes, Route } from "react-router-dom";
 
@@ -330,7 +337,7 @@ Useful for:
 * Tooltip
 * Popup
 
-```js
+```jsx
 ReactDOM.createPortal(<Modal/>, document.getElementById('modal-root'))
 ```
 
@@ -348,7 +355,7 @@ Prop drilling happens when you pass props through multiple layers of components 
 
 Allows sharing data globally without passing props manually.
 
-```js
+```jsx
 // ThemeContext.jsx
 import React, { createContext, useContext, useState } from "react";
 
@@ -374,7 +381,7 @@ export const ThemeProvider = ({ children }) => {
 export const useTheme = () => useContext(ThemeContext);
 ```
 
-```js
+```jsx
 // App.jsx
 import React from "react";
 import { ThemeProvider } from "./ThemeContext";
@@ -389,7 +396,7 @@ export default function App() {
 }
 ```
 
-```js
+```jsx
 // Home.jsx
 import React from "react";
 import { useTheme } from "./ThemeContext";
@@ -450,7 +457,7 @@ However, shallow comparison doesn’t detect deep object changes, so always main
 
 `React.PureComponent` and `React.memo` are performance optimization tools that skip re-renders if props and state haven’t changed.
 
-```js
+```jsx
 class MyComponent extends React.PureComponent {}
 ```
 
@@ -489,7 +496,7 @@ If an error occurs, they display a fallback UI instead of breaking the entire ap
 They don’t catch errors in event handlers or async code, only during rendering or lifecycle.
 You can use them for graceful degradation — e.g., show an error message instead of a blank screen.
 
-```js
+```jsx
 <ErrorBoundary>
   <MyComponent />
 </ErrorBoundary>
@@ -579,7 +586,7 @@ Memoization avoids unnecessary calculations or renders.
 * `useCallback` caches a function reference to prevent child re-renders.
 * `React.memo` memoizes components
 
-```js
+```jsx
 const value = useMemo(() => expensiveFunction(a), [a]);
 ```
 
@@ -607,7 +614,7 @@ MyComponent.propTypes = {
 | Uses React state               | Uses DOM directly        |
 | Value controlled by `useState` | Value accessed using ref |
 
-```js
+```jsx
 <input value={name} onChange={e => setName(e.target.value)} />
 ```
 
@@ -617,7 +624,7 @@ MyComponent.propTypes = {
 
 Refs allow direct access to DOM elements.
 
-```js
+```jsx
 const inputRef = useRef();
 inputRef.current.focus();
 ```
@@ -627,38 +634,47 @@ inputRef.current.focus();
 ## 21. What is Lazy Loading?
 
 Lazy loading loads components only when needed.
+React’s `React.lazy()` and `<Suspense>` enable code-splitting — loading components only when needed.
+This reduces bundle size and improves initial load time.
 
-```js
+```jsx
 const Home = React.lazy(() => import('./Home'));
-```
 
-Used with `Suspense`.
+<Suspense fallback={<div>Loading.....</div>}>
+  <Routes>
+    <Route path='/home' element={<Home />} />
+  </Routes>
+</Suspense>
+```
 
 ---
 
 ## 22. What is Concurrent Rendering?
 
+It is introduced with React Fiber
 Concurrent Rendering allows React to interrupt rendering and prioritize important updates.
-
 It improves responsiveness.
 
 ---
 
-## 23. What are React Server Components?
+## 23. What are React Server Components (RSCs)?
 
 Server Components render on the server and send HTML to the client.
+<!-- React Server Components are a new feature that allow parts of your app to run entirely on the server, not in the browser. -->
+They can fetch data directly on the server, render HTML, and send it to the client — without shipping JavaScript for those components.
 
 Benefits:
-
 * Smaller bundle size
 * Faster initial load
+
+For example, a product list could be rendered as HTML on the server, while interactive parts like filters remain client components.
+RSCs work seamlessly with `Next.js` 13+ (App Router) and use the `.server.jsx` and `.client.jsx` conventions.
 
 ---
 
 ## 24. What is Render Hijacking?
 
 Render hijacking means controlling or modifying a component's render output using HOC.
-
 Example: Prevent rendering based on permissions.
 
 ---
@@ -669,14 +685,16 @@ Example: Prevent rendering based on permissions.
 
 * Reusable components
 * Fast rendering
-* Large ecosystem
-* Easy testing
+* Declarative UI - you describe what you want, React figures out how to update the DOM.
+* Component - based architecture — reusable, maintainable pieces of UI.
+* Virtual DOM - faster updates and better performance.
+* Strong ecosystem - tools like React Router, Redux, Next.js, and a huge community.
 
 ### Limitations
 
-* Only view layer
+* It’s only the View layer — you must add your own state and routing libraries.
 * Frequent updates
-* JSX learning curve
+* SEO challenges without SSR.
 
 ---
 
@@ -684,11 +702,15 @@ Example: Prevent rendering based on permissions.
 
 JSX is syntax that looks like HTML inside JavaScript.
 
-```js
-const element = <h1>Hello</h1>;
+```jsx
+const element = <h1>Hello, {user.name}</h1>;
 ```
 
-JSX is converted to `React.createElement()`.
+JSX is not required but highly recommended.
+It compiles to `React.createElement()` calls, which build the virtual DOM tree.
+It supports embedding expressions, conditional rendering, and attributes.
+Behind the scenes, it’s pure JavaScript, so everything stays dynamic.
+The only rule is that JSX must have one parent element and all tags must be closed properly.
 
 ---
 
@@ -707,6 +729,8 @@ Handled using `useEffect`.
 ---
 
 ## 28. How to Pass Data Using React Router?
+
+React Router allows data to flow between routes via URL parameters, query strings, or route state.
 
 ```js
 navigate('/profile', { state: { userId: 1 } });
@@ -740,18 +764,21 @@ StrictMode highlights potential problems.
 </React.StrictMode>
 ```
 
-It runs some lifecycle methods twice in development.
+It intentionally runs certain functions twice (like component render and effects) to highlight unsafe side effects.
+It doesn’t affect production builds but ensures your code follows the latest React best practices.
 
 ---
 
 ## 31. Explain the Building Blocks of React
 
+The main building blocks of React are:
 * Components
 * Props
 * State
 * JSX
 * Events
 * Hooks
+* Virtual DOM & Reconciliation
 
 ---
 
@@ -759,7 +786,7 @@ It runs some lifecycle methods twice in development.
 
 Fragments allow grouping multiple elements without adding extra DOM node.
 
-```js
+```jsx
 <>
   <h1>Hello</h1>
   <p>World</p>
@@ -1108,21 +1135,21 @@ npx create-react-app my-app
 
 ---
 
-# Frequently Asked Interview Follow-up Questions
+# Frequently Asked Interview Follow-up Questions or Advanced React Questions
 
-1. Why is React faster?
+## 1. Why is React faster?
 
    * Because of Virtual DOM and diffing.
 
-2. Why use hooks instead of class components?
+## 2. Why use hooks instead of class components?
 
    * Less code, reusable logic, easier to maintain.
 
-3. When should you use Context API instead of Redux?
+## 3. When should you use Context API instead of Redux?
 
    * When the state is small and simple.
 
-4. Why is `useEffect` dependency array important?
+## 4. Why is `useEffect` dependency array important?
 
    * It controls when the effect should run.
 
@@ -1132,6 +1159,189 @@ useEffect(() => {
 }, []);
 ```
 
-5. Why should we avoid using array index as key?
+## 5. Why should we avoid using array index as key?
 
    * It can cause incorrect UI updates if list order changes.
+
+## 6. Concurrent Rendering vs Incremental Rendering in React
+
+### Concurrent Rendering
+
+Concurrent Rendering is a feature introduced in React 18 that allows React to prepare multiple versions of the UI in the background and decide which update is most important.
+
+Instead of blocking the browser until the entire render is finished, React can:
+
+* Pause rendering work
+* Resume it later
+* Abandon outdated work
+* Prioritize more important updates
+
+This makes the application feel faster and more responsive.
+
+#### Example
+
+Suppose a user is typing into a search box while a large list is being filtered.
+
+Without Concurrent Rendering:
+
+* React blocks the UI while filtering the large list
+* Typing may feel slow or laggy
+
+With Concurrent Rendering:
+
+* React gives higher priority to the typing update
+* The expensive list rendering can happen later in the background
+* The input remains smooth
+
+```jsx
+import { useState, useTransition } from 'react';
+
+function SearchPage() {
+  const [text, setText] = useState('');
+  const [query, setQuery] = useState('');
+  const [isPending, startTransition] = useTransition();
+
+  const handleChange = (e) => {
+    const value = e.target.value;
+    setText(value); // urgent update
+
+    startTransition(() => {
+      setQuery(value); // low priority update
+    });
+  };
+
+  return (
+    <>
+      <input value={text} onChange={handleChange} />
+      {isPending && <p>Loading...</p>}
+      <LargeList filter={query} />
+    </>
+  );
+}
+```
+
+Here:
+
+* Updating the input value is urgent
+* Rendering the filtered list is less urgent
+* React can interrupt the list rendering if the user types again
+
+#### Key Characteristics of Concurrent Rendering
+
+* Introduced in React 18
+* Not enabled globally by default; specific features use it
+* Allows interruption of rendering
+* Helps keep the UI responsive
+* Works with features like:
+
+  * `useTransition`
+  * `startTransition`
+  * `Suspense`
+  * `useDeferredValue`
+
+---
+
+### Incremental Rendering
+
+Incremental Rendering means rendering the UI in smaller chunks or steps instead of rendering everything at once.
+The idea is to split a large rendering task into smaller pieces so that the browser can stay responsive.
+React may render part of the tree first and then continue with the remaining parts.
+
+#### Example
+
+Imagine a page with:
+
+* Header
+* Sidebar
+* Large dashboard with 10,000 rows
+
+Instead of waiting for all 10,000 rows to render before showing anything, incremental rendering may:
+
+1. Render the header first
+2. Then render the sidebar
+3. Then gradually render the large table
+
+This gives the user faster visual feedback.
+
+Incremental Rendering is often seen with:
+
+* Lazy loaded components
+* `Suspense`
+* Streaming server rendering
+* Rendering large lists in chunks
+
+```jsx
+const Dashboard = React.lazy(() => import('./Dashboard'));
+
+function App() {
+  return (
+    <Suspense fallback={<p>Loading dashboard...</p>}>
+      <Dashboard />
+    </Suspense>
+  );
+}
+```
+
+In this case:
+
+* The main page appears immediately
+* The dashboard loads later
+* UI is shown incrementally
+
+---
+
+### Main Difference
+
+| Feature                   | Concurrent Rendering                    | Incremental Rendering                       |
+| ------------------------- | --------------------------------------- | ------------------------------------------- |
+| Purpose                   | Prioritize and interrupt rendering work | Render UI in smaller chunks                 |
+| Focus                     | Scheduling and priority                 | Breaking work into stages                   |
+| Can pause/resume?         | Yes                                     | Usually no explicit priority handling       |
+| Can cancel outdated work? | Yes                                     | No                                          |
+| Improves                  | Responsiveness during user interaction  | Faster initial display of UI                |
+| Common APIs               | `useTransition`, `useDeferredValue`     | `Suspense`, lazy loading, chunked rendering |
+
+---
+
+### Simple Analogy
+
+Imagine a chef preparing food.
+
+#### Concurrent Rendering
+
+The chef is cooking several dishes and can stop making one dish if an urgent order comes in.
+
+Example:
+
+* Chef starts cooking pasta
+* Suddenly an urgent coffee order comes
+* Chef pauses pasta and makes coffee first
+
+This is like React prioritizing urgent UI updates.
+
+#### Incremental Rendering
+
+The chef serves the meal in parts.
+
+Example:
+
+* First serves drinks
+* Then starters
+* Then the main course
+
+This is like React showing part of the UI first and the rest later.
+
+---
+
+### Interview-Friendly Answer
+
+> Concurrent Rendering is React's ability to pause, resume, and prioritize rendering work so the UI remains responsive, especially during expensive updates.
+> Incremental Rendering, on the other hand, is the process of rendering the UI in smaller pieces or stages so that users can see content earlier instead of waiting for the entire page to render.
+
+> In short:
+>
+> * Concurrent Rendering = smarter scheduling
+> * Incremental Rendering = gradual rendering
+
+
+## 7. Why using string mode in react calls `useEffect` 2 times?
