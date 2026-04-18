@@ -863,7 +863,6 @@ That’s why using stable, unique keys in lists is critical — it helps React m
 ---
 
 ## 39. What is Redux Saga?
-
 Redux-Saga is a middleware for handling side effects in Redux using generator functions.
 It helps organize complex async logic — like fetching data, cancelling requests, or chaining actions.
 Sagas run in the background and can listen for dispatched actions (takeEvery, takeLatest).
@@ -1343,13 +1342,13 @@ This is like React showing part of the UI first and the rest later.
 
 ### Interview-Friendly Answer
 
-> Concurrent Rendering is React's ability to pause, resume, and prioritize rendering work so the UI remains responsive, especially during expensive updates.
-> Incremental Rendering, on the other hand, is the process of rendering the UI in smaller pieces or stages so that users can see content earlier instead of waiting for the entire page to render.
+Concurrent Rendering is React's ability to pause, resume, and prioritize rendering work so the UI remains responsive, especially during expensive updates.
 
-> In short:
->
-> * Concurrent Rendering = smarter scheduling
-> * Incremental Rendering = gradual rendering
+Incremental Rendering, on the other hand, is the process of rendering the UI in smaller pieces or stages so that users can see content earlier instead of waiting for the entire page to render.
+
+In short:
+* Concurrent Rendering = smarter scheduling
+* Incremental Rendering = gradual rendering
 
 
 ## 7. Why using string mode in react calls `useEffect` 2 times?
