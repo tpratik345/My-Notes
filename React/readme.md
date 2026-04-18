@@ -9,19 +9,22 @@
 | Entire tree may re-render                | Only changed parts are updated       |
 | Causes performance issues for large apps | Improves performance using diffing   |
 
-React creates a Virtual DOM, compares it with the previous one, and updates only the changed elements in the Real DOM.
+React creates a Virtual DOM, compares it with the previous (virtual dom), and updates only the changed elements in the Real DOM.
+So it means that React creates 2 Virtual Dom.
 
 ---
 
 ## 2. What is Flux Architecture?
 
+Flux is an architecture pattern introduced by Meta (Facebook) for predictable state management.
 Flux is a unidirectional data flow architecture.
+Flux can have multiple stores to manage different area of data.
 
 Flow:
 
 `Action -> Dispatcher -> Store -> View`
 
-* Action: describes what happened
+* Action: describes what happened (is has type & payload)
 * Dispatcher: sends action to store
 * Store: holds application state
 * View: UI updates based on state
@@ -32,20 +35,28 @@ Redux is inspired by Flux.
 
 ## 3. Explain Redux concepts: store, action, reducer, dispatch
 
-* Store: central place where state is stored
-* Action: object describing what happened
-* Reducer: function that returns updated state
+It has a single store containing the entire app state.
+When an action ({type, payload}) is dispatched, it’s handled by a reducer — a pure function that takes the current state and the action, and returns a new state.
+
+Flow:
+
+`UI → dispatch(action) → reducer → new state → re-render`
+
+* UI (Component): User interaction (e.g., button click) triggers an event.
 * Dispatch: sends an action to reducer
+* Action: object describing what happened with its type and payload
+* Reducer: function that returns updated state (pure functions)
+* Store: central place where state is stored
 
 Example:
 
 ```js
-const action = { type: 'INCREMENT' };
+const action = { type: 'INCREMENT', payload: 10 };
 
 function reducer(state = 0, action) {
   switch (action.type) {
     case 'INCREMENT':
-      return state + 1;
+      return state + action.payload;
     default:
       return state;
   }
@@ -59,7 +70,25 @@ function reducer(state = 0, action) {
 A Higher Order Component is a function that takes a component and returns a new component.
 
 ```js
-const EnhancedComponent = withAuth(MyComponent);
+function withAuth(WrappedComponent) {
+  return function AuthComponent(props) {
+    const isAuthenticated = localStorage.getItem('token');
+
+    if (!isAuthenticated) {
+      return <h3>Please login to continue</h3>;
+    }
+
+    return <WrappedComponent {...props} />;
+  };
+}
+
+function Dashboard() {
+  return <h1>Dashboard Page</h1>;
+}
+
+const ProtectedDashboard = withAuth(Dashboard);
+
+export default ProtectedDashboard;
 ```
 
 Use cases:
@@ -68,6 +97,14 @@ Use cases:
 * Authentication
 * Logging
 * Permission handling
+* Error handling
+
+Important Rules of HOCs (Interview Gold 🏆)
+* Do not modify the original component
+* Always pass props using {...props}
+* Name HOCs with withSomething
+* HOCs are pure functions
+* Hooks CANNOT be used conditionally inside HOCs
 
 ---
 
@@ -94,6 +131,7 @@ Without `super(props)`, `this.props` will be undefined.
 | Handles logic             | Mostly presentational |
 
 ```js
+// Stateless Component is only for display purpose
 function Greeting({ name }) {
   return <h1>{name}</h1>;
 }
@@ -106,7 +144,35 @@ function Greeting({ name }) {
 React Router is used for navigation in React apps without refreshing the page.
 
 ```js
-<Route path="/about" element={<About />} />
+// Browser Router
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+
+function App() {
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/about" element={<About />} />
+      </Routes>
+    </BrowserRouter>
+  );
+}
+```
+
+```js
+// Memory Router
+import { MemoryRouter, Routes, Route } from "react-router-dom";
+
+function App() {
+  return (
+    <MemoryRouter>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/about" element={<About />} />
+      </Routes>
+    </MemoryRouter>
+  );
+}
 ```
 
 Important components:
@@ -116,6 +182,21 @@ Important components:
 * Route
 * Link
 * useNavigate
+
+Types:
+* BrowserRouter:
+  - The standard for modern web apps.
+  - It uses the HTML5 History API `(pushState, replaceState)` to create clean, SEO-friendly URLs without hash fragments (e.g., /about).
+* MemoryRouter:
+  - Keeps the history of your "URL" in memory instead of the browser's address bar.
+  - It is primarily used for unit testing or non-browser environments like React Native.
+* HashRouter:
+  - Used for legacy browser support or environments where you cannot configure the server to handle all paths.
+  - It uses the hash portion of the URL (e.g., /#/about) to keep the UI in sync with the location.
+* StaticRouter:
+  - Used for Server-Side Rendering (SSR) in Node.js, where you provide the current location via a prop because there is no browser history.
+* NativeRouter:
+  - The specialized router for React Native mobile applications.
 
 ---
 
