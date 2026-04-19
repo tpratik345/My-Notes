@@ -166,13 +166,13 @@ const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
 ## 4. What is Promise()?
 
-The Promise is an object represents the eventual completion or failure of an asynchronous operation and its resulting value.
-Promises have three states - `pending`, `fulfilled`, and `rejected`.
-When you create a Promise, you pass an executor function that receives two parameters: `resolve` and `reject`
-Calling resolve fulfills the Promise with a value, while reject signals an error or failure.
-You handle them using .then() for success and .catch() for errors.
-.finally() runs regardless of the outcome.
-Promises help avoid callback hell by flattening asynchronous code.
+* The Promise is an object represents the eventual completion or failure of an asynchronous operation and its resulting value.
+* Promises have three states - `pending`, `fulfilled`, and `rejected`.
+* When you create a Promise, you pass an executor function that receives two parameters: `resolve` and `reject`
+* Calling resolve fulfills the Promise with a value, while reject signals an error or failure.
+* You handle them using .then() for success and .catch() for errors.
+* .finally() runs regardless of the outcome.
+* Promises help avoid callback hell by flattening asynchronous code.
 
 For example:
 ```js
