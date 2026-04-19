@@ -8,7 +8,7 @@
 | 1  | [What is Hoisting?](#1-what-is-hoisting)                                                             |
 | 2  | [Difference between var, let and const](#2-difference-between-var-let-and-const)                     |
 | 3  | [What is a Regular Expression?](#3-what-is-a-regular-expression)                                     |
-| 4  | [What is Promise.resolve()?](#4-what-is-promiseresolve)                                              |
+| 4  | [What is Promise?](#4-what-is-promise)                                                               |
 | 5  | [Explain async and await](#5-explain-async-and-await)                                                |
 | 6  | [What are Callbacks and Callback Hell?](#6-what-are-callbacks-and-callback-hell)                     |
 | 7  | [What is Debounce and Throttle?](#7-what-is-debounce-and-throttle)                                   |
@@ -87,14 +87,23 @@ a = 10;
 ```
 
 * `var` is hoisted and initialized with `undefined`
-* `let` and `const` are hoisted but remain in Temporal Dead Zone
+* `let` and `const` are hoisted but remain in `Temporal Dead Zone`
 * Function declarations are fully hoisted
+
+```js
+console.log(a); // ReferenceError
+. //TDZ
+. //TDZ
+. //TDZ
+. //TDZ
+let a = 10;
+```
 
 ```js
 sayHello();
 
 function sayHello() {
-  console.log('Hello');
+  console.log('Hello'); // Hello
 }
 ```
 
@@ -137,7 +146,11 @@ console.log(regex.test('Pratik')); // true
 Common patterns:
 
 * `\d` → digit
+* `\D` → non-digit
 * `\w` → word character
+* `\W` → non-word character
+* `\s` → white spaces
+* `\S` → non-white spaces
 * `+` → one or more
 * `*` → zero or more
 * `^` → starts with
@@ -146,13 +159,31 @@ Common patterns:
 Example:
 
 ```js
-const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 ```
 
 ---
 
-## 4. What is Promise.resolve()?
+## 4. What is Promise()?
 
+The Promise is an object represents the eventual completion or failure of an asynchronous operation and its resulting value.
+Promises have three states:
+> pending, fulfilled, and rejected.
+When you create a Promise, you pass an executor function that receives two parameters: `resolve` and `reject`
+Calling resolve fulfills the Promise with a value, while reject signals an error or failure.
+You handle them using .then() for success and .catch() for errors.
+.finally() runs regardless of the outcome.
+Promises help avoid callback hell by flattening asynchronous code.
+
+For example:
+```js
+fetch('/data')
+  .then(res => res.json())
+  .then(data => console.log(data))
+  .catch(err => console.error(err));
+```
+
+Misc:
 `Promise.resolve()` returns a promise that is already resolved.
 
 ```js
