@@ -67,8 +67,9 @@
 | 60 | [What is Nullish Coalescing Operator?](#60-what-is-nullish-coalescing-operator)                      |
 | 61 | [What are preventDefault() and stopPropagation()?](#61-what-are-preventdefault-and-stoppropagation)  |
 | 62 | [Difference between for...of and for...in](#62-difference-between-forof-and-forin)                   |
+| 63 | [What is AbortController?](#63-what-is-abortController)                                              |
 
-# 1. What is Hoisting?
+## 1. What is Hoisting?
 
 Hoisting is JavaScript's default behavior of moving declarations to the top of their scope before code execution.
 
@@ -99,7 +100,7 @@ function sayHello() {
 
 ---
 
-# 2. Difference between var, let and const
+## 2. Difference between var, let and const
 
 | Feature    | var      | let   | const |
 | ---------- | -------- | ----- | ----- |
@@ -124,7 +125,7 @@ user.name = 'Sam'; // allowed
 
 ---
 
-# 3. What is a Regular Expression?
+## 3. What is a Regular Expression?
 
 A Regular Expression (Regex) is a pattern used to match text.
 
@@ -150,7 +151,7 @@ const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 ---
 
-# 4. What is Promise.resolve()?
+## 4. What is Promise.resolve()?
 
 `Promise.resolve()` returns a promise that is already resolved.
 
@@ -169,7 +170,7 @@ Useful when you want to convert a value into a promise.
 
 ---
 
-# 5. Explain async and await
+## 5. Explain async and await
 
 `async` makes a function return a promise.
 `await` pauses execution until promise resolves.
@@ -192,7 +193,7 @@ function fetchData() {
 
 ---
 
-# 6. What are Callbacks and Callback Hell?
+## 6. What are Callbacks and Callback Hell?
 
 A callback is a function passed into another function.
 
@@ -224,7 +225,7 @@ Use Promises or async/await to solve it.
 
 ---
 
-# 7. What is Debounce and Throttle?
+## 7. What is Debounce and Throttle?
 
 ## Debounce
 
@@ -274,7 +275,7 @@ Use case:
 
 ---
 
-# 8. Explain Event Bubbling and Event Capturing
+## 8. Explain Event Bubbling and Event Capturing
 
 Event Bubbling: Event moves from child to parent.
 
@@ -295,7 +296,7 @@ parent.addEventListener('click', handler, true);
 
 ---
 
-# 9. What is Closure?
+## 9. What is Closure?
 
 A closure is a function that remembers variables from its outer scope even after outer function is executed.
 
@@ -322,7 +323,7 @@ Use cases:
 
 ---
 
-# 10. What are First Class Functions?
+## 10. What are First Class Functions?
 
 Functions are first class citizens in JavaScript.
 
@@ -340,7 +341,7 @@ const greet = function () {
 
 ---
 
-# 11. Explain Event Loop
+## 11. Explain Event Loop
 
 JavaScript is single-threaded but can handle asynchronous operations using Event Loop.
 
@@ -374,7 +375,7 @@ Because microtasks execute before callback queue.
 
 ---
 
-# 12. What is Callback Queue?
+## 12. What is Callback Queue?
 
 Callback Queue stores asynchronous callbacks like `setTimeout`.
 
@@ -386,7 +387,7 @@ After timer completes, callback goes to queue.
 
 ---
 
-# 13. What is Event Delegation?
+## 13. What is Event Delegation?
 
 Event Delegation attaches event listener to parent instead of children.
 
@@ -405,7 +406,7 @@ Benefits:
 
 ---
 
-# 14. What is Currying?
+## 14. What is Currying?
 
 Currying converts a function with multiple arguments into multiple functions with one argument.
 
@@ -421,7 +422,7 @@ add(2)(3); // 5
 
 ---
 
-# 15. What are Microtasks?
+## 15. What are Microtasks?
 
 Microtasks have higher priority than callback queue.
 
@@ -437,7 +438,7 @@ Promise.resolve().then(() => console.log('microtask'));
 
 ---
 
-# 16. What is Prototype?
+## 16. What is Prototype?
 
 Every JavaScript object has a hidden property called prototype.
 
@@ -453,7 +454,7 @@ Person.prototype.sayHi = function () {
 
 ---
 
-# 17. Difference between bind, call and apply
+## 17. Difference between bind, call and apply
 
 | Method | Executes Immediately | Arguments       |
 | ------ | -------------------- | --------------- |
@@ -473,7 +474,7 @@ const fn = greet.bind({ name: 'John' }, 'Pune');
 
 ---
 
-# 18. Difference between Shallow Copy and Deep Copy
+## 18. Difference between Shallow Copy and Deep Copy
 
 Shallow copy copies only first level.
 
@@ -492,7 +493,7 @@ const deep = structuredClone(obj);
 
 ---
 
-# 19. What is Encapsulation?
+## 19. What is Encapsulation?
 
 Encapsulation means hiding data and exposing only necessary methods.
 
@@ -508,7 +509,7 @@ class BankAccount {
 
 ---
 
-# 20. How to Compare Two Objects?
+## 20. How to Compare Two Objects?
 
 Wrong:
 
@@ -528,7 +529,7 @@ or use deep comparison function.
 
 ---
 
-# 21. Pass by Value vs Pass by Reference
+## 21. Pass by Value vs Pass by Reference
 
 | Primitive     | Object            |
 | ------------- | ----------------- |
@@ -554,7 +555,7 @@ Now both have `x = 5`.
 
 ---
 
-# 22. Prototype Inheritance vs Classical Inheritance
+## 22. Prototype Inheritance vs Classical Inheritance
 
 JavaScript uses prototype inheritance.
 
@@ -572,7 +573,7 @@ Classical inheritance is used in Java/C++.
 
 ---
 
-# 23. What is Memoization?
+## 23. What is Memoization?
 
 Memoization stores previous function result.
 
@@ -591,7 +592,7 @@ function memoizedAdd() {
 
 ---
 
-# 24. Static Method vs Instance Method
+## 24. Static Method vs Instance Method
 
 ```js
 class User {
@@ -610,7 +611,7 @@ class User {
 
 ---
 
-# 25. What is `this` Keyword?
+## 25. What is `this` Keyword?
 
 `this` refers to current execution context.
 
@@ -627,7 +628,7 @@ Arrow functions do not have their own `this`.
 
 ---
 
-# 26. What is Type Coercion?
+## 26. What is Type Coercion?
 
 Automatic conversion of one type to another.
 
@@ -638,7 +639,7 @@ Automatic conversion of one type to another.
 
 ---
 
-# 27. What is an IIFE?
+## 27. What is an IIFE?
 
 Immediately Invoked Function Expression.
 
@@ -652,7 +653,7 @@ Used to create private scope.
 
 ---
 
-# 28. What is an Anonymous Function?
+## 28. What is an Anonymous Function?
 
 Function without name.
 
@@ -664,7 +665,7 @@ const greet = function () {
 
 ---
 
-# 29. What are Higher Order Functions?
+## 29. What are Higher Order Functions?
 
 A function that takes another function as argument or returns function.
 
@@ -680,7 +681,7 @@ Examples:
 
 ---
 
-# 30. What is Constructor and super?
+## 30. What is Constructor and super?
 
 ```js
 class Animal {
@@ -700,7 +701,7 @@ class Dog extends Animal {
 
 ---
 
-# 31. Arrow Function vs Normal Function
+## 31. Arrow Function vs Normal Function
 
 | Arrow Function        | Normal Function    |
 | --------------------- | ------------------ |
@@ -710,7 +711,7 @@ class Dog extends Animal {
 
 ---
 
-# 32. Difference between DOM and BOM
+## 32. Difference between DOM and BOM
 
 DOM → Document Object Model
 BOM → Browser Object Model
@@ -722,7 +723,7 @@ Examples:
 
 ---
 
-# 33. Rest vs Spread Operator
+## 33. Rest vs Spread Operator
 
 Rest collects values.
 
@@ -738,7 +739,7 @@ const arr2 = [...arr1];
 
 ---
 
-# 34. What is Generator Function?
+## 34. What is Generator Function?
 
 ```js
 function* generator() {
@@ -751,7 +752,7 @@ Generators pause execution using `yield`.
 
 ---
 
-# 35. Difference between Set and WeakSet
+## 35. Difference between Set and WeakSet
 
 | Set              | WeakSet             |
 | ---------------- | ------------------- |
@@ -760,7 +761,7 @@ Generators pause execution using `yield`.
 
 ---
 
-# 36. Difference between Map and WeakMap
+## 36. Difference between Map and WeakMap
 
 | Map          | WeakMap          |
 | ------------ | ---------------- |
@@ -769,7 +770,7 @@ Generators pause execution using `yield`.
 
 ---
 
-# 37. What is Temporal Dead Zone?
+## 37. What is Temporal Dead Zone?
 
 TDZ is the period between variable declaration hoisting and initialization.
 
@@ -782,7 +783,7 @@ Throws ReferenceError.
 
 ---
 
-# 38. What are Design Patterns in JavaScript?
+## 38. What are Design Patterns in JavaScript?
 
 Common patterns:
 
@@ -793,7 +794,7 @@ Common patterns:
 
 ---
 
-# 39. Difference between defer, async and script tag
+## 39. Difference between defer, async and script tag
 
 | Attribute | Behavior                             |
 | --------- | ------------------------------------ |
@@ -807,7 +808,7 @@ Common patterns:
 
 ---
 
-# 40. What is Window Object?
+## 40. What is Window Object?
 
 Global object in browser.
 
@@ -817,7 +818,7 @@ window.alert('Hello');
 
 ---
 
-# 41. What is Strict Mode?
+## 41. What is Strict Mode?
 
 ```js
 'use strict';
@@ -830,7 +831,7 @@ Benefits:
 
 ---
 
-# 42. What are Typed Arrays?
+## 42. What are Typed Arrays?
 
 Typed arrays allow handling binary data efficiently.
 
@@ -840,7 +841,7 @@ const arr = new Uint8Array([1, 2, 3]);
 
 ---
 
-# 43. Difference between Java and JavaScript
+## 43. Difference between Java and JavaScript
 
 | Java           | JavaScript         |
 | -------------- | ------------------ |
@@ -850,7 +851,7 @@ const arr = new Uint8Array([1, 2, 3]);
 
 ---
 
-# 44. What is delete operator?
+## 44. What is delete operator?
 
 ```js
 const obj = { a: 1 };
@@ -861,7 +862,7 @@ Deletes property from object.
 
 ---
 
-# 45. Difference between slice and splice
+## 45. Difference between slice and splice
 
 | slice                    | splice             |
 | ------------------------ | ------------------ |
@@ -870,7 +871,7 @@ Deletes property from object.
 
 ---
 
-# 46. Difference between ES5 and ES6
+## 46. Difference between ES5 and ES6
 
 ES6 introduced:
 
@@ -883,7 +884,7 @@ ES6 introduced:
 
 ---
 
-# 47. Compile Time Error vs Runtime Error
+## 47. Compile Time Error vs Runtime Error
 
 Compile time:
 
@@ -899,7 +900,7 @@ console.log(x.y);
 
 ---
 
-# 48. Difference between setTimeout and setInterval
+## 48. Difference between setTimeout and setInterval
 
 `setTimeout` runs once.
 
@@ -907,7 +908,7 @@ console.log(x.y);
 
 ---
 
-# 49. What is Execution Context?
+## 49. What is Execution Context?
 
 JavaScript creates:
 
@@ -922,7 +923,7 @@ Each contains:
 
 ---
 
-# 50. Strongly Typed vs Loosely Typed
+## 50. Strongly Typed vs Loosely Typed
 
 JavaScript is loosely typed.
 
@@ -933,7 +934,7 @@ a = 'hello';
 
 ---
 
-# 51. Difference between Object and Array
+## 51. Difference between Object and Array
 
 | Object         | Array              |
 | -------------- | ------------------ |
@@ -941,7 +942,7 @@ a = 'hello';
 
 ---
 
-# 52. sort() with and without compare function
+## 52. sort() with and without compare function
 
 ```js
 [10, 2, 5].sort();
@@ -963,7 +964,7 @@ Correct:
 
 ---
 
-# 53. What is localeCompare()?
+## 53. What is localeCompare()?
 
 ```js
 'a'.localeCompare('b');
@@ -973,7 +974,7 @@ Used for string comparison.
 
 ---
 
-# 54. What are Interceptors?
+## 54. What are Interceptors?
 
 Interceptors modify request or response before handling.
 
@@ -985,7 +986,7 @@ axios.interceptors.request.use(config => config);
 
 ---
 
-# 55. Difference between undefined and null
+## 55. Difference between undefined and null
 
 | undefined             | null                    |
 | --------------------- | ----------------------- |
@@ -998,7 +999,7 @@ let b = null;
 
 ---
 
-# 56. What are Polyfills?
+## 56. What are Polyfills?
 
 Polyfills provide support for modern features in old browsers.
 
@@ -1012,7 +1013,7 @@ if (!Array.prototype.includes) {
 
 ---
 
-# 57. What is Axios?
+## 57. What is Axios?
 
 Axios is a promise-based HTTP client.
 
@@ -1023,7 +1024,7 @@ axios.get('/users')
 
 ---
 
-# 58. What are Implicit Global Variables?
+## 58. What are Implicit Global Variables?
 
 ```js
 function test() {
@@ -1035,7 +1036,7 @@ Without `var/let/const`, variable becomes global.
 
 ---
 
-# 59. Why does `typeof null` return `object`?
+## 59. Why does `typeof null` return `object`?
 
 ```js
 typeof null // 'object'
@@ -1045,7 +1046,7 @@ This is a historical bug in JavaScript.
 
 ---
 
-# 60. What is Nullish Coalescing Operator?
+## 60. What is Nullish Coalescing Operator?
 
 ```js
 const value = input ?? 'default';
@@ -1055,7 +1056,7 @@ Returns right side only if left side is `null` or `undefined`.
 
 ---
 
-# 61. What are preventDefault() and stopPropagation()?
+## 61. What are preventDefault() and stopPropagation()?
 
 ```js
 e.preventDefault();
@@ -1067,7 +1068,7 @@ e.stopPropagation();
 
 ---
 
-# 62. Difference between for...of and for...in
+## 62. Difference between for...of and for...in
 
 | for...of        | for...in      |
 | --------------- | ------------- |
@@ -1079,6 +1080,89 @@ for (const key in obj) {}
 ```
 
 ---
+
+## 63. What is AbortController?
+
+AbortController is a browser / Node.js API that lets you cancel operations by sending an "abort signal".
+
+It works together with:
+* fetch
+* Streams
+* Some libraries like `Axios`
+* Your own `async` functions
+
+Basic flow:
+* Create an `AbortController`
+* Pass `controller.signal` to the async operation
+* Call `controller.abort()` when you want to stop it
+
+Example: Cancel a fetch request
+```js
+  const controller = new AbortController();
+
+  fetch("https://api.example.com/data", {signal: controller.signal})
+    .then(res => res.json())
+    .then(data => console.log(data))
+    .catch(err => {
+      if (err.name === "AbortError") {
+        console.log("Request was cancelled");
+      } else {
+        console.error(err);
+      }
+    });
+
+  // Cancel after 2 seconds
+  setTimeout(() => {
+    controller.abort();
+  }, 2000);
+```
+
+Using AbortController with async/await
+```js
+  async function getData() {
+    const controller = new AbortController();
+
+    setTimeout(() => controller.abort(), 2000);
+
+    try {
+      const response = await fetch("https://api.example.com/users", {
+        signal: controller.signal
+      });
+
+      const data = await response.json();
+      console.log(data);
+    } catch (err) {
+      if (err.name === "AbortError") {
+        console.log("Fetch aborted");
+      } else {
+        console.error(err);
+      }
+    }
+  }
+```
+
+Cancelling Previous API Calls in React
+This is common in search bars or autocomplete.
+```jsx
+  useEffect(() => {
+    const controller = new AbortController();
+
+    fetch(`/api/search?q=${searchTerm}`, {
+      signal: controller.signal
+    })
+      .then(res => res.json())
+      .then(setData)
+      .catch(err => {
+        if (err.name !== "AbortError") {
+          console.error(err);
+        }
+      });
+
+    return () => {
+      controller.abort(); // cancel previous request
+    };
+  }, [searchTerm]);
+```
 
 # Frequently Asked Tricky Interview Questions
 
@@ -1161,3 +1245,102 @@ false
 ```
 
 Because of floating point precision.
+
+---
+
+# Bonus: Interview — 8 moderate→hard JS questions (with answers)
+
+## 1 — Explain the event loop with an example that shows ordering of `console.log` calls between `setTimeout`, `Promise`, and immediate code.
+
+Answer: Immediate synchronous code runs first. Then `microtasks` (Promise callbacks) run, then `macrotasks` (timers).
+
+Example:
+```js
+console.log('A');
+
+setTimeout(() => console.log('B'), 0);
+
+Promise.resolve().then(() => console.log('C'));
+
+console.log('D');
+// Output order: A, D, C, B
+```
+
+Explanation: A and D are sync. Promise then is microtask executed after current stack but before macrotasks. setTimeout callback is macrotask.
+
+## 2 — Implement a function `deepClone(obj)` handling arrays, objects, Dates, RegExp, and circular references. (Explain approach.)
+
+Answer (approach):
+* Use recursion with a WeakMap to track visited objects to handle cycles.
+* For built-ins, create appropriate clones (new Date, new RegExp).
+* For arrays, clone each element. For plain objects, iterate own properties.
+* Example sketch omitted for brevity; mention performance and edge cases (functions, prototype chain, symbols).
+
+## 3 — How do you implement `debounce`? Provide code and explain edge cases (immediate invocation, trailing calls).
+
+Answer:
+
+```js
+function debounce(fn, wait, immediate = false) {
+  let timer;
+  return function(...args) {
+    const ctx = this;
+    clearTimeout(timer);
+    if (immediate && !timer) {
+      fn.apply(ctx, args);
+    }
+    timer = setTimeout(() => {
+      if (!immediate) fn.apply(ctx, args);
+      timer = null;
+    }, wait);
+  };
+}
+```
+
+Explanation: immediate controls leading-edge invocation. Clearing previous timer ensures only last call within interval runs.
+
+## 4 — What is prototypal inheritance? Show how to create inheritance without class.
+
+Answer:
+```js
+function Parent(name) {
+  this.name = name;
+}
+Parent.prototype.greet = function(){ return `Hi ${this.name}`; };
+
+function Child(name, age) {
+  Parent.call(this, name);
+  this.age = age;
+}
+Child.prototype = Object.create(Parent.prototype);
+Child.prototype.constructor = Child;
+
+const c = new Child('A', 10);
+console.log(c.greet());
+```
+
+Explanation: `Object.create` sets prototype chain; Parent.call(this, ...) sets instance properties.
+
+## 5 — Explain why typeof `null === 'object'` and how to reliably check for null.
+
+Answer: It's a historical bug left for backward compatibility: null is a primitive but typeof null returns 'object'. Use value === null to check consistently.
+
+## 6 — How to avoid race conditions when using async functions that update shared state (e.g., multiple fetches updating UI)?
+
+Answer: Use techniques like tracking request tokens (only apply results for latest token), abort controllers (AbortController), or serialize operations. Example: increment a requestId and only apply result if requestId === currentRequestId.
+
+## 7 — Explain this in JS with examples for method call, function call, constructor, arrow function, and bind.
+
+Answer:
+
+* Method call: obj.fn() — this is obj.
+* Function call: fn() in strict mode this is undefined, else window.
+* Constructor: new Fn() — this is the new object.
+* Arrow function: this lexical from outer scope.
+* bind: returns function with this permanently set.
+
+Example snippet and caveat: const f = obj.fn; f(); loses this — use bind or arrow.
+
+## 8 — Optimize a function that does heavy CPU work in the browser without blocking UI. What options exist?
+
+Answer: Offload CPU work to Web Workers to avoid blocking main thread. Other strategies: break the work into chunks with setTimeout/requestIdleCallback, use WebAssembly for compute-heavy tasks, or optimize algorithmic complexity.
