@@ -203,12 +203,17 @@ Useful when you want to convert a value into a promise.
 ## 5. Explain async and await
 
 `async` makes a function return a promise.
-`await` pauses execution until promise resolves.
+`await` pauses execution until promise resolves. (blocks the code until promise is Resolved or Rejected)
 
 ```js
-async function fetchData() {
-  const result = await Promise.resolve('Done');
-  console.log(result);
+async function getData() {
+  try {
+    const res = await fetch('/data');
+    const data = await res.json();
+    console.log(data); // data will be logged only after reolving above promise
+  } catch (err) {
+    console.error(err);
+  }
 }
 ```
 
@@ -225,7 +230,7 @@ function fetchData() {
 
 ## 6. What are Callbacks and Callback Hell?
 
-A callback is a function passed into another function.
+A callback is a function passed as arguments to other functions.
 
 ```js
 setTimeout(() => {
@@ -234,6 +239,7 @@ setTimeout(() => {
 ```
 
 Callback Hell:
+The problem with callbacks arises when multiple asynchronous operations depend on each other, causing deeply nested structures — what we call callback hell.
 
 ```js
 login(user, function() {
@@ -246,7 +252,6 @@ login(user, function() {
 ```
 
 Problems:
-
 * Difficult to read
 * Difficult to debug
 * Hard to maintain
@@ -257,7 +262,7 @@ Use Promises or async/await to solve it.
 
 ## 7. What is Debounce and Throttle?
 
-## Debounce
+### Debounce
 
 Executes function only after user stops triggering it.
 
@@ -273,11 +278,10 @@ function debounce(fn, delay) {
 ```
 
 Use case:
-
 * Search input
 * Resize event
 
-## Throttle
+### Throttle
 
 Executes function only once in given interval.
 
@@ -299,7 +303,6 @@ function throttle(fn, limit) {
 ```
 
 Use case:
-
 * Scroll event
 * Mouse movement
 
@@ -333,16 +336,14 @@ A closure is a function that remembers variables from its outer scope even after
 ```js
 function outer() {
   let count = 0;
-
-  return function () {
+  return function inner() {
     count++;
-    console.log(count);
+    return count;
   };
 }
-
 const counter = outer();
-counter(); // 1
-counter(); // 2
+console.log(counter()); // 1
+console.log(counter()); // 2
 ```
 
 Use cases:
@@ -375,20 +376,23 @@ const greet = function () {
 
 JavaScript is single-threaded but can handle asynchronous operations using Event Loop.
 
+At a high level, the JavaScript runtime has a call stack, a heap, and two important queues — the macro task queue and the microtask queue.
+
+The event loop’s job is to constantly check whether the call stack is empty; if it is, it takes the next task from the queue based on priority and pushes it onto the stack for execution.
+
+Microtasks, like Promises and queueMicrotask, have higher priority — they run right after the current stack completes, before the next macrotask (like setTimeout).
+
 Flow:
 
 1. Call Stack
 2. Web APIs
-3. Callback Queue / Microtask Queue
+3. Callback Queue (low prio) / Microtask Queue (high prio)
 4. Event Loop
 
 ```js
 console.log('Start');
-
 setTimeout(() => console.log('Timeout'), 0);
-
 Promise.resolve().then(() => console.log('Promise'));
-
 console.log('End');
 ```
 
