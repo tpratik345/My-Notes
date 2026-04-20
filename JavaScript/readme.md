@@ -17,9 +17,9 @@
 | 10 | [What are First Class Functions?](#10-what-are-first-class-functions)                                |
 | 11 | [Explain Event Loop](#11-explain-event-loop)                                                         |
 | 12 | [What is Callback Queue?](#12-what-is-callback-queue)                                                |
-| 13 | [What is Event Delegation?](#13-what-is-event-delegation)                                            |
-| 14 | [What is Currying?](#14-what-is-currying)                                                            |
-| 15 | [What are Microtasks?](#15-what-are-microtasks)                                                      |
+| 13 | [What are Microtasks?](#13-what-are-microtasks)                                                      |
+| 14 | [What is Event Delegation?](#14-what-is-event-delegation)                                            |
+| 15 | [What is Currying?](#15-what-is-currying)                                                            |
 | 16 | [What is Prototype?](#16-what-is-prototype)                                                          |
 | 17 | [Difference between bind, call and apply](#17-difference-between-bind-call-and-apply)                |
 | 18 | [Difference between Shallow Copy and Deep Copy](#18-difference-between-shallow-copy-and-deep-copy)   |
@@ -411,17 +411,35 @@ Because microtasks execute before callback queue.
 
 ## 12. What is Callback Queue?
 
-Callback Queue stores asynchronous callbacks like `setTimeout`.
+Callback Queue stores asynchronous callbacks like `setTimeout`, `setInterval`, DOM events, and I/O callbacks.
 
 ```js
 setTimeout(() => console.log('Hi'), 1000);
 ```
 
-After timer completes, callback goes to queue.
+* When the call stack is empty, the event loop picks tasks from this queue in order and executes them.
+* It’s important to contrast this with the microtask queue, which holds callbacks from Promises and mutation observers.
+* For instance, a Promise.then will always execute before a timer callback with a 0 ms delay because microtasks have higher priority.
 
 ---
 
-## 13. What is Event Delegation?
+## 13. What are Microtasks?
+
+Microtasks have higher priority than callback queue.
+
+Examples:
+
+* Promise.then
+* queueMicrotask
+* MutationObserver
+
+```js
+Promise.resolve().then(() => console.log('microtask'));
+```
+
+---
+
+## 14. What is Event Delegation?
 
 Event Delegation attaches event listener to parent instead of children.
 
@@ -440,7 +458,7 @@ Benefits:
 
 ---
 
-## 14. What is Currying?
+## 15. What is Currying?
 
 Currying converts a function with multiple arguments into multiple functions with one argument.
 
@@ -456,34 +474,19 @@ add(2)(3); // 5
 
 ---
 
-## 15. What are Microtasks?
-
-Microtasks have higher priority than callback queue.
-
-Examples:
-
-* Promise.then
-* queueMicrotask
-* MutationObserver
-
-```js
-Promise.resolve().then(() => console.log('microtask'));
-```
-
----
-
 ## 16. What is Prototype?
 
-Every JavaScript object has a hidden property called prototype.
+Every JavaScript object has a hidden property (internal link) called prototype.
 
 ```js
 function Person(name) {
   this.name = name;
 }
-
-Person.prototype.sayHi = function () {
-  console.log('Hi');
+Person.prototype.greet = function() {
+  return `Hi ${this.name}`;
 };
+const p = new Person('Alice');
+p.greet(); // 'Hi Alice'
 ```
 
 ---
@@ -513,8 +516,10 @@ const fn = greet.bind({ name: 'John' }, 'Pune');
 Shallow copy copies only first level.
 
 ```js
-const obj = { a: 1, b: { c: 2 } };
-const copy = { ...obj };
+const obj1 = { a: 1, b: { c: 2 } };
+const shallow = { ...obj1 };
+shallow.b.c = 10;
+console.log(obj1.b.c); // 10 (affected)
 ```
 
 Changing nested object affects original.
@@ -532,12 +537,10 @@ const deep = structuredClone(obj);
 Encapsulation means hiding data and exposing only necessary methods.
 
 ```js
-class BankAccount {
+class Account {
   #balance = 0;
-
-  deposit(amount) {
-    this.#balance += amount;
-  }
+  deposit(amount) { this.#balance += amount; }
+  getBalance() { return this.#balance; }
 }
 ```
 
@@ -571,8 +574,11 @@ or use deep comparison function.
 
 ```js
 let a = 10;
-let b = a;
-b = 20;
+function modify(x) {
+  x = 20;
+}
+modify(a);
+console.log(a); // 10
 ```
 
 `a` remains 10.
@@ -580,12 +586,15 @@ b = 20;
 Objects:
 
 ```js
-const obj1 = { x: 1 };
-const obj2 = obj1;
-obj2.x = 5;
+const obj = { n: 1 };
+function update(o) {
+  o.n = 2;
+}
+update(obj);
+console.log(obj.n); // 2
 ```
 
-Now both have `x = 5`.
+Object's value changes to 2.
 
 ---
 
@@ -596,11 +605,11 @@ JavaScript uses prototype inheritance.
 ```js
 const parent = {
   greet() {
-    console.log('Hello');
+    console.log('Hi');
   }
 };
-
 const child = Object.create(parent);
+child.greet(); // Inherited
 ```
 
 Classical inheritance is used in Java/C++.
@@ -609,17 +618,16 @@ Classical inheritance is used in Java/C++.
 
 ## 23. What is Memoization?
 
-Memoization stores previous function result.
+Memoization is an optimization technique where you cache the results of expensive function calls so that when the same inputs occur again, the cached result is returned.
 
 ```js
-function memoizedAdd() {
+function memoize(fn) {
   const cache = {};
-
-  return function (num) {
-    if (cache[num]) return cache[num];
-
-    cache[num] = num + 10;
-    return cache[num];
+  return function(n) {
+    if (n in cache) return cache[n];
+    const res = fn(n);
+    cache[n] = res;
+    return res;
   };
 }
 ```
@@ -628,16 +636,35 @@ function memoizedAdd() {
 
 ## 24. Static Method vs Instance Method
 
+Instance methods are functions that operate on instance data.
+
+Static methods belong to the class itself.
+
 ```js
-class User {
-  static company() {
-    return 'Google';
+class Car {
+  constructor(brand) {
+    this.brand = brand; // Instance property
   }
 
-  greet() {
-    return 'Hello';
+  // Instance Method
+  start() {
+    console.log(`${this.brand} is starting...`);
+  }
+
+  // Static Method
+  static describe() {
+    console.log("Cars are vehicles used for transport.");
   }
 }
+
+const myCar = new Car("Tesla");
+
+myCar.start();      // "Tesla is starting..." (Instance method)
+Car.describe();     // "Cars are vehicles..." (Static method)
+
+// Errors:
+// myCar.describe(); // TypeError: myCar.describe is not a function
+// Car.start();      // TypeError: Car.start is not a function
 ```
 
 * Static method → called on class
@@ -648,17 +675,27 @@ class User {
 ## 25. What is `this` Keyword?
 
 `this` refers to current execution context.
+The this keyword refers to the context in which a function is executed, not where it’s defined.
+
+In global scope, this refers to the global object (window in browsers, global in Node).
+
+Inside object methods, this refers to that object.
+
+However, in a `normal function`, this depends on how the function is called, not where it’s written.
+
+In strict mode, standalone functions get undefined as this.
+
+`Arrow functions` are special — they don’t have their own this; instead, they inherit from their surrounding lexical scope.
 
 ```js
 const obj = {
-  name: 'Pratik',
-  show() {
-    console.log(this.name);
+  name: 'JS',
+  say: function() {
+    setTimeout(() => console.log(this.name), 0);
   }
 };
+obj.say(); // "JS"
 ```
-
-Arrow functions do not have their own `this`.
 
 ---
 
@@ -683,7 +720,9 @@ Immediately Invoked Function Expression.
 })();
 ```
 
-Used to create private scope.
+* IIFEs were used to create private scopes — variables defined inside couldn’t leak into the global scope.
+* They’re also useful for initializing configurations or running setup logic once.
+* In modern JavaScript, modules and block scopes with `let` and `const` reduce the need for `IIFEs`, but you may still see them in legacy code or minified scripts.
 
 ---
 
@@ -717,6 +756,10 @@ Examples:
 
 ## 30. What is Constructor and super?
 
+In ES6 classes, the `constructor` method initializes class instances.
+
+If you extend another class, you must call `super()` before using this, as super() runs the parent class’s constructor.
+
 ```js
 class Animal {
   constructor(name) {
@@ -730,8 +773,6 @@ class Dog extends Animal {
   }
 }
 ```
-
-`super()` calls parent constructor.
 
 ---
 
@@ -752,37 +793,58 @@ BOM → Browser Object Model
 
 Examples:
 
-* DOM: `document.getElementById()`
-* BOM: `window.location`, `navigator`
+* DOM: `document.getElementById()`, `document.querySelector`
+* BOM: `window.location`, `navigator`, `location`, and `history`.
+
+While DOM deals with the content of the page, BOM deals with the browser itself.
+For example, changing the URL via `window.location` is a BOM operation.
 
 ---
 
 ## 33. Rest vs Spread Operator
 
-Rest collects values.
+Rest collects multiple arguments into an array:
 
 ```js
-function sum(...nums) {}
+function sum(...nums) {
+  return nums.reduce((a, b) => a + b);
+}
 ```
 
-Spread expands values.
+Spread expands expands arrays or objects into individual elements:
 
 ```js
-const arr2 = [...arr1];
+const arr = [1, 2, 3];
+const clone = [...arr];
 ```
 
 ---
 
 ## 34. What is Generator Function?
 
+Generators are special functions that can `pause` and `resume` execution.
+
+
 ```js
-function* generator() {
-  yield 1;
-  yield 2;
+function* generator(i) {
+  yield i;
+  yield i + 10;
 }
+
+const gen = generator(10);
+
+console.log(gen.next());
+// Expected output: { value: 10, done: false }
+
+console.log(gen.next());
+// Expected output: { value: 20, done: false }
+
+console.log(gen.next());
+// Expected output: { value: undefined, done: true }
 ```
 
 Generators pause execution using `yield`.
+If a generor functions encounters a `return`, it considers it a end of function and ignores all values below it.
 
 ---
 
@@ -793,6 +855,15 @@ Generators pause execution using `yield`.
 | Stores any value | Stores objects only |
 | Iterable         | Not iterable        |
 
+`Set` stores unique values of any type and maintains insertion order.
+
+`WeakSet` is similar but only holds objects, and references are weak — meaning if no other references exist, the object is garbage-collected.
+
+```js
+const s = new Set([1, 2, 2]);
+s.add(3); // {1, 2, 3}
+```
+
 ---
 
 ## 36. Difference between Map and WeakMap
@@ -801,6 +872,20 @@ Generators pause execution using `yield`.
 | ------------ | ---------------- |
 | Any key type | Only object keys |
 | Iterable     | Not iterable     |
+
+In JavaScript, `Map` is a key-value data structure that allows any type of key — unlike objects which only use strings or symbols.
+
+It preserves insertion order and offers useful methods like `set`, `get`, `has`, and `delete`.
+
+`Map` is faster for frequent insertions and deletions, making it better for caches or lookups.
+
+`WeakMap` allows keys to be garbage-collected — great for private data storage.
+
+```js
+const m = new Map();
+m.set('name', 'JS');
+m.get('name'); // 'JS'
+```
 
 ---
 
@@ -830,13 +915,15 @@ Common patterns:
 
 ## 39. Difference between defer, async and script tag
 
-| Attribute | Behavior                             |
-| --------- | ------------------------------------ |
-| Normal    | Blocks HTML parsing                  |
-| async     | Loads parallel, executes immediately |
-| defer     | Loads parallel, executes after HTML  |
+| Attribute | Behavior                                                             | Usecase                              |
+| --------- | -------------------------------------------------------------------- |------------------------------------- |
+| Normal    | Blocks HTML parsing                                                  | JavaScript                           |   
+| async     | Download scripts asynchronously, executes immediately after download | Analytics                            |
+| defer     | Download scripts asynchronously, executes after HTML parsing         | Scripts that depend on DOM structure |
 
 ```html
+<script src="app.js"></script>
+<script src="app.js" async></script>
 <script src="app.js" defer></script>
 ```
 
@@ -845,6 +932,8 @@ Common patterns:
 ## 40. What is Window Object?
 
 Global object in browser.
+It represents the browser window or tab.
+It also holds APIs like `setTimeout`, `fetch`, `localStorage`, and even the `document object`.
 
 ```js
 window.alert('Hello');
@@ -1378,3 +1467,5 @@ Example snippet and caveat: const f = obj.fn; f(); loses this — use bind or ar
 ## 8 — Optimize a function that does heavy CPU work in the browser without blocking UI. What options exist?
 
 Answer: Offload CPU work to Web Workers to avoid blocking main thread. Other strategies: break the work into chunks with setTimeout/requestIdleCallback, use WebAssembly for compute-heavy tasks, or optimize algorithmic complexity.
+
+## 9 - How Garbage Collection works in JavaScript
