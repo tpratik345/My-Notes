@@ -55,10 +55,10 @@
 | 48 | [Difference between setTimeout and setInterval](#48-difference-between-settimeout-and-setinterval)   |
 | 49 | [What is Execution Context?](#49-what-is-execution-context)                                          |
 | 50 | [Strongly Typed vs Loosely Typed](#50-strongly-typed-vs-loosely-typed)                               |
-| 51 | [Difference between Object and Array](#51-difference-between-object-and-array)                       |
+| 51 | [What is Object.prototype?](#51-what-is-Object.prototype?)                                           |
 | 52 | [sort() with and without compare function](#52-sort-with-and-without-compare-function)               |
 | 53 | [What is localeCompare()?](#53-what-is-localecompare)                                                |
-| 54 | [What are Interceptors?](#54-what-are-interceptors)                                                  |
+| 54 | [What is Axios Interceptors?](#54-what-is-axios-interceptors)                                                  |
 | 55 | [Difference between undefined and null](#55-difference-between-undefined-and-null)                   |
 | 56 | [What are Polyfills?](#56-what-are-polyfills)                                                        |
 | 57 | [What is Axios?](#57-what-is-axios)                                                                  |
@@ -943,24 +943,38 @@ window.alert('Hello');
 
 ## 41. What is Strict Mode?
 
+Strict Mode ('use strict') was introduced in ES5 to make JavaScript more `secure` and `predictable`.
+
+When enabled, it changes some silent errors into explicit ones and prevents dangerous or confusing behaviors.
+
 ```js
 'use strict';
+x = 5; // ReferenceError: x is not defined
 ```
 
 Benefits:
 
 * Prevents accidental globals
 * Throws more errors
+* Prevents duplicate parameter names,
+
+It changes `this` behavior — in strict mode, `this` is `undefined` in functions instead of defaulting to the global object.
 
 ---
 
 ## 42. What are Typed Arrays?
 
-Typed arrays allow handling binary data efficiently.
+Typed arrays allow handling binary data such as images, audio, or video data efficiently.
 
 ```js
-const arr = new Uint8Array([1, 2, 3]);
+const buffer = new ArrayBuffer(8);
+const view = new Uint8Array(buffer);
+view[0] = 255;
 ```
+
+* They are mostly used in low-level APIs like `WebGL`, `WebAudio`, or working with `file streams`.
+* Typed arrays are `faster` because they don’t dynamically resize and store uniform types.
+* `ArrayBuffer` is the base, and views like DataView allow different types to read/write on the same.
 
 ---
 
@@ -969,19 +983,20 @@ const arr = new Uint8Array([1, 2, 3]);
 | Java           | JavaScript         |
 | -------------- | ------------------ |
 | Compiled       | Interpreted        |
-| Strongly typed | Dynamically typed  |
+| Strongly typed | Loosly typed       |
 | OOP language   | Scripting language |
 
 ---
 
 ## 44. What is delete operator?
 
+The `delete` operator removes a property from an object, not a variable.
+
 ```js
 const obj = { a: 1 };
 delete obj.a;
 ```
 
-Deletes property from object.
 
 ---
 
@@ -991,6 +1006,16 @@ Deletes property from object.
 | ------------------------ | ------------------ |
 | Does not modify original | Modifies original  |
 | Returns copied portion   | Adds/removes items |
+
+`slice(start, end)` returns a shallow copy of the array section without modifying the original.
+
+`splice(start, deleteCount, ...items)` modifies the original array by removing or inserting elements.
+
+```js
+const arr = [1, 2, 3, 4];
+arr.slice(1, 3); // [2, 3]
+arr.splice(1, 2); // arr becomes [1, 4]
+```
 
 ---
 
@@ -1004,18 +1029,23 @@ ES6 introduced:
 * Template literals
 * Modules
 * Promises
+* Destructuring
+* Default parameters
+* Spread/rest operators
+* Map, Set
+* Iterators and generators
 
 ---
 
 ## 47. Compile Time Error vs Runtime Error
 
-Compile time:
+Compile-time errors are caught before code execution — typically by the parser or type checker.
 
 ```js
 console.log(a;
 ```
 
-Runtime:
+Examples of Runtime errors include `ReferenceError`, `TypeError`, and `SyntaxError`.
 
 ```js
 console.log(x.y);
@@ -1029,20 +1059,31 @@ console.log(x.y);
 
 `setInterval` runs repeatedly.
 
+```js
+setTimeout(() => console.log('once'), 1000);
+setInterval(() => console.log('repeat'), 1000);
+```
+
+Also, both return IDs used to cancel them with `clearTimeout` and `clearInterval` respectively.
+
 ---
 
 ## 49. What is Execution Context?
 
 JavaScript creates:
 
-* Global Execution Context
-* Function Execution Context
+* `Global Execution Context` is created when the program starts.
+* `Function Execution Context` is created on each function call.
 
 Each contains:
 
 * Variable Environment
 * Scope Chain
 * `this`
+
+Each function call creates a function execution context, which gets pushed onto the call stack.
+
+When a function finishes, its context is popped off.
 
 ---
 
@@ -1057,55 +1098,78 @@ a = 'hello';
 
 ---
 
-## 51. Difference between Object and Array
+## 51. What is Object.prototype?
 
-| Object         | Array              |
-| -------------- | ------------------ |
-| Key-value pair | Indexed collection |
+In JavaScript, almost everything is an object or inherits from one.
+
+`Object.prototype` is at the top of the prototype chain and contains methods like `toString()` and `hasOwnProperty()`
+
+When you call `obj.toString()`, JS looks up the prototype chain until it finds it.
+
+If you override it, it affects how objects are represented.
 
 ---
 
 ## 52. sort() with and without compare function
 
+Without a Compare Function:
+
+It performs a lexicographical (alphabetical) sort.
+
+This leads to incorrect results for numbers because "100" comes before "25" alphabetically.
+
 ```js
-[10, 2, 5].sort();
+const numbers = [40, 100, 1, 5, 25];
+numbers.sort(); 
+// Result: [1, 100, 25, 40, 5] (Incorrect for numbers)
 ```
 
-Output:
+With a Compare Function:
+
+To sort numbers or custom objects correctly, you must pass a compare function (a, b) that defines the sort order. 
+
+* Logic: The function compares two values (a and b) and returns a numeric value:
+  - Negative value: a is sorted before b.
+  - Positive value: b is sorted before a.
+  - Zero: The relative order remains unchanged.
+
+* Common Use Cases:
+  - Numbers (Ascending): (a, b) => a - b.
+  - Numbers (Descending): (a, b) => b - a.
+  - Objects: Use a property, e.g., (a, b) => a.age - b.age.
 
 ```js
-[10, 2, 5]
-```
-
-Because sort converts to string.
-
-Correct:
-
-```js
-[10, 2, 5].sort((a, b) => a - b);
+const numbers = [40, 100, 1, 5, 25];
+numbers.sort((a, b) => a - b); 
+// Result: [1, 5, 25, 40, 100] (Correct numeric order)
 ```
 
 ---
 
 ## 53. What is localeCompare()?
 
+`localeCompare()` compares two strings according to language-specific sorting rules.
+
 ```js
-'a'.localeCompare('b');
+'apple'.localeCompare('banana'); // -1
 ```
 
-Used for string comparison.
+It returns a number: negative if before, zero if equal, positive if after.
 
 ---
 
-## 54. What are Interceptors?
+## 54. What is Axios Interceptors?
 
 Interceptors modify request or response before handling.
 
-Mostly used in Axios.
-
 ```js
-axios.interceptors.request.use(config => config);
+axios.interceptors.request.use(config => {
+  config.headers.Authorization = 'Bearer token';
+  return config;
+});
 ```
+
+They’re great for attaching tokens, handling logging, or global error handling.
 
 ---
 
@@ -1118,6 +1182,8 @@ axios.interceptors.request.use(config => config);
 ```js
 let a;
 let b = null;
+console.log(a); // undefined
+console.log(b); // null
 ```
 
 ---
@@ -1130,7 +1196,9 @@ Example:
 
 ```js
 if (!Array.prototype.includes) {
-  Array.prototype.includes = function () {};
+  Array.prototype.includes = function(item) {
+    return this.indexOf(item) !== -1;
+  };
 }
 ```
 
@@ -1141,13 +1209,16 @@ if (!Array.prototype.includes) {
 Axios is a promise-based HTTP client.
 
 ```js
-axios.get('/users')
-  .then(res => console.log(res.data));
+axios.get('/api/data')
+  .then(res => console.log(res.data))
+  .catch(err => console.error(err));
 ```
 
 ---
 
 ## 58. What are Implicit Global Variables?
+
+Without `var/let/const`, variable becomes global.
 
 ```js
 function test() {
@@ -1155,7 +1226,6 @@ function test() {
 }
 ```
 
-Without `var/let/const`, variable becomes global.
 
 ---
 
@@ -1175,11 +1245,11 @@ This is a historical bug in JavaScript.
 const value = input ?? 'default';
 ```
 
-Returns right side only if left side is `null` or `undefined`.
+Returns right side, only if left side is `null` or `undefined`.
 
 ---
 
-## 61. What are preventDefault() and stopPropagation()?
+## 61. What are `preventDefault()` and `stopPropagation()`?
 
 ```js
 e.preventDefault();
@@ -1193,9 +1263,13 @@ e.stopPropagation();
 
 ## 62. Difference between for...of and for...in
 
-| for...of        | for...in      |
-| --------------- | ------------- |
-| Iterates values | Iterates keys |
+| Feature          | for...in                                  | for...of                                  |
+| ---------------- | ----------------------------------------- | ----------------------------------------- |
+| Iterates Over    | Enumerable property keys (names)          |	Iterable values                          |
+| Target Objects   | Any Object	                               |  Iterables (Arrays, Strings, Maps, Sets)  |
+| Prototypal Chain | Includes inherited enumerable properties  |	Only iterates over the object’s own data |
+| Primary Use Case | Debugging or inspecting object properties |	General iteration over collection data   |
+
 
 ```js
 for (const value of arr) {}
@@ -1222,8 +1296,9 @@ Basic flow:
 Example: Cancel a fetch request
 ```js
   const controller = new AbortController();
+  const signal = controller.signal;
 
-  fetch("https://api.example.com/data", {signal: controller.signal})
+  fetch("https://api.example.com/data", { signal })
     .then(res => res.json())
     .then(data => console.log(data))
     .catch(err => {
@@ -1265,7 +1340,8 @@ Using AbortController with async/await
 ```
 
 Cancelling Previous API Calls in React
-This is common in search bars or autocomplete.
+This is common in search bars or autocomplete.\
+
 ```jsx
   useEffect(() => {
     const controller = new AbortController();
