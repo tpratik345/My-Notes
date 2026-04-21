@@ -879,7 +879,24 @@ It preserves insertion order and offers useful methods like `set`, `get`, `has`,
 
 `Map` is faster for frequent insertions and deletions, making it better for caches or lookups.
 
-`WeakMap` allows keys to be garbage-collected — great for private data storage.
+`WeakMap` allows keys to be garbage-collected — great for private data storage meaning they do not prevent garbage collection of the objects used as keys
+
+### Core Mechanism:
+  * Weak References: In a standard `Map`, holding an object as a key prevents it from being garbage collected even if it is no longer used elsewhere in your code. In a `WeakMap`, if no other strong references to the key object exist, the JavaScript engine can reclaim that object's memory, and the entry will automatically disappear from the `WeakMap`.
+  * Key Restrictions: Keys must be objects or non-registered symbols. Primitive values like strings or numbers cannot be used as keys because they are not garbage-collectable in the same way.
+  * Non-Iterability: Because keys can be garbage collected at any time, a `WeakMap` is not enumerable. It lacks a `.size` property and methods like `.keys()`, `.values()`, or `.forEach()`. You can only access a value if you already have a reference to its specific key. 
+
+### Available Methods:
+The MDN Web Docs for `WeakMap` defines only four primary instance methods: 
+  * set(key, value): Adds or updates an entry.
+  * get(key): Retrieves the value associated with the key.
+  * has(key): Returns a boolean indicating if the key exists.
+  * delete(key): Removes the entry for the specified key.
+
+### Practical Use Cases:
+  * Private Data: Useful for storing "private" properties of a class instance that are inaccessible from the outside but are automatically cleaned up when the instance is destroyed.
+  * DOM Element Metadata: Storing data related to DOM elements without preventing them from being garbage collected when they are removed from the document.
+  * Caching/Memoization: Creating caches where results are only kept as long as the input object is still in use, preventing memory leaks in long-running applications. 
 
 ```js
 const m = new Map();
@@ -1362,186 +1379,3 @@ This is common in search bars or autocomplete.\
     };
   }, [searchTerm]);
 ```
-
-# Frequently Asked Tricky Interview Questions
-
-## What is output?
-
-```js
-console.log([] == ![]);
-```
-
-Output:
-
-```js
-true
-```
-
-Because:
-
-```js
-![] => false
-[] == false
-[] => ''
-false => 0
-'' == 0 => true
-```
-
----
-
-## What is output?
-
-```js
-for (var i = 0; i < 3; i++) {
-  setTimeout(() => console.log(i), 1000);
-}
-```
-
-Output:
-
-```js
-3
-3
-3
-```
-
-Because `var` is function scoped.
-
-Using `let` gives:
-
-```js
-0
-1
-2
-```
-
----
-
-## What is output?
-
-```js
-console.log(typeof NaN);
-```
-
-Output:
-
-```js
-number
-```
-
----
-
-## What is output?
-
-```js
-console.log(0.1 + 0.2 === 0.3);
-```
-
-Output:
-
-```js
-false
-```
-
-Because of floating point precision.
-
----
-
-# Bonus: Interview — 8 moderate→hard JS questions (with answers)
-
-## 1 — Explain the event loop with an example that shows ordering of `console.log` calls between `setTimeout`, `Promise`, and immediate code.
-
-Answer: Immediate synchronous code runs first. Then `microtasks` (Promise callbacks) run, then `macrotasks` (timers).
-
-Example:
-```js
-console.log('A');
-
-setTimeout(() => console.log('B'), 0);
-
-Promise.resolve().then(() => console.log('C'));
-
-console.log('D');
-// Output order: A, D, C, B
-```
-
-Explanation: A and D are sync. Promise then is microtask executed after current stack but before macrotasks. setTimeout callback is macrotask.
-
-## 2 — Implement a function `deepClone(obj)` handling arrays, objects, Dates, RegExp, and circular references. (Explain approach.)
-
-Answer (approach):
-* Use recursion with a WeakMap to track visited objects to handle cycles.
-* For built-ins, create appropriate clones (new Date, new RegExp).
-* For arrays, clone each element. For plain objects, iterate own properties.
-* Example sketch omitted for brevity; mention performance and edge cases (functions, prototype chain, symbols).
-
-## 3 — How do you implement `debounce`? Provide code and explain edge cases (immediate invocation, trailing calls).
-
-Answer:
-
-```js
-function debounce(fn, wait, immediate = false) {
-  let timer;
-  return function(...args) {
-    const ctx = this;
-    clearTimeout(timer);
-    if (immediate && !timer) {
-      fn.apply(ctx, args);
-    }
-    timer = setTimeout(() => {
-      if (!immediate) fn.apply(ctx, args);
-      timer = null;
-    }, wait);
-  };
-}
-```
-
-Explanation: immediate controls leading-edge invocation. Clearing previous timer ensures only last call within interval runs.
-
-## 4 — What is prototypal inheritance? Show how to create inheritance without class.
-
-Answer:
-```js
-function Parent(name) {
-  this.name = name;
-}
-Parent.prototype.greet = function(){ return `Hi ${this.name}`; };
-
-function Child(name, age) {
-  Parent.call(this, name);
-  this.age = age;
-}
-Child.prototype = Object.create(Parent.prototype);
-Child.prototype.constructor = Child;
-
-const c = new Child('A', 10);
-console.log(c.greet());
-```
-
-Explanation: `Object.create` sets prototype chain; Parent.call(this, ...) sets instance properties.
-
-## 5 — Explain why typeof `null === 'object'` and how to reliably check for null.
-
-Answer: It's a historical bug left for backward compatibility: null is a primitive but typeof null returns 'object'. Use value === null to check consistently.
-
-## 6 — How to avoid race conditions when using async functions that update shared state (e.g., multiple fetches updating UI)?
-
-Answer: Use techniques like tracking request tokens (only apply results for latest token), abort controllers (AbortController), or serialize operations. Example: increment a requestId and only apply result if requestId === currentRequestId.
-
-## 7 — Explain this in JS with examples for method call, function call, constructor, arrow function, and bind.
-
-Answer:
-
-* Method call: obj.fn() — this is obj.
-* Function call: fn() in strict mode this is undefined, else window.
-* Constructor: new Fn() — this is the new object.
-* Arrow function: this lexical from outer scope.
-* bind: returns function with this permanently set.
-
-Example snippet and caveat: const f = obj.fn; f(); loses this — use bind or arrow.
-
-## 8 — Optimize a function that does heavy CPU work in the browser without blocking UI. What options exist?
-
-Answer: Offload CPU work to Web Workers to avoid blocking main thread. Other strategies: break the work into chunks with setTimeout/requestIdleCallback, use WebAssembly for compute-heavy tasks, or optimize algorithmic complexity.
-
-## 9 - How Garbage Collection works in JavaScript
