@@ -358,36 +358,36 @@ That is why `WeakMap` is often used in:
 ### Common Memory Leak Examples
 
 1. Forgotten Event Listeners
-```js
-button.addEventListener("click", handler);
-```
-If the button is removed from the page but the listener still exists, memory may stay allocated.
+  ```js
+  button.addEventListener("click", handler);
+  ```
+  If the button is removed from the page but the listener still exists, memory may stay allocated.
 
 2. Timers
-```js
-setInterval(() => {
-  console.log("running");
-}, 1000);
-```
-If never cleared, the callback and related variables remain in memory.
+  ```js
+  setInterval(() => {
+    console.log("running");
+  }, 1000);
+  ```
+  If never cleared, the callback and related variables remain in memory.
 
-Use:
+  Use:
 
-```js
-clearInterval(id);
-```
+  ```js
+  clearInterval(id);
+  ```
 
 3. Closures Holding Large Data
-```js
-function create() {
-  const hugeArray = new Array(1000000).fill("*");
+  ```js
+  function create() {
+    const hugeArray = new Array(1000000).fill("*");
 
-  return function () {
-    console.log(hugeArray.length);
-  };
-}
-```
-The inner function keeps hugeArray alive because it closes over it.
+    return function () {
+      console.log(hugeArray.length);
+    };
+  }
+  ```
+  The inner function keeps hugeArray alive because it closes over it.
 
 ### Generational Garbage Collection
 Modern engines optimize further using generations:
