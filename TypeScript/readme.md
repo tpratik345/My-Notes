@@ -197,6 +197,20 @@ interface User {
 }
 ```
 
+Interface with Function
+
+```js
+interface AddFunction {
+  (x: number, y: number): number;
+}
+
+const add: AddFunction = (x, y) => {
+  return x + y;
+};
+
+console.log(add(5, 10)); // Output: 15
+```
+
 ---
 
 ## 9. Interface vs Type Alias
@@ -275,11 +289,15 @@ let user: [string, number] = ['John', 25];
 Enums define named constants.
 
 ```ts
-enum Role {
-  Admin,
-  User,
-  Guest
+enum Direction {
+  Up,
+  Down,
+  Left,
+  Right,
 }
+
+let move: Direction = Direction.Up;
+console.log(move); // Output: 0 (default value)
 ```
 
 ---
@@ -333,9 +351,12 @@ type Person = typeof person;
 Generics allow reusable components/functions with flexible types.
 
 ```ts
-function identity<T>(value: T): T {
-  return value;
+function getArray<T>(items: T[]): T[] {
+  return new Array<T>().concat(items);
 }
+
+let numArray = getArray<number>([1, 2, 3]);
+let strArray = getArray<string>(["a", "b", "c"]);
 ```
 
 ---
@@ -386,10 +407,59 @@ interface Admin extends User {
 
 ## 23. What is `infer` keyword?
 
-`infer` extracts a type inside conditional types.
+`infer` extracts a type inside conditional types. infer will be present with extends only.
+
+## 1. Extract Array element type
+```js
+type ElementType<T> = T extends (infer U)[] ? U : never;
+
+type A = ElementType<string[]>; // string
+type B = ElementType<number[]>; // number
+type C = ElementType<boolean>;  // never
+```
+
+Explanation:
+  * If T is an array → extract its element type
+  * Otherwise → return never
+
+## 2. Extract Function Return Type:
 
 ```ts
-type Return<T> = T extends (...args: any[]) => infer R ? R : never;
+type MyReturnType<T> = T extends (...args: any[]) => infer R ? R : never;
+
+type A = MyReturnType<() => number>; // number
+type B = MyReturnType<(x: string) => boolean>; // boolean
+```
+This is actually how built-in ReturnType<T> works internally.
+
+## 3. Extract Function Parameters
+```js
+type MyParameters<T> = T extends (...args: infer P) => any ? P : never;
+
+type A = MyParameters<(x: number, y: string) => void>; 
+// [number, string]
+```
+`infer P` captures all parameters as a `tuple`.
+
+## 4. Extract Promise Type
+
+```js
+type UnwrapPromise<T> = T extends Promise<infer U> ? U : T;
+
+type A = UnwrapPromise<Promise<string>>; // string
+type B = UnwrapPromise<number>;         // number
+```
+
+## 5. Nested infer
+```js
+type DeepUnwrap<T> = 
+  T extends Promise<infer U> 
+    ? U extends Promise<infer V> 
+      ? V 
+      : U 
+    : T;
+
+type A = DeepUnwrap<Promise<Promise<number>>>; // number
 ```
 
 ---
