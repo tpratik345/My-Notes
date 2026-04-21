@@ -355,15 +355,15 @@ That is why `WeakMap` is often used in:
   * Private object metadata
 
 
-### Common Memory Leak Examples
+## Common Memory Leak Examples
 
-1. Forgotten Event Listeners
+### 1. Forgotten Event Listeners
   ```js
   button.addEventListener("click", handler);
   ```
   If the button is removed from the page but the listener still exists, memory may stay allocated.
 
-2. Timers
+### 2. Timers
   ```js
   setInterval(() => {
     console.log("running");
@@ -377,7 +377,7 @@ That is why `WeakMap` is often used in:
   clearInterval(id);
   ```
 
-3. Closures Holding Large Data
+### 3. Closures Holding Large Data
   ```js
   function create() {
     const hugeArray = new Array(1000000).fill("*");
