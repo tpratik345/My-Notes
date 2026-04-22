@@ -293,7 +293,7 @@ Answer: "1023"
 
  Once string appears → everything becomes string
 
-## 12. 10 + 2 + "3"
+### 12. 10 + 2 + "3"
 
 Answer: "123"
 
