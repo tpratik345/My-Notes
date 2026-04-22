@@ -56,7 +56,7 @@
 | 50 | [What is Declaration File (`.d.ts`)?](#50-what-is-declaration-file-dts)                                        |
 | 51 | [Omit vs Exclude](#51-omit-vs-exclude)                                                                         |
 | 52 | [Pick vs Extract](#52-pick-vs-extract)                                                                         |
-| 52 | [What is Template Literal?](#53-what-is-template-literal)                                                      |
+| 53 | [What is Template Literal?](#53-what-is-template-literal)                                                      |
 
 ---
 
