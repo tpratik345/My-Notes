@@ -381,3 +381,6 @@ Answer: -1
 | `[]`        | "" → 0      |
 | `[5]`       | "5" → 5     |
 | `[1,2]`     | "1,2" → NaN |
+
+## 8. `var`, `let`, `const` tricky questions
+

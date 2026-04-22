@@ -54,6 +54,9 @@
 | 48 | [What is `implements` vs `extends`?](#48-what-is-implements-vs-extends)                                        |
 | 49 | [What are Decorators?](#49-what-are-decorators)                                                                |
 | 50 | [What is Declaration File (`.d.ts`)?](#50-what-is-declaration-file-dts)                                        |
+| 51 | [Omit vs Exclude](#51-omit-vs-exclude)                                                                         |
+| 52 | [Pick vs Extract](#52-pick-vs-extract)                                                                         |
+| 52 | [What is Template Literal?](#53-what-is-template-literal)                                                      |
 
 ---
 
@@ -314,20 +317,88 @@ console.log(move); // Output: 0 (default value)
 ## 17. What is `keyof`?
 
 `keyof` gets all keys of a type.
+  - It takes an object type and returns a union of its keys
 
 ```ts
-interface User {
-  name: string;
-  age: number;
-}
-
-type UserKeys = keyof User;
+type Keys = keyof SomeType;
 ```
 
-Result:
+### 1. Example:
+```ts
+type User = {
+  id: number;
+  name: string;
+  age: number;
+};
+
+type UserKeys = keyof User;
+// ^=> "id" | "name" | "age"
+```
+
+### 2. Example: Safe Property Access
 
 ```ts
-'name' | 'age'
+function getValue<T, K extends keyof T>(obj: T, key: K) {
+  return obj[key];
+}
+
+const user = { id: 1, name: "Pratik" };
+
+getValue(user, "id");   // ✅
+getValue(user, "name"); // ✅
+getValue(user, "age");  // ❌ Error
+```
+In above example the `K` will be be the Keyof `T(object)`
+
+### 3. `keyof` with Index Signatures
+
+```ts
+type Dictionary = {
+  [key: string]: number;
+};
+
+type Keys = keyof Dictionary;
+// string | number
+```
+`[key: string]` this will allow dynamic key allocation the value as `number`.
+Also if we want to ahve a dynamic `key` and `value` pair we should be using Record<K, T>
+
+It can be also possible by Template Literals:
+```ts
+type DataKey = `data_${string}`;
+
+type DynamicData = {
+  [K in DataKey]: string | number;
+};
+
+const stats: DynamicData = {
+  data_score: 100,
+  data_username: "pratik_codes",
+  // status: "active" // Error! Must start with 'data_'
+};
+```
+It is used when dynamic keys must follow a specific naming convention.
+
+
+### 4. `keyof` with Arrays
+
+```ts
+type Arr = string[];
+
+type Keys = keyof Arr;
+// number | "length" | "push" | "pop" | ...
+```
+
+### 5. `keyof` + `typeof`
+
+```ts
+const user = {
+  id: 1,
+  name: "Pratik",
+};
+
+type Keys = keyof typeof user;
+// "id" | "name"
 ```
 
 ---
@@ -502,12 +573,9 @@ Examples:
 Makes all properties optional.
 
 ```ts
-interface User {
-  name: string;
-  age: number;
-}
-
-type PartialUser = Partial<User>;
+type User = { id: number; name: string; age: number; }
+type PartialUser = Partial<User>
+// ^= { id?: number; name?: string; age?: number; }
 ```
 
 ---
@@ -517,7 +585,9 @@ type PartialUser = Partial<User>;
 Makes all properties required.
 
 ```ts
-type RequiredUser = Required<User>;
+type PartialUser = { id?: number; name?: string; age?: number; }
+type RequiredUser = Required<PartialUser>
+// ^= { id: number; name: string; age: number; }
 ```
 
 ---
@@ -534,31 +604,46 @@ type ReadonlyUser = Readonly<User>;
 
 ## 30. What is `Pick<T, K>`?
 
-Select specific properties.
+Create a new object type that contains only the specified keys from the original object.
 
 ```ts
-type NameOnly = Pick<User, 'name'>;
+type User = { id: number; name: string; age: number; }
+type UserFormFields = Pick<User, 'name' | 'age'>
+// ^= { name: string; age: number; }
 ```
+
+Useful for creating subsets of object types without needing to redefine every property. Use
+Pick whenever your type is derived from the existing object type.
+Opposite of `Omit` .
 
 ---
 
 ## 31. What is `Omit<T, K>`?
 
-Remove specific properties.
+Create a new object type that contains all properties except the specified keys from the original object.
 
 ```ts
-type UserWithoutAge = Omit<User, 'age'>;
+type User = { id: number; name: string; age: number; }
+type UserWithoutAgeOrName = Omit<User, 'age' | 'name'>
+// ^= { id: number; }
 ```
+Useful for creating subsets of object types without needing to redefine every property. Use
+Omit whenever your type is derived from the existing object type.
+Opposite of `Pick`.
 
 ---
 
 ## 32. What is `Record<K, T>`?
 
-Creates an object type with fixed keys and value type.
+Create an object type with specific keys that all have the same value type.
 
 ```ts
-type Users = Record<string, number>;
+type UserRole = 'admin' | 'user' | 'guest'
+type Permissions = Record<UserRole, string[]>
+// ^= { admin: string[]; user: string[]; guest: string[]; }
 ```
+
+Perfect for creating dictionaries or maps with known keys. Commonly used for configurations, mappings, and lookup tables.
 
 ---
 
@@ -567,14 +652,14 @@ type Users = Record<string, number>;
 Removes types from union.
 
 ```ts
-type Result = Exclude<'a' | 'b' | 'c', 'a'>;
+type Colors = 'red' | 'green' | 'blue' | 'yellow' | 'orange'
+type RedishColors = Exclude<Colors, "blue" | "green">
+// ^= 'red' | 'yellow' | 'orange'
 ```
 
-Result:
-
-```ts
-'b' | 'c'
-```
+Useful for creating subsets of union types without needing to redefine every member. Use
+Exclude whenever your union is derived from the existing union type.
+Opposite of `Extract` , and similar to `Omit` .
 
 ---
 
@@ -583,8 +668,14 @@ Result:
 Keeps only matching types.
 
 ```ts
-type Result = Extract<'a' | 'b' | 'c', 'a' | 'b'>;
+type Colors = 'red' | 'green' | 'blue' | 'yellow' | 'orange'
+type RedishColors = Extract<Colors, "red" | "yellow" | "orange">
+// ^= 'red' | 'yellow' | 'orange'
 ```
+
+Useful for creating subsets of union types without needing to redefine every member. Use
+Extract whenever your union is derived from the existing union type.
+Opposite of `Exclude` , and similar to `Pick` .
 
 ---
 
@@ -593,29 +684,23 @@ type Result = Extract<'a' | 'b' | 'c', 'a' | 'b'>;
 Gets the return type of a function.
 
 ```ts
-function getUser() {
-  return { name: 'John' };
+function getUser(id: number) {
+return { id, name: "John" }
 }
-
-type User = ReturnType<typeof getUser>;
+type User = ReturnType<typeof getUser>
+// ^= { id: number; name: string; }
 ```
 
 ---
 
 ## 36. What is `Parameters<T>`?
 
-Gets function parameter types.
+Gets function parameter types in a tuple.
 
 ```ts
-function greet(name: string, age: number) {}
-
-type Params = Parameters<typeof greet>;
-```
-
-Result:
-
-```ts
-[string, number]
+type GreetFunction = (name: string, age: number) => string
+type GreetParams = Parameters<GreetFunction>
+// ^= [string, number]
 ```
 
 ---
@@ -634,11 +719,27 @@ const input = document.getElementById('name') as HTMLInputElement;
 
 TypeScript does not actually change runtime value.
 
+Type Assertion (Re-labeling):
+
 ```ts
-let value = '123' as unknown as number;
+let myValue: any = "123";
+// We tell TS to treat it as a string, but the value is still "123"
+let strLength = (myValue as string).length; 
 ```
 
-This only changes the compiler's understanding.
+Type Casting (Converting):
+```js
+let myValue: string = "123";
+// We actually convert the string "123" into the number 123
+let myNumber: number = Number(myValue); 
+```
+
+| Feature        | Type Assertion (`as`)                           | Type Casting (Conversion)               |
+|----------------|-------------------------------------------------|-----------------------------------------|
+| Timing         | Compile-time only                               | Runtime                                 |
+| Effect on Data | None; just "re-labels" the variable             | Transforms the underlying value         |
+| Syntax         | `value as string` or `<string>value`            | `String(value)`, `Number(value)`, etc.  |
+| Risk           | Can cause runtime errors if assertion is wrong  | Safer; data is explicitly transformed   |
 
 ---
 
@@ -658,9 +759,23 @@ function print(value: string | number) {
 
 ## 40. What is `instanceof` type guard?
 
+It is a built-in mechanism that uses the JavaScript instanceof operator to narrow down the type of a variable within a conditional block.
+
 ```ts
-if (value instanceof Date) {
-  console.log(value.getFullYear());
+class Dog {
+  bark() { console.log("Woof!"); }
+}
+
+class Cat {
+  meow() { console.log("Meow!"); }
+}
+
+function makeSound(pet: Dog | Cat) {
+  if (pet instanceof Dog) {
+    pet.bark(); // Successfully narrowed to Dog
+  } else {
+    pet.meow(); // Automatically narrowed to Cat
+  }
 }
 ```
 
@@ -668,34 +783,80 @@ if (value instanceof Date) {
 
 ## 41. What is `in` operator type guard?
 
+Used to narrow down the type of an object by checking for the existence of a specific property at runtime
+
 ```ts
-if ('name' in user) {
-  console.log(user.name);
+interface Bird {
+  fly: () => void;
 }
+
+interface Fish {
+  swim: () => void;
+}
+
+function move(animal: Bird | Fish) {
+  if ("fly" in animal) {
+    // TypeScript knows 'animal' is a Bird here
+    animal.fly();
+  } else {
+    // TypeScript knows 'animal' is a Fish here
+    animal.swim();
+  }
+}
+
 ```
 
 ---
 
 ## 42. What is `is` keyword in TypeScript?
 
-Used for custom type guards.
+Used to define Type Predicates, which allow you to create `custom Type Guards`. 
+
+In this example, the `isString` function uses the `is` keyword to tell TypeScript that val is `definitely` a string if it returns true. 
 
 ```ts
-function isString(value: unknown): value is string {
-  return typeof value === 'string';
+function isString(val: unknown): val is string {
+  return typeof val === "string";
+}
+
+let input: string | number = "Hello";
+
+if (isString(input)) {
+  // TypeScript knows 'input' is a string here
+  console.log(input.toLowerCase()); 
+} else {
+  // TypeScript knows 'input' must be a number here
+  console.log(input.toFixed(2));
 }
 ```
+
+| Keyword | Purpose                                                                                              | Usage Context                     |
+|---------|------------------------------------------------------------------------------------------------------|-----------------------------------|
+| `is`    | **Type Guarding:** Dynamically checks and narrows a type at runtime via a function.                  | Used in function return types.    |
+| `as`    | **Type Assertion:** Forces the compiler to treat a value as a specific type without a runtime check. | Used directly on variables.       |
 
 ---
 
 ## 43. What is Function Overloading?
 
+`Function overloading` in TypeScript is a feature that allows a single function to be called in multiple ways with different parameter types or counts.
+
 ```ts
-function add(a: number, b: number): number;
-function add(a: string, b: string): string;
-function add(a: any, b: any) {
+// 1. Overload Signatures
+function combine(a: number, b: number): number;
+function combine(a: string, b: string): string;
+
+// 2 & 3. Implementation Signature and Body
+function combine(a: any, b: any): any {
+  if (typeof a === 'string' || typeof b === 'string') {
+    return a.toString() + b.toString();
+  }
   return a + b;
 }
+
+combine(10, 20);      // Result: 30 (matches overload 1)
+combine("Hi ", "JS"); // Result: "Hi JS" (matches overload 2)
+// combine(10, "Hi"); // Error: No overload matches this call
 ```
 
 ---
@@ -741,15 +902,52 @@ abstract class Animal {
 
 ---
 
-## 48. What is `implements` vs `extends`?
+## 48. What is `extends` vs `implements`?
 
-| implements           | extends                      |
-| -------------------- | ---------------------------- |
-| Used with interfaces | Used with classes/interfaces |
+Entends:
 
 ```ts
-class Dog implements Animal {}
+class Animal {
+    makeSound(): void {
+        console.log('Dog sound');
+    }
+}
+// Derived class representing a 
+// specific type of animal: Dog
+class Dog extends Animal {
+    bark(): void {
+        console.log('Dog is barking!');
+    }
+}
+
+const myDog = new Dog();
+myDog.makeSound();
+myDog.bark();
 ```
+
+Implements:
+```ts
+interface GeeksforGeeks {
+    print(): void;
+}
+
+class GFG implements GeeksforGeeks {
+    print() {
+        console.log('GeeksForGeeks');
+    }
+}
+const output = new GFG();
+output.print();
+```
+
+| Features                 | extends                                                                  | implements                                                                                       |
+|--------------------------|--------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------|
+| Inheritance              | Extends is used for class inheritance.                                   | Implements is used for interface implementation.                                                 |
+|                          | It allows a class to inherit properties and methods from another class.  | It enables a class to provide specific implementations for the methods defined in an interface.  |
+| Multiple Inheritance     | A class can extend only one class                                        | A class can implement multiple interfaces                                                        |
+| Implementation of Methods| No direct implementation of methods                                      | Requires the class to provide concrete implementations for all methods declared in the interface |
+| Code Reusability         | Promotes code reusability                                                | Promotes code reusability and abstraction through interfaces                                     |
+| Abstract Classes         | Can extend abstract classes                                              | Cannot extend abstract classes but can implement abstract methods                                |
 
 ---
 
@@ -778,13 +976,134 @@ declare module 'my-library';
 
 Used when library does not provide TypeScript types.
 
+The primary goal of a `.d.ts` file is to describe the shape of existing JavaScript code so that TypeScript can provide autocompletion and type-checking without needing the original source code to be written in TypeScript.
+
+| Feature          | `.ts` (Source File)                         | `.d.ts` (Declaration File)              |
+|------------------|---------------------------------------------|-----------------------------------------|
+| Contains Logic?  | Yes (e.g., `const x = 10;`)                 | No (e.g., `declare const x: number;`)   |
+| Generates JS?    | Yes, after compilation                      | No, never                               |
+| Main Usage       | Writing your application                    | Providing types for external code       |
+| Metadata         | Includes types + code                       | Includes only types                     |
+
 ---
+
+## 51. Omit vs Exclude
+
+### Core Difference:
+| Feature  | `Omit`                        | `Exclude`               |
+| -------- | ----------------------------- | ----------------------- |
+| Works on | **Object types**              | **Union types**         |
+| Purpose  | Remove properties from object | Remove types from union |
+| Output   | New object type               | New union type          |
+
+### 1. Omit<T, K>
+  - Removes properties from an object type
+  ```ts
+  type User = {
+    id: number;
+    name: string;
+    password: string;
+  };
+  type SafeUser = Omit<User, "password">;
+  // ^=> { id: number; name: string; }
+  ```
+
+### 2. Exclude<T, U>
+  - Removes types from a union
+  ```ts
+  type A = "a" | "b" | "c";
+
+  type Result = Exclude<A, "a">;
+  // ^=> "b" | "c"
+  ```
+  ```ts
+  type Status = "success" | "error" | "loading";
+
+  type WithoutLoading = Exclude<Status, "loading">;
+  // ^=> "success" | "error"
+  ```
+
+### How They Are Related
+ `Omit` actually uses `Exclude` internally!
+ ```ts
+  type Omit<T, K extends keyof any> = Pick<T, Exclude<keyof T, K>>
+ ```
+
+ Breakdown:
+    1. `keyof` T → get all keys
+    2. `Exclude` → remove unwanted keys
+    3. `Pick` → construct new object
+
+---
+
+## 52. Pick vs Extract
+
+### Core Difference:
+| Feature  | `Pick`                     | `Extract`             |
+| -------- | -------------------------- | --------------------- |
+| Works on | **Object types**           | **Union types**       |
+| Purpose  | Select specific properties | Select specific types |
+| Output   | New object type            | New union type        |
+
+### 1. Pick<T, K>
+  - Used to select properties from an object
+  ```ts
+  type User = {
+    id: number;
+    name: string;
+    email: string;
+  };
+
+  type UserPreview = Pick<User, "id" | "name">;
+  // ^=> { id: number; name: string; }
+  ```
+
+### 2. Extract<T, U>
+  - Used to filter types from a union
+  ```ts
+  type A = "a" | "b" | "c";
+  type Result = Extract<A, "a" | "b">;
+  // ^=> "a" | "b"
+  ```
+
+### Internal Understanding
+
+1. `Pick` is based on mapped types:
+```ts
+type Pick<T, K extends keyof T> = {
+  [P in K]: T[P];
+};
+```
+
+2. `Extract` is just a conditional type:
+```ts
+type Extract<T, U> = T extends U ? T : never;
+```
+
+---
+
+## 53. What is `Template Literal`?
+
+* Template Literals are strings that allow for embedded expressions and multi-line text.
+* They use backticks (`) instead of single or double quotes
+
+```ts
+type Vertical = "top" | "bottom";
+type Horizontal = "left" | "right";
+
+// This creates: "top-left" | "top-right" | "bottom-left" | "bottom-right"
+type Alignment = `${Vertical}-${Horizontal}`;
+
+let myPosition: Alignment = "top-left"; // Success
+// let myPosition: Alignment = "center"; // Error!
+```
+
 
 # Advanced Interview Questions
 
 ## What is the difference between `interface merging` and `type alias`?
 
-Interfaces can merge automatically.
+`Interfaces` can merge automatically.
 
 ```ts
 interface User {
@@ -794,18 +1113,17 @@ interface User {
 interface User {
   age: number;
 }
+
+/*
+It will be merged into below:
+  {
+    name: string;
+    age: number;
+  }
+*/
 ```
 
-Result:
-
-```ts
-{
-  name: string;
-  age: number;
-}
-```
-
-Type aliases cannot merge.
+`Type` aliases cannot merge.
 
 ---
 
@@ -839,5 +1157,8 @@ function check(shape: Shape) {
   }
 }
 ```
+If a new type is added → TypeScript error.
 
 This ensures all cases are handled.
+
+
