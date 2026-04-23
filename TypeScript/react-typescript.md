@@ -309,9 +309,38 @@ const Input = forwardRef<HTMLInputElement, Props>((props, ref) => {
 
 ## 22. How do you type `useImperativeHandle`?
 
+
+
 ```tsx
-interface InputRef {
+type MyHandle = {
   focus: () => void;
+  reset: () => void;
+};
+
+// Child Component Implementation:
+import { forwardRef, useImperativeHandle, useRef } from 'react';
+
+const MyInput = forwardRef<MyHandle, { label: string }>((props, ref) => {
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useImperativeHandle(ref, () => ({
+    focus: () => inputRef.current?.focus(),
+    reset: () => { if (inputRef.current) inputRef.current.value = ""; }1
+  }), []);
+
+  return <input ref={inputRef} />;
+});
+
+// Parent Component Usage
+function Parent() {
+  // Pass the handle type to the generic useRef hook
+  const inputRef = useRef<MyHandle>(null);
+
+  const handleClick = () => {
+    inputRef.current?.focus(); // TypeScript now knows 'focus' exists
+  };
+
+  return <MyInput ref={inputRef} label="Name" />;
 }
 ```
 
@@ -330,10 +359,71 @@ function useToggle(initial = false): [boolean, () => void] {
 
 ## 24. How do you type Redux with React TypeScript?
 
-Use typed RootState and AppDispatch.
+### 1. Define Store Types
+In your store configuration file (e.g., `store.ts`), infer the RootState and AppDispatch types directly from the store instance. 
 
+* RootState: Represents the entire state tree.
+* AppDispatch: Captures the type of the `dispatch` function, including middleware like Thunk. 
+
+store.ts:
 ```tsx
-type RootState = ReturnType<typeof store.getState>;
+import { configureStore } from '@reduxjs/toolkit';
+
+export const store = configureStore({
+  reducer: { /* your reducers */ },
+});
+
+export type RootState = ReturnType<typeof store.getState>;
+export type AppDispatch = typeof store.dispatch;
+```
+
+### 2. Type Slices and Actions
+When creating a slice with createSlice, define an interface for the initial state.
+
+Use the `PayloadAction<T>` generic to type the data expected by each reducer. 
+
+* PayloadAction: Ensures action.payload has the correct structure (e.g., number, string[], or a custom interface). 
+
+Slice action:
+```tsx
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+
+interface CounterState { value: number; }
+const initialState: CounterState = { value: 0 };
+
+const counterSlice = createSlice({
+  name: 'counter',
+  initialState,
+  reducers: {
+    incrementByAmount: (state, action: PayloadAction<number>) => {
+      state.value += action.payload;
+    },
+  },
+});
+```
+
+### 3. Create Typed Hooks:
+To avoid repeating types in every component, create typed versions of `useDispatch` and `useSelector`
+
+Use the withTypes method (available in newer versions) to bind the types
+* useAppDispatch: Ensures dispatched actions are valid.
+* useAppSelector: Provides automatic state autocompletion. 
+```tsx
+import { useDispatch, useSelector } from 'react-redux';
+import type { RootState, AppDispatch } from './store';
+
+export const useAppDispatch = useDispatch.withTypes<AppDispatch>();
+export const useAppSelector = useSelector.withTypes<RootState>();
+```
+
+### 4. Use in Components:
+Type Safety: TypeScript will now flag errors if you attempt to access non-existent state properties or dispatch actions with incorrect payload types. 
+```ts
+const count = useAppSelector((state) => state.counter.value);
+const dispatch = useAppDispatch();
+
+dispatch(incrementByAmount(5)); // Valid
+dispatch(incrementByAmount("5")); // Error: Argument of type 'string' is not assignable to 'number'
 ```
 
 ---

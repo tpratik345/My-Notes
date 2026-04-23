@@ -1091,8 +1091,8 @@ type Extract<T, U> = T extends U ? T : never;
 type Vertical = "top" | "bottom";
 type Horizontal = "left" | "right";
 
-// This creates: "top-left" | "top-right" | "bottom-left" | "bottom-right"
 type Alignment = `${Vertical}-${Horizontal}`;
+// This creates: "top-left" | "top-right" | "bottom-left" | "bottom-right"
 
 let myPosition: Alignment = "top-left"; // Success
 // let myPosition: Alignment = "center"; // Error!
