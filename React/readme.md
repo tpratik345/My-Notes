@@ -63,11 +63,12 @@
 | 57 | [What is `useImperativeHandle`?](#57-what-is-useimperativehandle)                                                                                           |
 | 58 | [What is the difference between Class Components and Functional Components?](#58-what-is-the-difference-between-class-components-and-functional-components) |
 | 59 | [Explain Event Handling in React](#59-explain-event-handling-in-react)                                                                                      |
-| 60 | [Synthetic Event vs Native DOM Event](#60-synthetic-event-vs-native-dom-event)                                                                                                     |
+| 60 | [Synthetic Event vs Native DOM Event](#60-synthetic-event-vs-native-dom-event)                                                                              |
 | 61 | [What is Batching in React?](#61-what-is-batching-in-react)                                                                                                 |
 | 62 | [What is the use of `key` prop?](#62-what-is-the-use-of-key-prop)                                                                                           |
 | 63 | [What is the use of `dangerouslySetInnerHTML`?](#63-what-is-the-use-of-dangerouslysetinnerhtml)                                                             |
 | 64 | [What is the difference between `npm` and `npx`?](#64-what-is-the-difference-between-npm-and-npx)                                                           |
+| 65 | [How useRef can be used to handle previous value](#65-how-useRef-can-be-used-to-handle-previous-value)                                                      |
 
 ---
 
@@ -1226,6 +1227,90 @@ Use carefully because of XSS risk.
 ```bash
 npx create-react-app my-app
 ```
+
+---
+
+## 65. How useRef can be used to handle previous value
+
+### How It Works (Step-by-Step)
+* Initialize the Ref: Declare a ref using the useRef Hook to store the value you want to track.
+* Render the Component: During the render, the component displays the current state and the value currently stored in ref.current. Because the ref hasn't been updated yet for this cycle, ref.current still holds the value from the previous render.
+* Update in useEffect: Use the useEffect Hook to update ref.current with the new state value. Since useEffect runs after the render is committed to the screen, the update happens late enough that it doesn't affect what is currently displayed, but saves the value for the next render. 
+
+```jsx
+function usePrevious(value) {
+  const ref = useRef();
+  
+  // Update ref.current after every render
+  useEffect(() => {
+    ref.current = value;
+  }, [value]);
+  
+  // Return previous value (happens before the useEffect above runs)
+  return ref.current;
+}
+```
+
+```jsx
+import { useEffect, useRef, useState } from 'react';
+
+function Counter() {
+  const [count, setCount] = useState(0);
+  const prevCount = usePrevious(count);
+
+  return (
+    <h1>
+      Now: {count}, Before: {prevCount}
+      <button onClick={() => setCount(count + 1)}>Increment</button>
+    </h1>
+  );
+}
+```
+### Use Cases
+1. Detect Value Change
+```jsx
+const prevPrice = usePrevious(price);
+
+useEffect(() => {
+ if(prevPrice && price > prevPrice){
+   console.log("Price increased");
+ }
+}, [price]);
+```
+
+2. Prevent Unnecessary API Calls
+  - Compare previous filters before fetching.
+```jsx
+const prevFilters = usePrevious(filters);
+
+useEffect(() => {
+ if(prevFilters !== filters){
+   fetchData();
+ }
+}, [filters]);
+```
+
+3. ComponentDidUpdate Equivalent
+  - Like old class lifecycle access:
+```jsx
+const prevUserId = usePrevious(userId);
+
+useEffect(() => {
+ if(prevUserId !== userId){
+   console.log("User changed");
+ }
+}, [userId]);
+```
+
+### Difference between useRef vs useState for previous values?
+
+| useRef                       | useState            |
+| ---------------------------- | ------------------- |
+| No re-render                 | Causes re-render    |
+| Mutable                      | Immutable update    |
+| Good for previous values     | Usually unnecessary |
+| Stores values across renders | Triggers UI updates |
+
 
 ---
 
