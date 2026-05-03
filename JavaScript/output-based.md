@@ -383,4 +383,13 @@ Answer: -1
 | `[1,2]`     | "1,2" → NaN |
 
 ## 8. `var`, `let`, `const` tricky questions
+```js
+let a = 5;
+{
+  console.log(a);
+  let a = 10;
+}
+```
 
+Output will be `ReferenceError: Cannot access 'a' before initialization`.
+A new `a` is declared inside block
