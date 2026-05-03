@@ -1,4 +1,4 @@
-## 1 — Explain the event loop with an example that shows ordering of `console.log` calls between `setTimeout`, `Promise`, and immediate code.
+## 1. Explain the event loop with an example that shows ordering of `console.log` calls between `setTimeout`, `Promise`, and immediate code.
 
 Answer: Immediate synchronous code runs first. Then `microtasks` (Promise callbacks) run, then `macrotasks` (timers).
 
@@ -18,7 +18,7 @@ Explanation: A and D are sync. Promise then is microtask executed after current 
 
 ---
 
-## 2 — Implement a function `deepClone(obj)` handling arrays, objects, Dates, RegExp, and circular references. (Explain approach.) (IMP)
+## 2. Implement a function `deepClone(obj)` handling arrays, objects, Dates, RegExp, and circular references. (Explain approach.) (IMP)
 
 ### To deeply clone an object, we need to:
 1. Return primitive values directly (`number`, `string`, `boolean`, `null`, `undefined`, etc.)
@@ -152,7 +152,7 @@ obj = null;
 
 ---
 
-## 3 — How do you implement `debounce`? Provide code and explain edge cases (immediate invocation, trailing calls).
+## 3. How do you implement `debounce`? Provide code and explain edge cases (immediate invocation, trailing calls).
 
 Answer:
 
@@ -210,7 +210,7 @@ No execution happens because the pending timer is removed.
 
 ---
 
-## 4 — What is prototypal inheritance? Show how to create inheritance without class.
+## 4. What is prototypal inheritance? Show how to create inheritance without class.
 
 Answer:
 ```js
@@ -234,39 +234,39 @@ Explanation: `Object.create` sets prototype chain; Parent.call(this, ...) sets i
 
 ---
 
-## 5 — Explain why typeof `null === 'object'` and how to reliably check for null.
+## 5. Explain why typeof `null === 'object'` and how to reliably check for null.
 
 Answer: It's a historical bug left for backward compatibility: null is a primitive but typeof null returns 'object'. Use value === null to check consistently.
 
 ---
 
-## 6 — How to avoid race conditions when using async functions that update shared state (e.g., multiple fetches updating UI)?
+## 6. How to avoid race conditions when using async functions that update shared state (e.g., multiple fetches updating UI)?
 
 Answer: Use techniques like tracking request tokens (only apply results for latest token), abort controllers (AbortController), or serialize operations. Example: increment a requestId and only apply result if requestId === currentRequestId.
 
 ---
 
-## 7 — Explain `this` in JS with examples for method call, function call, constructor, arrow function, and bind.
+## 7. Explain `this` in JS with examples for method call, function call, constructor, arrow function, and bind.
 
 Answer:
 
-* Method call: obj.fn() — `this` is obj.
+* Method call: obj.fn() - `this` is obj.
 * Function call: fn() in strict mode `this` is undefined, else window.
-* Constructor: new Fn() — `this` is the new object.
+* Constructor: new Fn() - `this` is the new object.
 * Arrow function: `this` lexical from outer scope.
 * bind: returns function with `this` permanently set.
 
-Example snippet and caveat: const f = obj.fn; f(); loses `this` — use bind or arrow.
+Example snippet and caveat: const f = obj.fn; f(); loses `this` - use bind or arrow.
 
 ---
 
-## 8 — Optimize a function that does heavy CPU work in the browser without blocking UI. What options exist?
+## 8. Optimize a function that does heavy CPU work in the browser without blocking UI. What options exist?
 
 Answer: Offload CPU work to Web Workers to avoid blocking main thread. Other strategies: break the work into chunks with setTimeout/requestIdleCallback, use WebAssembly for compute-heavy tasks, or optimize algorithmic complexity.
 
 ---
 
-## 9 - How Garbage Collection works in JavaScript
+## 9. How Garbage Collection works in JavaScript
 
 Garbage Collection in JavaScript is the process of automatically freeing memory that is no longer being used.
 
