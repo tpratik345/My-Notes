@@ -92,7 +92,7 @@ function deepClone(obj, seen = new WeakMap()) {
 const original = {
   name: "Pratik",
   age: 27,
-  hobbies: ["coding", "gaming"],
+  hobbies: ["badminton", "gaming"],
   createdAt: new Date(),
   pattern: /hello/gi
 };
