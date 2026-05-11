@@ -58,7 +58,7 @@
 | 51 | [What is Object.prototype?](#51-what-is-Object.prototype?)                                           |
 | 52 | [sort() with and without compare function](#52-sort-with-and-without-compare-function)               |
 | 53 | [What is localeCompare()?](#53-what-is-localecompare)                                                |
-| 54 | [What is Axios Interceptors?](#54-what-is-axios-interceptors)                                                  |
+| 54 | [What is Axios Interceptors?](#54-what-is-axios-interceptors)                                        |
 | 55 | [Difference between undefined and null](#55-difference-between-undefined-and-null)                   |
 | 56 | [What are Polyfills?](#56-what-are-polyfills)                                                        |
 | 57 | [What is Axios?](#57-what-is-axios)                                                                  |
@@ -68,6 +68,7 @@
 | 61 | [What are preventDefault() and stopPropagation()?](#61-what-are-preventdefault-and-stoppropagation)  |
 | 62 | [Difference between for...of and for...in](#62-difference-between-forof-and-forin)                   |
 | 63 | [What is AbortController?](#63-what-is-abortController)                                              |
+| 64 | [`Object.seal()` vs `Object.freeze()`](#64-objectseal-vs-objectfreeze)                               |
 
 ## 1. What is Hoisting?
 
@@ -1379,3 +1380,132 @@ This is common in search bars or autocomplete.\
     };
   }, [searchTerm]);
 ```
+
+## 64. `Object.seal()` vs `Object.freeze()`
+
+### Difference
+
+| Feature                     | `Object.seal()` | `Object.freeze()`  |
+| --------------------------- | --------------- | ------------------ |
+| Add new properties          | Not allowed     |  Not allowed       |
+| Delete properties           | Not allowed     |  Not allowed       |
+| Modify existing properties  | Allowed         |  Not allowed       |
+| Change property descriptors | Not allowed     |  Not allowed       |
+| Prevent extensions          | Yes             |  Yes               |
+| Level of immutability       | Partial         | Complete (shallow) |
+
+### Concept
+
+#### 1. `Object.seal()`
+
+A sealed object:
+  - Cannot add new properties
+  - Cannot delete properties
+  - CAN modify existing property values
+
+```js
+const user = {
+  name: "Pratik",
+  age: 25
+};
+
+Object.seal(user);
+
+user.age = 26; //  Allowed
+
+user.city = "Pune"; //  Cannot add
+delete user.name; //  Cannot delete
+
+console.log(user);
+
+// Output:
+// {
+//   name: "Pratik",
+//   age: 26
+// }
+```
+
+#### 2. `Object.freeze()`
+A frozen object:
+  - Cannot add properties
+  - Cannot delete properties
+  - Cannot modify existing properties
+
+```js
+const user = {
+  name: "Pratik",
+  age: 25
+};
+
+Object.freeze(user);
+
+user.age = 26; //  Not allowed
+user.city = "Pune"; //  Not allowed
+delete user.name; //  Not allowed
+
+console.log(user);
+
+/// Output:
+// {
+//   name: "Pratik",
+//   age: 25
+// }
+```
+
+### Internal Difference
+
+`seal()`
+Internally does: `Object.preventExtensions(obj)`
+AND sets: `configurable: false`
+But: `writable: true`
+still remains.
+
+
+`freeze()`
+Internally does: `Object.preventExtensions(obj)`
+AND sets: `configurable: false` & `writable: false`
+
+### Important Point
+`Both are shallow.`
+Nested objects can `still be modified`.
+```js
+const obj = {
+  user: {
+    name: "Pratik"
+  }
+};
+
+Object.freeze(obj);
+
+obj.user.name = "John"; // Still changes!
+```
+Because only top-level object is frozen.
+
+### Deep Freeze Example
+```js
+function deepFreeze(obj) {
+  Object.keys(obj).forEach(key => {
+    if (typeof obj[key] === "object" && obj[key] !== null) {
+      deepFreeze(obj[key]);
+    }
+  });
+
+  return Object.freeze(obj);
+}
+```
+
+### Related Methods
+| Method                       | Purpose                        |
+| ---------------------------- | ------------------------------ |
+| `Object.preventExtensions()` | Prevent adding properties only |
+| `Object.seal()`              | Prevent add/delete             |
+| `Object.freeze()`            | Prevent add/delete/update      |
+
+### Checking if object is sealed/frozen?
+
+```js
+Object.isSealed(obj);
+Object.isFrozen(obj);
+```
+
+
