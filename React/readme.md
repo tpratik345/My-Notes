@@ -498,18 +498,62 @@ They don’t catch errors in event handlers or async code, only during rendering
 You can use them for graceful degradation — e.g., show an error message instead of a blank screen.
 
 ```jsx
-<ErrorBoundary>
-  <MyComponent />
-</ErrorBoundary>
+import React from "react";
 
-componentDidCatch(error, info) {}
+class ErrorBoundary extends React.Component {
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      hasError: false,
+    };
+  }
+
+  static getDerivedStateFromError(error) {
+    return {
+      hasError: true,
+    };
+  }
+
+  componentDidCatch(error, errorInfo) {
+    console.log("Error:", error);
+    console.log("Error Info:", errorInfo);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return <h1>Something went wrong.</h1>;
+    }
+
+    return this.props.children;
+  }
+}
+
+export default ErrorBoundary;
 ```
 
-They do not catch:
+Usage:
+```jsx
+<ErrorBoundary>
+  <UserProfile />
+</ErrorBoundary>
+```
+If `UserProfile` crashes, the fallback UI will render instead.
 
-* Event handler errors
-* Async errors
-* Server-side rendering errors
+### What Errors Do Error Boundaries Catch?
+
+  - They catch errors in:
+    - Rendering
+    - Lifecycle methods
+    - Constructors of child components
+  
+  - What They DO NOT Catch
+    - Errors inside:
+      - Event handlers
+      - setTimeout
+      - Async code
+      - Server-side rendering
+      - Errors inside the error boundary itself
 
 ---
 
