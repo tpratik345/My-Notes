@@ -634,6 +634,42 @@ function memoize(fn) {
 }
 ```
 
+
+```js
+// Generic memoization function
+function memoize(fn) {
+  // Cache object
+  let cache = {};
+  // Return new function
+  return function (num) {
+    // Check if value already exists
+    if (cache[num]) {
+      console.log("From Cache");
+      return cache[num];
+    }
+    // Call original function
+    console.log("Calculating...");
+    let result = fn(num);
+    // Store result in cache
+    cache[num] = result;
+
+    return result;
+  };
+}
+
+// Normal square function
+function square(num) {
+  return num * num;
+}
+
+// Pass square function to memoize
+const memoizedSquare = memoize(square);
+// First call
+console.log(memoizedSquare(5)); // Calculating... 25
+// Second call
+console.log(memoizedSquare(5)); // From Cache 25
+```
+
 ---
 
 ## 24. Static Method vs Instance Method
