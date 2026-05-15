@@ -69,6 +69,7 @@
 | 62 | [Difference between for...of and for...in](#62-difference-between-forof-and-forin)                   |
 | 63 | [What is AbortController?](#63-what-is-abortController)                                              |
 | 64 | [`Object.seal()` vs `Object.freeze()`](#64-objectseal-vs-objectfreeze)                               |
+| 65 | [Function Declaration vs Function Expression](#65-function-declaration-vs-function-expression)       |
 
 ## 1. What is Hoisting?
 
@@ -1381,6 +1382,8 @@ This is common in search bars or autocomplete.\
   }, [searchTerm]);
 ```
 
+---
+
 ## 64. `Object.seal()` vs `Object.freeze()`
 
 ### Difference
@@ -1507,5 +1510,67 @@ function deepFreeze(obj) {
 Object.isSealed(obj);
 Object.isFrozen(obj);
 ```
+
+---
+
+## 65. Function Declaration vs Function Expression
+
+### 1. Function Declaration
+  A function defined using the function keyword with a name.
+
+```js
+function greet() {
+  console.log("Hello");
+}
+```
+You can call it before it appears in the code because declarations are `hoisted`.
+```js
+sayHi(); // Works
+
+function sayHi() {
+  console.log("Hi");
+}
+```
+
+### Characteristics
+  - Has a function name
+  - Fully hoisted
+  - Available before definition
+  - Common for reusable functions
+
+### 2. Function Expression
+
+A function stored inside a variable.
+```js
+const greet = function () {
+  console.log("Hello");
+};
+```
+This is treated like a variable assignment.
+```js
+sayHi(); // Error
+
+const sayHi = function () {
+  console.log("Hi");
+};
+```
+
+### Characteristics
+  - Can be anonymous or named
+  - Not fully hoisted
+  - Variable exists before assignment, but function doesn't
+  - Useful for callbacks and dynamic behavior
+
+
+### Difference
+
+| Feature                    | Function Declaration       | Function Expression       |
+| -------------------------- | -------------------------- | ------------------------- |
+| Syntax                     | `function fn(){}`          | `const fn = function(){}` |
+| Hoisted                    | Yes (fully)                | No                        |
+| Callable before definition | Yes                        | No                        |
+| Can be anonymous           | No                         | Yes                       |
+| Common use                 | General reusable functions | Callbacks, closures       |
+
 
 
