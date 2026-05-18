@@ -827,6 +827,7 @@ class Dog extends Animal {
 ## 32. Difference between DOM and BOM
 
 DOM → Document Object Model
+
 BOM → Browser Object Model
 
 Examples:
