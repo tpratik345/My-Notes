@@ -223,9 +223,85 @@ console.log(add(5, 10)); // Output: 15
 | Best for objects | Can represent any type           |
 | Can be extended  | Can use unions and intersections |
 
+`Interface` is mainly used for defining object structures and supports declaration merging, while `type alias` is more flexible and can represent primitives, unions, tuples, and function types.
+
 ```ts
-type ID = string | number;
+interface User1 {
+  name: string;
+  age: number;
+}
+
+const user: User1 = {
+  name: "Pratik",
+  age: 25,
+};
+
+type User2 = {
+  name: string;
+  age: number;
+};
 ```
+
+Interface:
+```ts
+interface Add {
+  (a: number, b: number): number;
+}
+
+const add: Add = (x, y) => {
+  return x + y;
+};
+```
+
+Type:
+```ts
+type Add = (a: number, b: number) => number;
+
+const add: Add = (x, y) => {
+  return x + y;
+};
+```
+
+### Declaration Merging
+#### 1. Interface supports merging
+```ts
+interface Person {
+  name: string;
+}
+
+interface Person {
+  age: number;
+}
+
+const p: Person = {
+  name: "Pratik",
+  age: 25,
+};
+// Both interfaces merge automatically.
+```
+
+### 2. Type Alias does NOT support merging
+```ts
+type Person = {
+  name: string;
+};
+
+type Person = {
+  age: number;
+};
+// Error: Duplicate identifier
+```
+
+### Difference
+| Feature              | Interface | Type Alias |
+| -------------------- | --------- | ---------- |
+| Used for objects     | ✅         | ✅          |
+| Used for primitives  | ❌         | ✅          |
+| Used for union types | ❌         | ✅          |
+| Used for tuples      | ❌         | ✅          |
+| Declaration merging  | ✅         | ❌          |
+| Extend support       | ✅         | ✅          |
+
 
 ---
 
