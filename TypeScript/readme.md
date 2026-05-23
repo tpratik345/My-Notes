@@ -326,16 +326,58 @@ interface User {
 }
 ```
 
-Cannot be changed after initialization.
+`readonly` is used to make a property immutable after initialization.
+
+Once value is assigned, it cannot be changed after initialization.
+
+
+```ts
+interface User {
+  readonly id: number;
+  name: string;
+}
+
+const user: User = {
+  id: 1,
+  name: "Pratik",
+};
+
+user.name = "Rahul"; // Allowed
+
+user.id = 2; // Error
+```
+
+```ts
+const nums: readonly number[] = [1, 2, 3];
+
+nums.push(4); // ❌ Error
+nums[0] = 10; // ❌ Error
+```
 
 ---
 
 ## 12. What is Union Type?
 
-A union allows multiple possible types.
+A Union Type allows a variable to hold multiple types.
 
 ```ts
-let value: string | number;
+let data: string | number;
+
+data = "Pratik"; // ✅
+data = 100;      // ✅
+
+data = true;     // Error
+
+
+let arr: (string | number)[] = [1, "hello", 2, "world"];
+
+function display(value: string | number) {
+  if (typeof value === "string") {
+    console.log(value.toUpperCase());
+  } else {
+    console.log(value.toFixed(2));
+  }
+}
 ```
 
 ---
@@ -345,27 +387,69 @@ let value: string | number;
 Combines multiple types into one.
 
 ```ts
-type A = { name: string };
-type B = { age: number };
+type Person = {
+  name: string;
+};
 
-type Person = A & B;
+type Employee = {
+  empId: number;
+};
+
+type Staff = Person & Employee;
+
+const user: Staff = {
+  name: "Pratik",
+  empId: 101,
+};
+
+// Staff contains: name & empId
 ```
+
+### Difference Between Union and Intersection
+
+| Type         | Symbol | Meaning                    |
+| ------------ | ------ | -------------------------- |
+| Union        | `\|`   | Either one type OR another |
+| Intersection | `&`    | Combination of all types   |
 
 ---
 
 ## 14. What is a Tuple?
 
+A `Tuple` is a special type of array where: the number of elements & and their data types are fixed.
+
 Tuple stores fixed number of values with fixed types.
 
 ```ts
-let user: [string, number] = ['John', 25];
+let user: [string, number];
+
+user = ["Pratik", 27]; // ✅
 ```
+
+Invalid:
+```ts
+user = [27, "Pratik"]; // ❌ Wrong order
+
+user = ["Pratik"]; // ❌ Missing value
+
+user = ["Pratik", 27, true]; // ❌ Extra value
+```
+
+### Difference Between Array and Tuple
+
+| Array               | Tuple                       |
+| ------------------- | --------------------------- |
+| Same type elements  | Different types allowed     |
+| Length can vary     | Fixed length                |
+| Example: `number[]` | Example: `[string, number]` |
 
 ---
 
 ## 15. What is Enum?
 
 Enums define named constants.
+
+It improves readability and avoids using hardcoded values.
 
 ```ts
 enum Direction {
@@ -437,7 +521,8 @@ type Keys = keyof Dictionary;
 // string | number
 ```
 `[key: string]` this will allow dynamic key allocation the value as `number`.
-Also if we want to ahve a dynamic `key` and `value` pair we should be using Record<K, T>
+
+Also if we want to have a dynamic `key` and `value` pair we should be using Record<K, T>
 
 It can be also possible by Template Literals:
 ```ts
@@ -526,13 +611,33 @@ Generics keep the original type.
 
 ## 21. What are Generic Constraints?
 
-Constraints restrict generic types.
+Generic Constraints are used to restrict the types that a generic can accept.
+
+We use the `extends` keyword for this.
+
+
+### Why Use Constraints?
+Without constraints, generic can accept any type.
 
 ```ts
-function getLength<T extends { length: number }>(item: T) {
-  return item.length;
+function printData<T>(data: T) {
+  console.log(data.length); // Error
 }
 ```
+Because not every type has `length`.
+
+### Using Generic Constraint
+```ts
+function printData<T extends { length: number }>(data: T) {
+  console.log(data.length);
+}
+
+printData("Hello"); // ✅
+printData([1, 2, 3]); // ✅
+
+printData(100); // ❌ number has no length
+```
+Now only values having `length` are allowed.
 
 ---
 
@@ -554,9 +659,9 @@ interface Admin extends User {
 
 ## 23. What is `infer` keyword?
 
-`infer` extracts a type inside conditional types. infer will be present with extends only.
+`infer` extracts a type inside conditional types. `infer` will be present with extends only.
 
-## 1. Extract Array element type
+### 1. Extract Array element type
 ```js
 type ElementType<T> = T extends (infer U)[] ? U : never;
 
@@ -569,7 +674,7 @@ Explanation:
   * If T is an array → extract its element type
   * Otherwise → return never
 
-## 2. Extract Function Return Type:
+### 2. Extract Function Return Type:
 
 ```ts
 type MyReturnType<T> = T extends (...args: any[]) => infer R ? R : never;
@@ -579,7 +684,7 @@ type B = MyReturnType<(x: string) => boolean>; // boolean
 ```
 This is actually how built-in ReturnType<T> works internally.
 
-## 3. Extract Function Parameters
+### 3. Extract Function Parameters
 ```js
 type MyParameters<T> = T extends (...args: infer P) => any ? P : never;
 
@@ -588,7 +693,7 @@ type A = MyParameters<(x: number, y: string) => void>;
 ```
 `infer P` captures all parameters as a `tuple`.
 
-## 4. Extract Promise Type
+### 4. Extract Promise Type
 
 ```js
 type UnwrapPromise<T> = T extends Promise<infer U> ? U : T;
@@ -597,7 +702,7 @@ type A = UnwrapPromise<Promise<string>>; // string
 type B = UnwrapPromise<number>;         // number
 ```
 
-## 5. Nested infer
+### 5. Nested infer
 ```js
 type DeepUnwrap<T> = 
   T extends Promise<infer U> 
@@ -613,8 +718,28 @@ type A = DeepUnwrap<Promise<Promise<number>>>; // number
 
 ## 24. What are Conditional Types?
 
+Conditional Types allow you to create types based on a condition.
+
 ```ts
 type IsString<T> = T extends string ? true : false;
+
+type A = IsString<string>; // true
+type B = IsString<number>; // false
+
+// If T extends string
+// → return true
+// otherwise
+// → return false
+```
+
+### Real Use Case
+Extract Array Element Type
+```ts
+type ElementType<T> =
+  T extends (infer U)[] ? U : T;
+
+type A = ElementType<string[]>; // string
+type B = ElementType<number>; // number
 ```
 
 ---
@@ -623,9 +748,22 @@ type IsString<T> = T extends string ? true : false;
 
 Mapped types transform properties of another type.
 
+Mapped Types allow you to create a new type by transforming properties of an existing type.
+
 ```ts
-type ReadonlyUser = {
+type User = {
+  name: string;
+  age: number;
+};
+
+type ReadOnlyUser = {
   readonly [K in keyof User]: User[K];
+};
+
+// Result:
+type ReadOnlyUser = {
+  readonly name: string;
+  readonly age: number;
 };
 ```
 
@@ -688,8 +826,10 @@ type UserFormFields = Pick<User, 'name' | 'age'>
 // ^= { name: string; age: number; }
 ```
 
-Useful for creating subsets of object types without needing to redefine every property. Use
-Pick whenever your type is derived from the existing object type.
+Useful for creating subsets of object types without needing to redefine every property.
+
+Use `Pick` whenever your type is derived from the existing object type.
+
 Opposite of `Omit` .
 
 ---
@@ -703,8 +843,10 @@ type User = { id: number; name: string; age: number; }
 type UserWithoutAgeOrName = Omit<User, 'age' | 'name'>
 // ^= { id: number; }
 ```
-Useful for creating subsets of object types without needing to redefine every property. Use
-Omit whenever your type is derived from the existing object type.
+Useful for creating subsets of object types without needing to redefine every property.
+
+Use `Omit` whenever your type is derived from the existing object type.
+
 Opposite of `Pick`.
 
 ---
@@ -719,7 +861,9 @@ type Permissions = Record<UserRole, string[]>
 // ^= { admin: string[]; user: string[]; guest: string[]; }
 ```
 
-Perfect for creating dictionaries or maps with known keys. Commonly used for configurations, mappings, and lookup tables.
+Perfect for creating dictionaries or maps with known keys.
+
+Commonly used for configurations, mappings, and lookup tables.
 
 ---
 
@@ -733,8 +877,10 @@ type RedishColors = Exclude<Colors, "blue" | "green">
 // ^= 'red' | 'yellow' | 'orange'
 ```
 
-Useful for creating subsets of union types without needing to redefine every member. Use
-Exclude whenever your union is derived from the existing union type.
+Useful for creating subsets of union types without needing to redefine every member.
+
+Use `Exclude` whenever your union is derived from the existing union type.
+
 Opposite of `Extract` , and similar to `Omit` .
 
 ---
@@ -749,8 +895,10 @@ type RedishColors = Extract<Colors, "red" | "yellow" | "orange">
 // ^= 'red' | 'yellow' | 'orange'
 ```
 
-Useful for creating subsets of union types without needing to redefine every member. Use
-Extract whenever your union is derived from the existing union type.
+Useful for creating subsets of union types without needing to redefine every member.
+
+Use `Extract` whenever your union is derived from the existing union type.
+
 Opposite of `Exclude` , and similar to `Pick` .
 
 ---
@@ -788,6 +936,26 @@ Type assertion tells TypeScript what the type is.
 ```ts
 const input = document.getElementById('name') as HTMLInputElement;
 ```
+
+### Why Use Type Assertion?
+
+Sometimes TypeScript cannot correctly infer the type.
+Ex:
+```ts
+const input = document.getElementById("username");
+```
+TypeScript thinks: `HTMLElement | null`
+
+But if you know it is an input element:
+```ts
+const input = document.getElementById("username") as HTMLInputElement;
+
+input.value = "Pratik";
+```
+
+Type Assertion does not change the actual type at runtime.
+
+It only helps TypeScript during compilation.
 
 ---
 
@@ -835,7 +1003,7 @@ function print(value: string | number) {
 
 ## 40. What is `instanceof` type guard?
 
-It is a built-in mechanism that uses the JavaScript instanceof operator to narrow down the type of a variable within a conditional block.
+It is a built-in mechanism that uses the JavaScript `instanceof` operator to narrow down the type of a variable within a conditional block.
 
 ```ts
 class Dog {
@@ -888,7 +1056,7 @@ function move(animal: Bird | Fish) {
 
 Used to define Type Predicates, which allow you to create `custom Type Guards`. 
 
-In this example, the `isString` function uses the `is` keyword to tell TypeScript that val is `definitely` a string if it returns true. 
+In this example, the `isString` function uses the `is` keyword to tell TypeScript that val is `definitely` a string if it returns true. -
 
 ```ts
 function isString(val: unknown): val is string {
@@ -961,20 +1129,47 @@ TypeScript supports:
 
 An abstract class cannot be instantiated directly.
 
+instantiated:
+Creating an object (instance) from a class using the new keyword.
+
 ```ts
 abstract class Animal {
   abstract makeSound(): void;
+
+  move() {
+    console.log("Animal is moving");
+  }
 }
+
+class Dog extends Animal {
+  makeSound() {
+    console.log("Bark");
+  }
+}
+
+const d = new Dog();
+
+d.makeSound();
+d.move();
+
+const a = new Animal(); // Error: Cannot create an instance of an abstract class
 ```
+
+### Rules:
+  - Abstract methods only have declaration
+  - No method body
+  - Child class must implement them
 
 ---
 
 ## 47. Abstract Class vs Interface
 
-| Abstract Class          | Interface        |
-| ----------------------- | ---------------- |
-| Can have implementation | Only declaration |
-| Supports constructor    | Does not         |
+| Abstract Class            | Interface                    |
+| ------------------------- | ---------------------------- |
+| Can have implementation   | Cannot have implementation   |
+| Can have constructor      | No constructor               |
+| Supports access modifiers | No access modifiers          |
+| Used for shared logic     | Used for structure/contracts |
 
 ---
 
@@ -1174,10 +1369,11 @@ let myPosition: Alignment = "top-left"; // Success
 // let myPosition: Alignment = "center"; // Error!
 ```
 
+---
 
 # Advanced Interview Questions
 
-## What is the difference between `interface merging` and `type alias`?
+## 1. What is the difference between `interface merging` and `type alias`?
 
 `Interfaces` can merge automatically.
 
@@ -1203,7 +1399,7 @@ It will be merged into below:
 
 ---
 
-## Why is `unknown` safer than `any`?
+## 2. Why is `unknown` safer than `any`?
 
 Because `unknown` forces you to check the type first.
 
@@ -1217,7 +1413,7 @@ if (typeof value === 'string') {
 
 ---
 
-## Why do we use `never` in exhaustive checks?
+## 3. Why do we use `never` in exhaustive checks?
 
 ```ts
 type Shape = 'circle' | 'square';
@@ -1236,5 +1432,3 @@ function check(shape: Shape) {
 If a new type is added → TypeScript error.
 
 This ensures all cases are handled.
-
-
