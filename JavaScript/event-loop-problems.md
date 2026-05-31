@@ -18,7 +18,6 @@ setTimeout(() => console.log(5));
 <details>
   <summary>Explaination</summary>
 
-  Explanation:
 ```js
     setTimeout(() => console.log(1))          // Line A
     Promise.resolve().then(() => console.log(2)); // Line B
@@ -64,4 +63,48 @@ This also schedules console.log(5) as a macrotask in the next event loop cycle, 
 </details>
 
 
-## 2. What is the output?
+## 2. What is the output? And Fix it.
+```js
+for (var i = 0; i < 5; i++) {
+  setTimeout(function() {
+    console.log(i);
+  }, i * 1000 ); }
+```
+
+<details>
+
+  <summary>Output</summary>
+
+  ### 5 5 5 5 5
+
+</details>
+
+<details>
+
+  <summary>Answer</summary>
+
+  ```js
+  for(var i=0; i< 5; i++) {
+    (function (a) {
+      setTimeout(() => {
+        console.log(a)
+      }, a * 1000)
+    })(i)
+  }
+  ```
+
+  ```js
+  for(var i=0; i< 5; i++) {
+      setTimeout(function (a){
+        console.log(a)
+      }.bind(null, i), i * 1000)  
+  }
+  ```
+
+  ```js
+  for (let i = 0; i < 5; i++) {
+    setTimeout(() => console.log(i), i * 1000);
+  }
+  ```
+
+</details>
