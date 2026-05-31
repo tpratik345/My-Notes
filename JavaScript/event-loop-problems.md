@@ -8,19 +8,8 @@ setTimeout(() => console.log(5));
 ```
 
 <details>
-  <summary>Click here to expand</summary>
-  
-  This content is hidden until you click the text above!
-  
-</details>
-
-<details>
   <summary>🔍 Click to reveal the secret list</summary>
 
-  ### You found it!
-  Here is some formatted content:
-  * **Bold item**
-  * _Italicized item_
-  * `Inline code`
+  ### 4 2 1 5 3
 
 </details>
