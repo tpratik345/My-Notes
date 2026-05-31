@@ -28,8 +28,12 @@ setTimeout(() => console.log(5));
 ```
 
 Line D: new Promise(() => console.log(4));
+
+
 This line creates a new Promise, and the executor function (the function passed to the Promise constructor) runs immediately.
 So console.log(4) executes synchronously and outputs 4 right away.
+
+
 Line B: Promise.resolve().then(() => console.log(2));
 
 
@@ -39,15 +43,25 @@ So console.log(2) will execute next, outputting 2.
 
 
 Line C: Promise.resolve().then(() => setTimeout(() => console.log(3)));
+
+
 This line is also a resolved Promise, so the .then() callback is scheduled as a microtask.
 Inside this callback, setTimeout schedules console.log(3) as a macrotask.
 This macrotask (for console.log(3)) will be executed in the next event loop, after all other synchronous code and microtasks have finished.
 
 
 Line A: setTimeout(() => console.log(1));
+
+
 This schedules console.log(1) as a macrotask to be executed in the next event loop cycle, after all synchronous code and microtasks have completed.
 
 
 Line E: setTimeout(() => console.log(5));
+
+
 This also schedules console.log(5) as a macrotask in the next event loop cycle, just like the previous setTimeout.
+
 </details>
+
+
+## 2. What is the output?

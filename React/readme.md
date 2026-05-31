@@ -2,73 +2,73 @@
 
 ## Index
 
-| #  | Question                                                                                                                                                    |
-| -- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 1  | [What is the difference between Real DOM and Virtual DOM?](#1-what-is-the-difference-between-real-dom-and-virtual-dom)                                      |
-| 2  | [What is Flux Architecture?](#2-what-is-flux-architecture)                                                                                                  |
-| 3  | [Explain Redux concepts: store, action, reducer, dispatch](#3-explain-redux-concepts-store-action-reducer-dispatch)                                         |
-| 4  | [What are Higher Order Components (HOC)?](#4-what-are-higher-order-components-hoc)                                                                          |
-| 5  | [What is `super` in React?](#5-what-is-super-in-react)                                                                                                      |
-| 6  | [Difference between Stateful and Stateless Components](#6-difference-between-stateful-and-stateless-components)                                             |
-| 7  | [What is React Router?](#7-what-is-react-router)                                                                                                            |
-| 8  | [What is Jest?](#8-what-is-jest)                                                                                                                            |
-| 9  | [Explain React Lifecycle Methods](#9-explain-react-lifecycle-methods)                                                                                       |
-| 10 | [What are Hooks?](#10-what-are-hooks)                                                                                                                       |
-| 11 | [What are React Portals?](#11-what-are-react-portals)                                                                                                       |
-| 12 | [What is Context API? What is Prop Drilling?](#12-what-is-context-api-what-is-prop-drilling)                                                                |
-| 13 | [What are Webpack and Polyfills?](#13-what-are-webpack-and-polyfills)                                                                                       |
-| 14 | [What are Pure Components?](#14-what-are-pure-components)                                                                                                   |
-| 15 | [What are Error Boundaries?](#15-what-are-error-boundaries)                                                                                                 |
-| 16 | [What is React Fiber?](#16-what-is-react-fiber)                                                                                                             |
-| 17 | [What is Memoization in React?](#17-what-is-memoization-in-react)                                                                                           |
-| 18 | [What are PropTypes?](#18-what-are-proptypes)                                                                                                               |
-| 19 | [Controlled vs Uncontrolled Components](#19-controlled-vs-uncontrolled-components)                                                                          |
-| 20 | [What are Refs?](#20-what-are-refs)                                                                                                                         |
-| 21 | [What is Lazy Loading?](#21-what-is-lazy-loading)                                                                                                           |
-| 22 | [What is Concurrent Rendering?](#22-what-is-concurrent-rendering)                                                                                           |
-| 23 | [What are React Server Components?](#23-what-are-react-server-components)                                                                                   |
-| 24 | [What is Render Hijacking?](#24-what-is-render-hijacking)                                                                                                   |
-| 25 | [Advantages and Limitations of React](#25-advantages-and-limitations-of-react)                                                                              |
-| 26 | [What is JSX?](#26-what-is-jsx)                                                                                                                             |
-| 27 | [What are Side Effects in React?](#27-what-are-side-effects-in-react)                                                                                       |
-| 28 | [How to Pass Data Using React Router?](#28-how-to-pass-data-using-react-router)                                                                             |
-| 29 | [Redux vs Context API vs Hooks](#29-redux-vs-context-api-vs-hooks)                                                                                          |
-| 30 | [What is Strict Mode?](#30-what-is-strict-mode)                                                                                                             |
-| 31 | [Explain the Building Blocks of React](#31-explain-the-building-blocks-of-react)                                                                            |
-| 32 | [What are React Fragments?](#32-what-are-react-fragments)                                                                                                   |
-| 33 | [How to Optimize a React Application?](#33-how-to-optimize-a-react-application)                                                                             |
-| 34 | [What is WebKit?](#34-what-is-webkit)                                                                                                                       |
-| 35 | [What is Web Optimization?](#35-what-is-web-optimization)                                                                                                   |
-| 36 | [Difference between `createRef` and `useRef`](#36-difference-between-createref-and-useref)                                                                  |
-| 37 | [What is React Reconciliation?](#37-what-is-react-reconciliation)                                                                                           |
-| 38 | [What is Diffing?](#38-what-is-diffing)                                                                                                                     |
-| 39 | [What is Redux Saga?](#39-what-is-redux-saga)                                                                                                               |
-| 40 | [What is `forwardRef`?](#40-what-is-forwardref)                                                                                                             |
-| 41 | [What are Render Props?](#41-what-are-render-props)                                                                                                         |
-| 42 | [Difference between `useLayoutEffect` and `useEffect`](#42-difference-between-uselayouteffect-and-useeffect)                                                |
-| 43 | [How to Call Child Function from Parent?](#43-how-to-call-child-function-from-parent)                                                                       |
-| 44 | [Difference between Library and Framework](#44-difference-between-library-and-framework)                                                                    |
-| 45 | [One-way vs Two-way Data Binding](#45-one-way-vs-two-way-data-binding)                                                                                      |
-| 46 | [Shadow DOM vs Virtual DOM](#46-shadow-dom-vs-virtual-dom)                                                                                                  |
-| 47 | [Why are Keys Important in React Lists?](#47-why-are-keys-important-in-react-lists)                                                                         |
-| 48 | [What is the difference between `useMemo` and `useCallback`?](#48-what-is-the-difference-between-usememo-and-usecallback)                                   |
-| 49 | [What is Code Splitting?](#49-what-is-code-splitting)                                                                                                       |
-| 50 | [Why should we not mutate state directly?](#50-why-should-we-not-mutate-state-directly)                                                                     |
-| 51 | [What is the difference between `==` and `===` in React/JS?](#51-what-is-the-difference-between--and--in-reactjs)                                           |
-| 52 | [What is Hydration in React?](#52-what-is-hydration-in-react)                                                                                               |
-| 53 | [What is Server Side Rendering (SSR)?](#53-what-is-server-side-rendering-ssr)                                                                               |
-| 54 | [What is Client Side Rendering (CSR)?](#54-what-is-client-side-rendering-csr)                                                                               |
-| 55 | [What is the difference between SSR and CSR?](#55-what-is-the-difference-between-ssr-and-csr)                                                               |
-| 56 | [What is Redux Thunk?](#56-what-is-redux-thunk)                                                                                                             |
-| 57 | [What is `useImperativeHandle`?](#57-what-is-useimperativehandle)                                                                                           |
-| 58 | [What is the difference between Class Components and Functional Components?](#58-what-is-the-difference-between-class-components-and-functional-components) |
-| 59 | [Explain Event Handling in React](#59-explain-event-handling-in-react)                                                                                      |
-| 60 | [Synthetic Event vs Native DOM Event](#60-synthetic-event-vs-native-dom-event)                                                                              |
-| 61 | [What is Batching in React?](#61-what-is-batching-in-react)                                                                                                 |
-| 62 | [What is the use of `key` prop?](#62-what-is-the-use-of-key-prop)                                                                                           |
-| 63 | [What is the use of `dangerouslySetInnerHTML`?](#63-what-is-the-use-of-dangerouslysetinnerhtml)                                                             |
-| 64 | [What is the difference between `npm` and `npx`?](#64-what-is-the-difference-between-npm-and-npx)                                                           |
-| 65 | [How useRef can be used to handle previous value](#65-how-useRef-can-be-used-to-handle-previous-value)                                                      |
+| #   | Question                                                                                                                                                    |
+| --- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1   | [What is the difference between Real DOM and Virtual DOM?](#1-what-is-the-difference-between-real-dom-and-virtual-dom)                                      |
+| 2   | [What is Flux Architecture?](#2-what-is-flux-architecture)                                                                                                  |
+| 3   | [Explain Redux concepts: store, action, reducer, dispatch](#3-explain-redux-concepts-store-action-reducer-dispatch)                                         |
+| 4   | [What are Higher Order Components (HOC)?](#4-what-are-higher-order-components-hoc)                                                                          |
+| 5   | [What is `super` in React?](#5-what-is-super-in-react)                                                                                                      |
+| 6   | [Difference between Stateful and Stateless Components](#6-difference-between-stateful-and-stateless-components)                                             |
+| 7   | [What is React Router?](#7-what-is-react-router)                                                                                                            |
+| 8   | [What is Jest?](#8-what-is-jest)                                                                                                                            |
+| 9   | [Explain React Lifecycle Methods](#9-explain-react-lifecycle-methods)                                                                                       |
+| 10  | [What are Hooks?](#10-what-are-hooks)                                                                                                                       |
+| 11  | [What are React Portals?](#11-what-are-react-portals)                                                                                                       |
+| 12  | [What is Context API? What is Prop Drilling?](#12-what-is-context-api-what-is-prop-drilling)                                                                |
+| 13  | [What are Webpack and Polyfills?](#13-what-are-webpack-and-polyfills)                                                                                       |
+| 14  | [What are Pure Components?](#14-what-are-pure-components)                                                                                                   |
+| 15  | [What are Error Boundaries?](#15-what-are-error-boundaries)                                                                                                 |
+| 16  | [What is React Fiber?](#16-what-is-react-fiber)                                                                                                             |
+| 17  | [What is Memoization in React?](#17-what-is-memoization-in-react)                                                                                           |
+| 18  | [What are PropTypes?](#18-what-are-proptypes)                                                                                                               |
+| 19  | [Controlled vs Uncontrolled Components](#19-controlled-vs-uncontrolled-components)                                                                          |
+| 20  | [What are Refs?](#20-what-are-refs)                                                                                                                         |
+| 21  | [What is Lazy Loading?](#21-what-is-lazy-loading)                                                                                                           |
+| 22  | [What is Concurrent Rendering?](#22-what-is-concurrent-rendering)                                                                                           |
+| 23  | [What are React Server Components?](#23-what-are-react-server-components)                                                                                   |
+| 24  | [What is Render Hijacking?](#24-what-is-render-hijacking)                                                                                                   |
+| 25  | [Advantages and Limitations of React](#25-advantages-and-limitations-of-react)                                                                              |
+| 26  | [What is JSX?](#26-what-is-jsx)                                                                                                                             |
+| 27  | [What are Side Effects in React?](#27-what-are-side-effects-in-react)                                                                                       |
+| 28  | [How to Pass Data Using React Router?](#28-how-to-pass-data-using-react-router)                                                                             |
+| 29  | [Redux vs Context API vs Hooks](#29-redux-vs-context-api-vs-hooks)                                                                                          |
+| 30  | [What is Strict Mode?](#30-what-is-strict-mode)                                                                                                             |
+| 31  | [Explain the Building Blocks of React](#31-explain-the-building-blocks-of-react)                                                                            |
+| 32  | [What are React Fragments?](#32-what-are-react-fragments)                                                                                                   |
+| 33  | [How to Optimize a React Application?](#33-how-to-optimize-a-react-application)                                                                             |
+| 34  | [What is WebKit?](#34-what-is-webkit)                                                                                                                       |
+| 35  | [What is Web Optimization?](#35-what-is-web-optimization)                                                                                                   |
+| 36  | [Difference between `createRef` and `useRef`](#36-difference-between-createref-and-useref)                                                                  |
+| 37  | [What is React Reconciliation?](#37-what-is-react-reconciliation)                                                                                           |
+| 38  | [What is Diffing?](#38-what-is-diffing)                                                                                                                     |
+| 39  | [What is Redux Saga?](#39-what-is-redux-saga)                                                                                                               |
+| 40  | [What is `forwardRef`?](#40-what-is-forwardref)                                                                                                             |
+| 41  | [What are Render Props?](#41-what-are-render-props)                                                                                                         |
+| 42  | [Difference between `useLayoutEffect` and `useEffect`](#42-difference-between-uselayouteffect-and-useeffect)                                                |
+| 43  | [How to Call Child Function from Parent?](#43-how-to-call-child-function-from-parent)                                                                       |
+| 44  | [Difference between Library and Framework](#44-difference-between-library-and-framework)                                                                    |
+| 45  | [One-way vs Two-way Data Binding](#45-one-way-vs-two-way-data-binding)                                                                                      |
+| 46  | [Shadow DOM vs Virtual DOM](#46-shadow-dom-vs-virtual-dom)                                                                                                  |
+| 47  | [Why are Keys Important in React Lists?](#47-why-are-keys-important-in-react-lists)                                                                         |
+| 48  | [What is the difference between `useMemo` and `useCallback`?](#48-what-is-the-difference-between-usememo-and-usecallback)                                   |
+| 49  | [What is Code Splitting?](#49-what-is-code-splitting)                                                                                                       |
+| 50  | [Why should we not mutate state directly?](#50-why-should-we-not-mutate-state-directly)                                                                     |
+| 51  | [What is the difference between `==` and `===` in React/JS?](#51-what-is-the-difference-between--and--in-reactjs)                                           |
+| 52  | [What is Hydration in React?](#52-what-is-hydration-in-react)                                                                                               |
+| 53  | [What is Server Side Rendering (SSR)?](#53-what-is-server-side-rendering-ssr)                                                                               |
+| 54  | [What is Client Side Rendering (CSR)?](#54-what-is-client-side-rendering-csr)                                                                               |
+| 55  | [What is the difference between SSR and CSR?](#55-what-is-the-difference-between-ssr-and-csr)                                                               |
+| 56  | [What is Redux Thunk?](#56-what-is-redux-thunk)                                                                                                             |
+| 57  | [What is `useImperativeHandle`?](#57-what-is-useimperativehandle)                                                                                           |
+| 58  | [What is the difference between Class Components and Functional Components?](#58-what-is-the-difference-between-class-components-and-functional-components) |
+| 59  | [Explain Event Handling in React](#59-explain-event-handling-in-react)                                                                                      |
+| 60  | [Synthetic Event vs Native DOM Event](#60-synthetic-event-vs-native-dom-event)                                                                              |
+| 61  | [What is Batching in React?](#61-what-is-batching-in-react)                                                                                                 |
+| 62  | [What is the use of `key` prop?](#62-what-is-the-use-of-key-prop)                                                                                           |
+| 63  | [What is the use of `dangerouslySetInnerHTML`?](#63-what-is-the-use-of-dangerouslysetinnerhtml)                                                             |
+| 64  | [What is the difference between `npm` and `npx`?](#64-what-is-the-difference-between-npm-and-npx)                                                           |
+| 65  | [How useRef can be used to handle previous value](#65-how-useRef-can-be-used-to-handle-previous-value)                                                      |
 
 ---
 
@@ -1596,3 +1596,104 @@ useEffect(() => {
 }, []);
 ```
 If you forget the cleanup, the extra mount in `StrictMode` exposes the bug immediately because you end up with two connections.
+
+---
+
+## 8. can we declare like this `let [data1, setData1] = useState(true)`
+### 1. useState Hook:
+  - The useState hook is used to create a state variable in a functional component.
+  - It returns an array with two elements:
+    - The current state value (here, data1).
+    - A function to update the state (here, setData1).
+
+Destructuring: The [data1, setData1] syntax uses array destructuring to assign the elements of the array returned by useState to variables.
+
+Although using `let` works, it's more common to declare state variables using `const`:
+
+```jsx
+const [data1, setData1] = useState(true);
+```
+
+Why Use const?
+
+The reference to the `data1` variable and the `setData1` function never changes; only the value of data1 changes when the state is updated.
+
+
+Using const reflects the intention that the state variable and its setter are not reassigned.
+
+### Can You Use let?
+Technically, `yes`. Using `let` instead of `const` won't throw an error, but it's unnecessary and less idiomatic in React, where immutability and clear intentions are emphasized.
+
+
+## 9. what happens to `useEffect` cleanup function based on the dependencies we are passing or no dependency or empty dependency
+
+### 1. No Dependency Array (Effect Runs After Every Render)
+
+* Behavior:
+    - Cleanup function: The cleanup function runs before the effect runs again on every render. This ensures that any previous effect is cleaned up before running a new one.
+    - It runs on every render after the first, meaning the effect is cleaned up and then re-executed after each render.
+
+* Use Case:
+    - This approach is typically used for effects that need to be reset or cleaned up after every render, such as event listeners, intervals, or other resources that could cause issues if not cleared between renders.
+
+* Example:
+```jsx
+
+useEffect(() => {
+  console.log("Effect running");
+  
+  return () => {
+    console.log("Cleanup before next render");
+  };
+});
+```
+
+### 2. Empty Dependency Array `([])`
+* Behavior:
+  - Effect: The effect runs only once, after the component mounts (equivalent to componentDidMount in class components).
+  - Cleanup function: The cleanup function will run once when the component unmounts (equivalent to componentWillUnmount in class components).
+  - Since the effect runs only once (on mount), the cleanup function is triggered only when the component unmounts.
+
+* Use Case:
+  - Useful for setting up resources like subscriptions, timers, or event listeners that need to be cleaned up when the component is removed.
+
+* Example:
+
+```jsx
+useEffect(() => {
+  console.log("Component mounted");
+
+  return () => {
+    console.log("Component unmounted");
+  };
+}, []); // Cleanup happens only on unmount
+```
+
+### 3. With Dependencies `([dep1, dep2])`
+* Behavior:
+  - Effect: The effect runs after the initial render and whenever any of the specified dependencies change.
+  - Cleanup function: The cleanup function will run before the effect runs again, which ensures that any previous effect is cleaned up before the new effect runs.
+  - Cleanup on unmount: It will also run when the component is unmounted, in case dependencies don’t change.
+
+* Use Case:
+  - This is the most common case when you need to run an effect that depends on specific values (e.g., state or props) and clean up before the effect re-runs.
+
+* Example:
+
+```jsx
+useEffect(() => {
+  console.log("Effect running due to dependency change");
+
+  return () => {
+    console.log("Cleanup before effect rerun");
+  };
+}, [dep1, dep2]); // Cleanup happens when dep1 or dep2 changes or component unmounts
+```
+
+### Behavior Summary of Cleanup Based on Dependencies
+
+| Dependency Array     | When Cleanup Runs                                                                       | When Effect Runs                                                           |
+| -------------------- | --------------------------------------------------------------------------------------- | -------------------------------------------------------------------------- |
+| None                 | Before the effect runs on every render (after each render).                             | After every render.                                                        |
+| Empty (`[]`)         | Only when the component unmounts.                                                       | Only once, after the component mounts (equivalent to `componentDidMount`). |
+| Specified (`[dep1]`) | Before the effect runs again, whenever any listed dependency changes. Also, on unmount. | After the initial render and whenever any dependency changes.              |
