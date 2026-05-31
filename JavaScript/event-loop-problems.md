@@ -25,7 +25,7 @@ setTimeout(() => console.log(5));
     Promise.resolve().then(() => setTimeout(() => console.log(3))); // Line C
     new Promise(() => console.log(4));        // Line D
     setTimeout(() => console.log(5));         // Line E
-    ```
+```
 
 Line D: new Promise(() => console.log(4));
 This line creates a new Promise, and the executor function (the function passed to the Promise constructor) runs immediately.
