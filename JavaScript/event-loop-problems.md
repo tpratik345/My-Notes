@@ -8,7 +8,7 @@ setTimeout(() => console.log(5));
 ```
 
 <details>
-  <summary>🔍 Click to reveal the secret list</summary>
+  <summary>Answer</summary>
 
   ### 4 2 1 5 3
 
