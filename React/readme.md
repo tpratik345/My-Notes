@@ -1624,6 +1624,7 @@ Using const reflects the intention that the state variable and its setter are no
 ### Can You Use let?
 Technically, `yes`. Using `let` instead of `const` won't throw an error, but it's unnecessary and less idiomatic in React, where immutability and clear intentions are emphasized.
 
+---
 
 ## 9. what happens to `useEffect` cleanup function based on the dependencies we are passing or no dependency or empty dependency
 
@@ -1697,3 +1698,64 @@ useEffect(() => {
 | None                 | Before the effect runs on every render (after each render).                             | After every render.                                                        |
 | Empty (`[]`)         | Only when the component unmounts.                                                       | Only once, after the component mounts (equivalent to `componentDidMount`). |
 | Specified (`[dep1]`) | Before the effect runs again, whenever any listed dependency changes. Also, on unmount. | After the initial render and whenever any dependency changes.              |
+
+---
+
+## 10. What is use of passing a callback function to the useState.
+
+Passing a `callback` function to useState in React serves two distinct purposes depending on whether you pass it to the `initial state `(inside useState()) or to the `state updater function` (the setter).
+
+### 1. Passing a Callback as the Initial State (Lazy Initialization)
+- When you pass a function directly inside the useState() call, it is known as `lazy initialization`.
+- The Main Purpose:
+  - Performance Optimization: It prevents expensive, heavy computational logic from running on every single component re-render.
+
+### The Code Problem
+  - This expensive calculation runs on the first mount and every single time the component re-renders for any reason, wasting CPU cycles:
+```jsx
+  // BAD: Runs every re-render
+  const [data, setData] = useState(getExpensiveData()); 
+```
+
+### The Callback Solution
+  - By wrapping the logic in an arrow function wrapper, React recognizes it as an initializer function.
+  - It will only run once when the component initially mounts:
+```jsx
+// GOOD: Runs ONLY on initial mount
+const [data, setData] = useState(() => getExpensiveData()); 
+```
+
+### 2. Passing a Callback to the State Updater (Functional Updates)
+- When you pass a callback function to the state setter, it is known as a functional update.
+- The Main Purpose:
+  - Prevents Stale State Bugs: It ensures your update always uses the most recent, up-to-date state.
+  - Handles Batching: React batches state updates together for performance. If you perform multiple rapid updates, reading the state variable directly can result in using a "stale" snapshot.
+
+### The Code Problem
+If you click this button, the count only increments by 1, not 3:
+```jsx
+const [count, setCount] = useState(0);
+
+function handleClick() {
+  setCount(count + 1); // Reads count as 0 -> schedules 1
+  setCount(count + 1); // Reads count as 0 -> schedules 1
+  setCount(count + 1); // Reads count as 0 -> schedules 1
+}
+```
+
+### The Callback Solution
+- By passing a callback, React hands you the absolute latest pending state dynamically. This button correctly increments by 3:
+
+```jsx
+const [count, setCount] = useState(0);
+
+function handleClick() {
+  setCount(prev => prev + 1); // prev is 0 -> returns 1
+  setCount(prev => prev + 1); // prev is 1 -> returns 2
+  setCount(prev => prev + 1); // prev is 2 -> returns 3
+}
+```
+
+### Summary Checklist
+  - Use a callback in useState(() => ...) when parsing large local storage items, processing heavy arrays, or running complex initial data setups.
+  - Use a callback in setCount(prev => ...) whenever your new state calculation explicitly relies on what the previous state value currently is.
