@@ -101,19 +101,18 @@ Start with desktop styles, then reduce for smaller screens.
 
 ## 7. What are common CSS breakpoints?
 
-```txt
-Mobile: up to 600px
-Tablet: 601px to 1024px
-Desktop: above 1024px
-```
+- Mobile: 320px – 768px
+- Laptops: 769px – 1024px
+- Desktops: 1025px – 1200px
+- Large Screens: 1201px and above.
 
 ---
 
 ## 8. How do you target mobile, tablet and desktop using media queries?
 
 ```css
-@media (max-width: 600px) {}
-@media (min-width: 601px) and (max-width: 1024px) {}
+@media (max-width: 768px) {}
+@media (min-width: 769px) and (max-width: 1024px) {}
 @media (min-width: 1025px) {}
 ```
 
