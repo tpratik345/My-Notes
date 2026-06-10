@@ -556,4 +556,7 @@ const rect = element.getBoundingClientRect();
 console.log(rect.top, rect.left);
 ```
 
-[![Back to Top](https://shields.io)](#top)
+[<kbd>Back to Top ↑</kbd>](#top)
+
+[↑ Back to Top](#top)
+
