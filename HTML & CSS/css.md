@@ -349,14 +349,14 @@ grid-template-areas:
 // Each quoted string represents a row.
 ```
 Visual Represenation:
-+-----------------------+
+|-----------------------|
 |        HEADER         |
-+-----------+-----------+
+|-----------|-----------|
 | SIDEBAR   |   MAIN    |
 |           |           |
-+-----------+-----------+
+|-----------|-----------|
 |        FOOTER         |
-+-----------------------+
+|-----------------------|
 
 This clearly shows the page structure.
 
