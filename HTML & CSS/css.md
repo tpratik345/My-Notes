@@ -247,31 +247,120 @@ Used for movement, scaling, rotation.
 
 ## 19. What is CSS Clamp?
 
-`clamp()` sets a value between minimum and maximum.
+CSS `clamp()` is a CSS function that lets you set a value with a minimum, preferred, and maximum limit.
 
 ```css
+/* clamp(minimum, preferred, maximum) */
 font-size: clamp(1rem, 2vw, 2rem);
+```
+* minimum → the smallest allowed value
+* preferred → the ideal value (often responsive using vw)
+* maximum → the largest allowed value
+
+### Why use clamp()?
+
+Before `clamp()`, responsive sizing often required media queries:
+
+```css
+h1 {
+  font-size: 1.5rem;
+}
+
+@media (min-width: 768px) {
+  h1 {
+    font-size: 2.5rem;
+  }
+}
+```
+
+With clamp():
+```css
+h1 {
+  font-size: clamp(1.5rem, 5vw, 2.5rem);
+}
+```
+
+The browser automatically scales the value between the minimum and maximum.
+
+### Common Use Cases
+Responsive Typography
+```css
+p {
+  font-size: clamp(1rem, 2vw, 1.25rem);
+}
+```
+Responsive Width
+```css
+.container {
+  width: clamp(300px, 80vw, 1200px);
+}
 ```
 
 ---
 
 ## 20. What are CSS Functions like `calc()`, `min()`, `max()`?
 
-```css
-width: calc(100% - 20px);
-width: min(500px, 100%);
+CSS functions such as calc(), min(), max(), and clamp() allow you to perform calculations and create responsive layouts directly in CSS.
+
+```js
+width: calc(100% - 50px);
+// The calc() function performs mathematical calculations using different units.
+// Take 100% of the parent width.
+// Subtract 50px.
+// Use the result as the width.
+
+
+width: min(90%, 1200px);
+// The min() function selects the smallest value from a list.
+// If 90% is less than 1200px, use 90%.
+// Otherwise, use 1200px.
+
+
 width: max(300px, 50%);
+// The max() function selects the largest value from a list.
+// Width will never be smaller than 300px.
+// If 50% becomes larger than 300px, it will be used.
 ```
 
 ---
 
 ## 21. What is CSS Grid Template Areas?
 
+CSS Grid Template Areas is a feature of CSS Grid Layout that lets you define grid layouts using named areas instead of row/column numbers. This makes layouts more readable and easier to maintain.
+
+### Why Use It?
+
+Instead of placing items with line numbers:
+
 ```css
-grid-template-areas:
-  'header header'
-  'sidebar main';
+.header {
+  grid-column: 1 / 4;
+}
 ```
+
+You can give sections meaningful names like:
+
+```cs
+grid-template-areas:
+  "header header header"
+  "sidebar main main"
+  "footer footer footer";
+
+// Each quoted string represents a row.
+```
+Visual Represenation:
++-----------------------+
+|        HEADER         |
++-----------+-----------+
+| SIDEBAR   |   MAIN    |
+|           |           |
++-----------+-----------+
+|        FOOTER         |
++-----------------------+
+
+This clearly shows the page structure.
+
+Use a dot (.) for an empty grid cell.
 
 ---
 
@@ -312,3 +401,73 @@ Used to blur content behind an element.
 | `nth-child()`       | `nth-of-type()`                   |
 | ------------------- | --------------------------------- |
 | Counts all children | Counts only matching element type |
+
+1. `:nth-child()`
+
+Selects an element based on its position among all siblings.
+
+```html
+<div>
+  <h2>Title</h2>
+  <p>Paragraph 1</p>
+  <p>Paragraph 2</p>
+</div>
+```
+```css
+p:nth-child(2) {
+  color: red;
+}
+```
+`Paragraph 1` is selected because it is the 2nd child of the `div`.
+
+2. `:nth-of-type()`
+
+Selects an element based on its position among elements of the same type.
+
+```html
+<div>
+  <h2>Title</h2>
+  <span>Info</span>
+  <p>Paragraph 1</p>
+  <p>Paragraph 2</p>
+</div>
+```
+```css
+p:nth-of-type(2) {
+  color: blue;
+}
+```
+`Paragraph 2` is selected. Only `<p>` elements are counted.
+
+### Side-by-Side Example
+```html
+<div>
+  <h2>Heading</h2>
+  <p>First P</p>
+  <span>Span</span>
+  <p>Second P</p>
+  <p>Third P</p>
+</div>
+```
+```css
+p:nth-child(2) {
+  color: red;
+}
+
+p:nth-of-type(2) {
+  background: yellow;
+}
+```
+
+### Analysis
+
+| Element    | Child Position | P Position |
+| ---------- | -------------- | ---------- |
+| h2         | 1              | -          |
+| p (First)  | 2              | 1          |
+| span       | 3              | -          |
+| p (Second) | 4              | 2          |
+| p (Third)  | 5              | 3          |
+
+* `p:nth-child(2)` → selects `First P`
+* `p:nth-of-type(2)` → selects `Second P`
