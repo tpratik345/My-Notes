@@ -14,7 +14,7 @@
 | 6  | [What is a CSS Sprite?](#6-what-is-a-css-sprite)                                                                                                            |
 | 7  | [What are CSS Preprocessors?](#7-what-are-css-preprocessors)                                                                                                |
 | 8  | [What are Mixins?](#8-what-are-mixins)                                                                                                                      |
-| 9  | [Explain CSS Specificity](#9-explain-css-specificity)                                                                                                       |
+| 9  | [Explain CSS Specificity and Cascading](#9-explain-css-specificity-and-cascading)                                                                           |
 | 10 | [What is `!important`?](#10-what-is-important)                                                                                                              |
 | 11 | [What are CSS Combinators?](#11-what-are-css-combinators)                                                                                                   |
 | 12 | [What does `::before` do?](#12-what-does-before-do)                                                                                                         |
@@ -43,6 +43,7 @@
 | 35 | [What is a `<textarea>` tag?](#35-what-is-a-textarea-tag)                                                                                                   |
 | 36 | [Difference between `mouseenter` and `mouseover`](#36-difference-between-mouseenter-and-mouseover)                                                          |
 | 37 | [Difference between `offsetHeight`, `offsetWidth` and `getBoundingClientRect()`](#37-difference-between-offsetheight-offsetwidth-and-getboundingclientrect) |
+| 38 | [Types of CSS Stylesheets](#38-types-of-css-stylesheets)                                                                            |
 
 ---
 
@@ -137,10 +138,15 @@ margin: 10px;
 Actual width = 200 + 20 + 20 + 5 + 5 = 250px
 
 Element's total width (excluding margin)
+
 Content width = 200px
+
 Left padding = 20px
+
 Right padding = 20px
+
 Left border = 5px
+
 Right border = 5px
 
 ---
@@ -186,20 +192,23 @@ Features:
 Mixins allow reusable CSS blocks.
 
 ```scss
-@mixin center {
+@mixin flex-center($direction) {
   display: flex;
   justify-content: center;
   align-items: center;
+  flex-direction: $direction;
 }
 
 .box {
-  @include center;
+  @include flex-center(row);
 }
 ```
 
 ---
 
-## 9. Explain CSS Specificity
+## 9. Explain CSS Specificity and Cascading
+
+### Specificity
 
 Specificity decides which CSS rule is applied.
 
@@ -215,6 +224,29 @@ Priority:
   color: red;
 }
 ```
+
+| Selector Type                                                 | Specificity Value |
+| ------------------------------------------------------------- | ----------------- |
+| Inline style                                                  | 1000              |
+| ID selector (`#id`)                                           | 100               |
+| Class, attribute, pseudo-class (`.class`, `[type]`, `:hover`) | 10                |
+| Element, pseudo-element (`div`, `p`, `::before`)              | 1                 |
+
+### Cascading
+
+Cascading determines which CSS rule is applied when multiple rules target the same element.
+
+```css
+p {
+  color: blue;
+}
+
+p {
+  color: red;
+}
+```
+
+Result: Red (last rule wins).
 
 ---
 
@@ -462,10 +494,25 @@ input[type="text"] {
 
 Common values:
 
-* `_self`
-* `_blank`
-* `_parent`
-* `_top`
+| Value       | Description    |
+| ----------- | -------------- |
+| `_self`     | Same tab       |
+| `_blank`    | New tab        |
+| `_parent`   | Parent frame   |
+| `_top`      | Full window    |
+| `framename` | Specific frame |
+
+### Security Best Practice
+
+```html
+<a
+  href="https://example.com"
+  target="_blank"
+  rel="noopener noreferrer"
+>
+```
+
+Prevents access through `window.opener`.
 
 ---
 
@@ -562,6 +609,35 @@ Example:
 const rect = element.getBoundingClientRect();
 console.log(rect.top, rect.left);
 ```
+
+## 38. Types of CSS Stylesheets
+
+### 1. User Agent (Browser) Stylesheet
+
+Default browser styles.
+
+### 2. User Stylesheet
+
+Styles defined by the user.
+
+### 3. Author Stylesheet
+
+Styles written by developers.
+
+#### Author Styles Types
+
+* Inline CSS
+* Internal CSS
+* External CSS
+
+#### Cascade Order
+
+1. Browser styles
+2. User styles
+3. Author styles
+4. Inline styles
+5. `!important`
+
 
 [↑ Back to Top](#top)
 
