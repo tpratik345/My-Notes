@@ -348,7 +348,7 @@ grid-template-areas:
 
 // Each quoted string represents a row.
 ```
-Visual Represenation:
+Visual Represenation:(see in VS Code)
 |-----------------------|
 |        HEADER         |
 |-----------|-----------|
