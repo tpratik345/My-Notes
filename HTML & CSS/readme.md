@@ -136,6 +136,13 @@ margin: 10px;
 
 Actual width = 200 + 20 + 20 + 5 + 5 = 250px
 
+Element's total width (excluding margin)
+Content width = 200px
+Left padding = 20px
+Right padding = 20px
+Left border = 5px
+Right border = 5px
+
 ---
 
 ## 6. What is a CSS Sprite?
@@ -555,8 +562,6 @@ Example:
 const rect = element.getBoundingClientRect();
 console.log(rect.top, rect.left);
 ```
-
-[<kbd>Back to Top ↑</kbd>](#top)
 
 [↑ Back to Top](#top)
 
