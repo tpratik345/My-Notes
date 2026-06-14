@@ -116,7 +116,10 @@ In case it is like below
 [] === ![]   //  false
 ```
 
+---
+
 ## 6. Top 10 JavaScript Tricky Questions
+
 ### 1. [] == ![]
 
 Result: true
@@ -214,6 +217,7 @@ Only value in JS that is not equal to itself
 
 Number.isNaN(NaN) // true
 
+---
 
 ## 7. Tricky JS Questions with + and -
 
@@ -281,9 +285,11 @@ Left to right:
 ```js
 "10" + 2 → "102"
 "102" + 3 → "1023"
-10. "10" + (2 + 3)
-"105"
 ```
+
+### 10. "10" + (2 + 3)
+
+Answer: "105"
 
 Brackets change the game
 
@@ -316,7 +322,8 @@ Answer: "[object Object]"
 ```
 
 ### 15. {} + [] ⚠️ (Tricky!)
-0   // or "[object Object]" depending on context
+
+Answer: 0   // or "[object Object]" depending on context
 
  In console (JS engine):
 
@@ -381,6 +388,8 @@ Answer: -1
 | `[]`        | "" → 0      |
 | `[5]`       | "5" → 5     |
 | `[1,2]`     | "1,2" → NaN |
+
+---
 
 ## 8. `var`, `let`, `const` tricky questions
 ```js
