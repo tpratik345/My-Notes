@@ -170,22 +170,122 @@ let city: string
 
 ## 7. Difference between `any`, `unknown`, and `never`
 
-| Type      | Meaning                             |
-| --------- | ----------------------------------- |
-| `any`     | Anything allowed                    |
-| `unknown` | Unknown type, must check before use |
-| `never`   | Value never occurs                  |
+| Type      | Meaning                 | Can store any value? | Can use value directly?  | Typical use                                     |
+| --------- | ----------------------- | -------------------- | ------------------------ | ----------------------------------------------- |
+| `any`     | Disable type checking   | ✅ Yes                | ✅ Yes                    | When migrating JS or avoiding type checks       |
+| `unknown` | Value of unknown type   | ✅ Yes                | ❌ No (must narrow first) | Safe alternative to `any`                       |
+| `never`   | Value that never occures | ❌ No                 | ❌ No                     | Functions that never return or impossible cases |
 
+1. `any`
+   - `any` tells TypeScript: "Don't check this variable."
 ```ts
-let a: any = 10;
-let b: unknown = 'hello';
+let value: any = "Hello";
+
+value = 100;
+value = true;
+value = {};
+
+// You can even call methods that don't exist.
+let value: any = 10;
+value.toUpperCase(); // No TypeScript error
+
+10.toUpperCase(); // Runtime Error
 ```
 
+
+2. `unknown`
+   -  `unknown` also accepts any value, but TypeScript forces you to check its type before using it.
+
 ```ts
-function throwError(): never {
-  throw new Error('Oops');
+let value: unknown;
+
+value = "Hello";
+value = 100;
+value = true;
+
+value.toUpperCase(); // Error
+```
+TypeScript says: Object is of type 'unknown'. You must narrow the type.
+
+```ts
+function print(value: unknown) {
+    if (typeof value === "string") {
+      console.log(value.toUpperCase());
+    }
+
+    if (typeof value === "number") {
+      console.log(value + 10);
+    }
 }
 ```
+
+#### Why use unknown?
+Suppose data comes from an API.
+```ts
+const response: unknown = JSON.parse(data);
+
+// Before using it:
+if (typeof response === "object" && response !== null ) {
+    console.log(response);
+}
+```
+This prevents runtime errors.
+
+3. `never`
+`never` means: "This value can never happen."
+
+Usually used for:
+- Functions that never return
+- Impossible code paths
+
+#### Example 1: Function that throws
+```ts
+function throwError(message: string): never {
+    throw new Error(message);
+}
+// The function never returns because it always throws.
+```
+
+#### Example 2: Infinite loop
+```ts
+function forever(): never {
+    while (true) {}
+}
+// It never finishes.
+```
+
+#### Example 3: Exhaustive switch
+```ts
+type Shape = "circle" | "square";
+
+function getArea(shape: Shape) {
+    switch (shape) {
+        case "circle":
+            return 100;
+
+        case "square":
+            return 200;
+
+        default:
+            const exhaustive: never = shape;
+            return exhaustive;
+    }
+}
+```
+
+```ts
+// If you later add:
+type Shape = "circle" | "square" | "triangle";
+// TypeScript reports an error because triangle isn't handled.
+// This helps catch missing cases during development.
+```
+
+
+#### When to use each
+1. any: Only when you intentionally want to opt out of type checking (e.g., during JavaScript migration or when interacting with poorly typed libraries).
+2. unknown: Prefer this for values whose type isn't known yet, such as API responses or user input. Validate or narrow the type before using it.
+3. never: Use for functions that never return (because they always throw or loop forever) and to ensure all cases in discriminated unions or switch statements are handled.
+
 
 ---
 
