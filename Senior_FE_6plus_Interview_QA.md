@@ -1,31 +1,32 @@
 # Senior Frontend Web Developer — Advanced Interview Q&A
 
 ## Index
-
-1. [Frontend Architecture](#1-frontend-architecture)
-2. [React Rendering and Reconciliation](#2-react-rendering-and-reconciliation)
-3. [React Performance Optimization](#3-react-performance-optimization)
-4. [State Management Architecture](#4-state-management-architecture)
-5. [Authentication Architecture](#5-authentication-architecture)
-6. [Authorization and RBAC](#6-authorization-and-rbac)
-7. [XSS, CSRF and Browser Security](#7-xss-csrf-and-browser-security)
-8. [Web Accessibility and ARIA](#8-web-accessibility-and-aria)
-9. [Production Performance Investigation](#9-production-performance-investigation)
-10. [Core Web Vitals](#10-core-web-vitals)
-11. [Code Splitting and Bundle Optimization](#11-code-splitting-and-bundle-optimization)
-12. [Caching Strategy](#12-caching-strategy)
-13. [API and Network Resilience](#13-api-and-network-resilience)
-14. [React Server-Side Rendering](#14-react-server-side-rendering)
-15. [Hydration and Mismatch Debugging](#15-hydration-and-mismatch-debugging)
-16. [TypeScript Advanced Design](#16-typescript-advanced-design)
-17. [JavaScript Event Loop](#17-javascript-event-loop)
-18. [Memory Leaks](#18-memory-leaks)
-19. [Testing Strategy](#19-testing-strategy)
-20. [Frontend System Design](#20-frontend-system-design)
-21. [Micro Frontends](#21-micro-frontends)
-22. [Observability and Error Monitoring](#22-observability-and-error-monitoring)
-23. [CI/CD and Production Safety](#23-cicd-and-production-safety)
-24. [Senior-Level Scenario: Slow Production App](#24-senior-level-scenario-slow-production-app)
+| No. | Section                                                                                     |
+| --: | ------------------------------------------------------------------------------------------- |
+|   1 | [Frontend Architecture](#1-frontend-architecture)                                           |
+|   2 | [React Rendering and Reconciliation](#2-react-rendering-and-reconciliation)                 |
+|   3 | [React Performance Optimization](#3-react-performance-optimization)                         |
+|   4 | [State Management Architecture](#4-state-management-architecture)                           |
+|   5 | [Authentication Architecture](#5-authentication-architecture)                               |
+|   6 | [Authorization and RBAC](#6-authorization-and-rbac)                                         |
+|   7 | [XSS, CSRF and Browser Security](#7-xss-csrf-and-browser-security)                          |
+|   8 | [Web Accessibility and ARIA](#8-web-accessibility-and-aria)                                 |
+|   9 | [Production Performance Investigation](#9-production-performance-investigation)             |
+|  10 | [Core Web Vitals](#10-core-web-vitals)                                                      |
+|  11 | [Code Splitting and Bundle Optimization](#11-code-splitting-and-bundle-optimization)        |
+|  12 | [Caching Strategy](#12-caching-strategy)                                                    |
+|  13 | [API and Network Resilience](#13-api-and-network-resilience)                                |
+|  14 | [React Server-Side Rendering](#14-react-server-side-rendering)                              |
+|  15 | [Hydration and Mismatch Debugging](#15-hydration-and-mismatch-debugging)                    |
+|  16 | [TypeScript Advanced Design](#16-typescript-advanced-design)                                |
+|  17 | [JavaScript Event Loop](#17-javascript-event-loop)                                          |
+|  18 | [Memory Leaks](#18-memory-leaks)                                                            |
+|  19 | [Testing Strategy](#19-testing-strategy)                                                    |
+|  20 | [Frontend System Design](#20-frontend-system-design)                                        |
+|  21 | [Micro Frontends](#21-micro-frontends)                                                      |
+|  22 | [Observability and Error Monitoring](#22-observability-and-error-monitoring)                |
+|  23 | [CI/CD and Production Safety](#23-ci-cd-and-production-safety)                              |
+|  24 | [Senior-Level Scenario: Slow Production App](#24-senior-level-scenario-slow-production-app) |
 
 ---
 
