@@ -4,32 +4,32 @@
 
 | No. | Topic | Question |
 |---:|---|---|
-| 1 | React Internals | How does React's reconciliation algorithm work and why are keys important? |
-| 2 | React Concurrency | What are `startTransition` and `useTransition`, and when should you use them? |
-| 3 | React Architecture | How would you prevent Context from becoming a performance bottleneck? |
-| 4 | React Design | How would you design reusable components without creating an over-engineered component library? |
-| 5 | JavaScript | Explain closures, lexical scope, and a production use case for closures. |
-| 6 | JavaScript | Explain event delegation and when it is useful in a large application. |
-| 7 | JavaScript Performance | What are Web Workers and when would you use them? |
-| 8 | TypeScript | Explain discriminated unions and exhaustive checking. |
-| 9 | TypeScript Architecture | How would you design a type-safe API layer? |
-| 10 | Authentication | How would you implement token refresh without sending multiple refresh requests simultaneously? |
-| 11 | Authorization | How would you design frontend authorization for hundreds of permissions? |
-| 12 | Security | What is Content Security Policy and how does it protect a frontend application? |
-| 13 | Security | What security checks would you perform before a frontend production release? |
-| 14 | Accessibility | How would you build an accessible autocomplete/combobox? |
-| 15 | Accessibility | How would you handle focus management in a React SPA? |
-| 16 | Performance | How would you improve INP on a page containing a large interactive data grid? |
-| 17 | Performance | What is layout thrashing and how would you identify and prevent it? |
-| 18 | Network | How would you prevent API race conditions in a search experience? |
-| 19 | Network | Explain HTTP caching using `Cache-Control`, ETag and `stale-while-revalidate`. |
-| 20 | Browser Architecture | Explain the critical rendering path from URL navigation to pixels on screen. |
-| 21 | Production | How would you investigate increasing memory usage in a production SPA? |
-| 22 | Reliability | How would you design graceful degradation when a non-critical backend service fails? |
-| 23 | Frontend System Design | Design a real-time notification system for a large React application. |
-| 24 | Frontend System Design | Design a frontend architecture for a large role-based admin portal. |
-| 25 | Engineering Leadership | How would you review a pull request as a senior frontend engineer? |
-| 26 | Production Incident | A new release causes CPU usage and INP to spike. What would you do? |
+| 1 | React Internals | [How does React's reconciliation algorithm work and why are keys important?](#1-react-internals) |
+| 2 | React Concurrency | [What are `startTransition` and `useTransition`, and when should you use them?](#2-react-concurrency) |
+| 3 | React Architecture | [How would you prevent Context from becoming a performance bottleneck?](#3-react-architecture) |
+| 4 | React Design | [How would you design reusable components without creating an over-engineered component library?](#4-react-design) |
+| 5 | JavaScript | [Explain closures, lexical scope, and a production use case for closures.](#5-javascript) |
+| 6 | JavaScript | [Explain event delegation and when it is useful in a large application.](#6-javascript) |
+| 7 | JavaScript Performance | [What are Web Workers and when would you use them?](#7-javascript-performance) |
+| 8 | TypeScript | [Explain discriminated unions and exhaustive checking.](#8-typescript) |
+| 9 | TypeScript Architecture | [How would you design a type-safe API layer?](#9-typescript-architecture) |
+| 10 | Authentication | [How would you implement token refresh without sending multiple refresh requests simultaneously?](#10-authentication) |
+| 11 | Authorization | [How would you design frontend authorization for hundreds of permissions?](#11-authorization) |
+| 12 | Security | [What is Content Security Policy and how does it protect a frontend application?](#12-security) |
+| 13 | Security | [What security checks would you perform before a frontend production release?](#13-security) |
+| 14 | Accessibility | [How would you build an accessible autocomplete/combobox?](#14-accessibility) |
+| 15 | Accessibility | [How would you handle focus management in a React SPA?](#15-accessibility) |
+| 16 | Performance | [How would you improve INP on a page containing a large interactive data grid?](#16-performance) |
+| 17 | Performance | [What is layout thrashing and how would you identify and prevent it?](#17-performance) |
+| 18 | Network | [How would you prevent API race conditions in a search experience?](#18-network) |
+| 19 | Network | [Explain HTTP caching using `Cache-Control`, ETag and `stale-while-revalidate`.](#19-network) |
+| 20 | Browser Architecture | [Explain the critical rendering path from URL navigation to pixels on screen.](#20-browser-architecture) |
+| 21 | Production | [How would you investigate increasing memory usage in a production SPA?](#21-production) |
+| 22 | Reliability | [How would you design graceful degradation when a non-critical backend service fails?](#22-reliability) |
+| 23 | Frontend System Design | [Design a real-time notification system for a large React application.](#23-frontend-system-design) |
+| 24 | Frontend System Design | [Design a frontend architecture for a large role-based admin portal.](#24-frontend-system-design) |
+| 25 | Engineering Leadership | [How would you review a pull request as a senior frontend engineer?](#25-engineering-leadership) |
+| 26 | Production Incident | [A new release causes CPU usage and INP to spike. What would you do?](#26-production-incident) |
 
 ---
 
