@@ -933,6 +933,542 @@ I would ask:
 
 A cache without an invalidation strategy can create correctness problems.
 
+The key point is that **not every API response should be cached at the same layer or for the same duration**.
+
+## 1. Browser Cache
+
+The browser cache stores resources locally on the user's device, such as:
+
+* JavaScript bundles
+* CSS
+* Images
+* Fonts
+* Sometimes API responses
+
+For API data, the server can control caching using HTTP headers such as:
+
+```http
+Cache-Control: max-age=300
+ETag: "abc123"
+Last-Modified: ...
+```
+
+For example:
+
+```http
+GET /api/products
+Cache-Control: max-age=300
+ETag: "products-v15"
+```
+
+If the user requests the same data again within 5 minutes, the browser may serve it from its HTTP cache instead of making a network request.
+
+### Why is this useful?
+
+It reduces:
+
+* Network requests
+* API load
+* Latency
+* Bandwidth usage
+
+### Important consideration
+
+I wouldn't blindly cache dynamic data.
+
+For example:
+
+```text
+Product catalog       → cache for a few minutes
+User profile           → short cache
+Stock price            → very short/no cache
+Authentication data   → generally don't use normal HTTP caching
+```
+
+---
+
+# 2. CDN Cache
+
+A **CDN (Content Delivery Network)** caches content at edge locations geographically close to users.
+
+For example:
+
+```text
+User in India
+      ↓
+CDN Edge in Mumbai
+      ↓
+Backend API
+```
+
+Instead of every request reaching the origin backend:
+
+```text
+User → Backend
+User → Backend
+User → Backend
+User → Backend
+```
+
+the CDN can do:
+
+```text
+User → CDN → Backend       ← first request
+User → CDN                 ← cached
+User → CDN                 ← cached
+User → CDN                 ← cached
+```
+
+This is especially useful for:
+
+* Public APIs
+* Product catalogs
+* Configuration data
+* CMS content
+* Images
+* Static assets
+
+### Example
+
+Suppose:
+
+```http
+GET /api/products
+```
+
+returns the same product catalog for thousands of users.
+
+We can configure the CDN:
+
+```http
+Cache-Control: public, max-age=300
+```
+
+The CDN can serve that response to many users without repeatedly hitting the backend.
+
+### Important consideration
+
+CDN caching is generally more appropriate for **shared/public data**.
+
+I would be careful with:
+
+```text
+GET /api/user/profile
+GET /api/account/balance
+GET /api/orders
+```
+
+because those responses are user-specific.
+
+---
+
+# 3. HTTP Cache
+
+This is closely related to browser caching, but in an interview I would distinguish **HTTP caching as the caching protocol/mechanism**.
+
+HTTP provides mechanisms such as:
+
+### `Cache-Control`
+
+```http
+Cache-Control: max-age=300
+```
+
+Means the response can be considered fresh for 300 seconds.
+
+### `ETag`
+
+The server provides a version identifier:
+
+```http
+ETag: "v123"
+```
+
+The browser later sends:
+
+```http
+If-None-Match: "v123"
+```
+
+If the data hasn't changed, the server returns:
+
+```http
+304 Not Modified
+```
+
+instead of sending the entire response again.
+
+### `Last-Modified`
+
+The server can also indicate when the resource was last modified:
+
+```http
+Last-Modified: Tue, 25 Aug 2026 10:00:00 GMT
+```
+
+The browser can then send:
+
+```http
+If-Modified-Since: Tue, 25 Aug 2026 10:00:00 GMT
+```
+
+### Why HTTP caching is powerful
+
+Even when the data isn't stored indefinitely, HTTP validation allows us to ask:
+
+> "Has this resource changed?"
+
+instead of:
+
+> "Send me the entire resource again."
+
+---
+
+# 4. Application / Query Cache
+
+This is probably the **most important layer when designing frontend API caching**.
+
+Here the frontend application stores API responses in memory or persistent storage.
+
+Libraries such as React Query/TanStack Query or SWR provide this functionality.
+
+For example:
+
+```text
+Component
+   ↓
+useQuery("products")
+   ↓
+Query Cache
+   ↓
+API
+```
+
+Suppose multiple components need the same data:
+
+```text
+ProductList
+ProductDropdown
+ProductRecommendations
+```
+
+Without caching:
+
+```text
+ProductList       → GET /products
+ProductDropdown   → GET /products
+Recommendations   → GET /products
+```
+
+With query caching:
+
+```text
+ProductList       → GET /products
+                         ↓
+                     Query Cache
+                         ↑
+ProductDropdown   → cache
+Recommendations   → cache
+```
+
+So we avoid unnecessary API calls.
+
+---
+
+## Stale Time vs Cache Time
+
+This is a very important senior-level concept.
+
+Suppose:
+
+```text
+staleTime = 5 minutes
+```
+
+It means:
+
+> For 5 minutes, consider this data fresh and don't unnecessarily refetch it.
+
+Then we might have a longer cache lifetime.
+
+Conceptually:
+
+```text
+0 min ---------------- 5 min ---------------- 30 min
+       FRESH                 STALE              REMOVED
+```
+
+The exact terminology varies by library/version, but the design principle is important.
+
+For relatively stable data:
+
+```text
+Countries
+Categories
+Product metadata
+Configuration
+```
+
+I might use a longer freshness period.
+
+For frequently changing data:
+
+```text
+Notifications
+Live dashboard
+Stock information
+```
+
+I'd use a shorter freshness period or explicit refetching.
+
+---
+
+# 5. Service Worker Cache
+
+A service worker sits between the browser and the network.
+
+Conceptually:
+
+```text
+Application
+     ↓
+Service Worker
+     ↓
+ ┌───────────┐
+ │ Cache API │
+ └───────────┘
+     ↓
+   Network
+```
+
+It can intercept requests:
+
+```javascript
+self.addEventListener("fetch", (event) => {
+  // Decide whether to use cache or network
+});
+```
+
+This is particularly useful for:
+
+* Offline applications
+* PWAs
+* Static assets
+* Frequently accessed resources
+* Offline-first experiences
+
+There are several strategies.
+
+### Cache First
+
+```text
+Cache → if available → return
+       ↓
+     Network
+```
+
+Good for relatively immutable assets.
+
+### Network First
+
+```text
+Network → if successful → return
+             ↓
+          Cache fallback
+```
+
+Good when fresh data is preferred but offline support is required.
+
+### Stale While Revalidate
+
+```text
+Return cached response immediately
+              ↓
+       Fetch latest data
+              ↓
+        Update cache
+```
+
+This gives the user a fast response while refreshing the data in the background.
+
+---
+
+# 6. Backend Cache
+
+Although I'm designing the frontend caching strategy, I also need to consider the backend.
+
+The backend might cache expensive operations using technologies such as:
+
+```text
+Redis
+Memcached
+In-memory cache
+Database query cache
+```
+
+For example:
+
+```text
+Frontend
+   ↓
+API
+   ↓
+Redis Cache
+   ↓
+Database
+```
+
+Suppose `/api/products` requires an expensive database query.
+
+Instead of:
+
+```text
+Request
+  ↓
+Database query
+  ↓
+Response
+```
+
+every time, the backend can do:
+
+```text
+Request
+  ↓
+Redis
+  ↓
+Cache hit → Response
+```
+
+If there's a cache miss:
+
+```text
+Request
+  ↓
+Redis → MISS
+  ↓
+Database
+  ↓
+Store result in Redis
+  ↓
+Response
+```
+
+This reduces database load and improves API response time.
+
+---
+
+# How I Would Design the Complete Strategy
+
+In an interview, I would bring all of these together:
+
+```text
+                    ┌──────────────┐
+                    │    Browser   │
+                    └──────┬───────┘
+                           │
+                    HTTP Browser Cache
+                           │
+                           ▼
+                    ┌──────────────┐
+                    │     CDN      │
+                    └──────┬───────┘
+                           │
+                           ▼
+                    ┌──────────────┐
+                    │   Frontend   │
+                    │ Query Cache  │
+                    └──────┬───────┘
+                           │
+                           ▼
+                    ┌──────────────┐
+                    │     API      │
+                    └──────┬───────┘
+                           │
+                           ▼
+                    ┌──────────────┐
+                    │Backend Cache │
+                    │    Redis     │
+                    └──────┬───────┘
+                           │
+                           ▼
+                    ┌──────────────┐
+                    │   Database   │
+                    └──────────────┘
+```
+
+And **Service Worker** can sit between the frontend and network when offline/PWA behavior is required.
+
+---
+
+## What I Would Consider Before Choosing the Cache
+
+I wouldn't simply say *"cache the API response."* I'd first classify the data.
+
+| Data                          | Typical strategy            |
+| ----------------------------- | --------------------------- |
+| Static assets                 | Browser + CDN               |
+| Product catalog               | Browser + CDN + query cache |
+| Categories                    | Long-lived query cache      |
+| User profile                  | Short-lived query cache     |
+| Notifications                 | Short stale time / refetch  |
+| Real-time dashboard           | Minimal caching             |
+| Authentication/session data   | Carefully controlled        |
+| Public CMS data               | CDN + HTTP cache            |
+| Expensive backend computation | Backend/Redis cache         |
+
+---
+
+## Senior-Level Considerations
+
+I'd also mention **cache invalidation**, because that's usually the hardest part of caching.
+
+For example, if a user updates a product:
+
+```text
+PUT /products/123
+```
+
+I need to make sure the old cached version doesn't remain visible.
+
+With a query cache, I might invalidate:
+
+```typescript
+queryClient.invalidateQueries({
+  queryKey: ["products"],
+});
+```
+
+Or update the cache optimistically:
+
+```typescript
+queryClient.setQueryData(
+  ["product", productId],
+  updatedProduct
+);
+```
+
+I would also think about:
+
+* **TTL** — how long data remains fresh
+* **Stale-while-revalidate** — show cached data while fetching fresh data
+* **Cache invalidation** — when cached data should be removed/refreshed
+* **Cache key design** — e.g. `["products", categoryId, page]`
+* **User-specific data** — avoid accidentally sharing private responses
+* **Pagination** — cache individual pages appropriately
+* **Mutations** — update or invalidate affected queries
+* **Offline behavior** — whether stale data is acceptable
+* **Consistency requirements** — how fresh must the data be?
+* **Memory usage** — don't keep unlimited API data in memory
+
+### Interview-ready conclusion
+
+You can finish with:
+
+> **"So, I would use caching as a layered strategy rather than relying on one cache. Browser and HTTP caching reduce network requests, CDN caching reduces traffic to the origin, application/query caching prevents duplicate API calls within the frontend, service-worker caching supports offline and PWA scenarios, and backend caching such as Redis reduces expensive database operations. The most important part is choosing the cache based on the data's freshness and consistency requirements and having a clear invalidation strategy."**
+
+That last part—**freshness, consistency, and invalidation**—is what makes the answer sound more like a **6+ years senior frontend answer** rather than just listing caching mechanisms.
+
 ---
 
 ## 13. API and Network Resilience
