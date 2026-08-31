@@ -1358,6 +1358,555 @@ useEffect(() => {
 
 ---
 
+## 66. When to use below hooks and when to not: `useMemo` , `useCallback` , `useContext`.
+
+### Quick rule
+
+| Hook          | Main purpose                               | Use when                                                           | Don't use when                                    |
+| ------------- | ------------------------------------------ | ------------------------------------------------------------------ | ------------------------------------------------- |
+| `useMemo`     | Memoize a **calculated value**             | Calculation is expensive or value stability matters                | Calculation is cheap                              |
+| `useCallback` | Memoize a **function reference**           | Passing callbacks to memoized children or function is a dependency | You're not gaining anything from stable reference |
+| `useContext`  | Share **data/state across component tree** | Avoiding prop drilling for shared data                             | Data is local or changes very frequently          |
+
+---
+
+## 1. `useMemo`
+
+`useMemo` memoizes the **result of a computation**.
+
+```tsx
+const filteredUsers = useMemo(() => {
+  return users.filter(user => user.name.includes(search));
+}, [users, search]);
+```
+
+Without `useMemo`, filtering runs on **every render**.
+
+With `useMemo`, React recalculates only when `users` or `search` changes.
+
+### When should I use it?
+
+**1. Expensive calculations**
+
+```tsx
+const sortedData = useMemo(() => {
+  return expensiveSort(data);
+}, [data]);
+```
+
+For example:
+
+* large array filtering/sorting
+* complex calculations
+* expensive transformations
+
+**2. When referential equality matters**
+
+This is an important senior-level use case.
+
+```tsx
+const options = useMemo(() => ({
+  theme: "dark",
+  pageSize: 20
+}), []);
+```
+
+Now `options` maintains the same reference between renders.
+
+This can matter when passing it to a `React.memo` child or using it as a dependency.
+
+### When NOT to use it?
+
+Don't do this everywhere:
+
+```tsx
+const fullName = useMemo(() => `${firstName} ${lastName}`, [
+  firstName,
+  lastName
+]);
+```
+
+That's a very cheap calculation. The overhead of `useMemo` may not be worth it.
+
+### Interview line
+
+> "`useMemo` is primarily a performance optimization. I use it when a computation is expensive or when I specifically need a stable object/array reference. I don't use it for every calculation because memoization itself has a cost."
+
+---
+
+# 2. `useCallback`
+
+`useCallback` memoizes the **function reference**, not the result of the function.
+
+```tsx
+const handleDelete = useCallback((id: number) => {
+  deleteUser(id);
+}, []);
+```
+
+The function reference remains stable between renders unless its dependencies change.
+
+### Why is this useful?
+
+Consider:
+
+```tsx
+const Parent = () => {
+  const handleClick = () => {
+    console.log("clicked");
+  };
+
+  return <Child onClick={handleClick} />;
+};
+```
+
+Every time `Parent` renders, a **new function** is created.
+
+If `Child` is:
+
+```tsx
+const Child = React.memo(({ onClick }) => {
+  ...
+});
+```
+
+then the new function reference can cause `Child` to re-render.
+
+We can use:
+
+```tsx
+const handleClick = useCallback(() => {
+  console.log("clicked");
+}, []);
+```
+
+Now the reference is stable.
+
+### Another important use case
+
+When a function is a dependency of another hook:
+
+```tsx
+const fetchUsers = useCallback(async () => {
+  const response = await fetch("/api/users");
+  return response.json();
+}, []);
+
+useEffect(() => {
+  fetchUsers();
+}, [fetchUsers]);
+```
+
+Without `useCallback`, `fetchUsers` gets recreated on every render, potentially causing the effect to run again.
+
+### When NOT to use it?
+
+Don't blindly do:
+
+```tsx
+const handleClick = useCallback(() => {
+  console.log("hello");
+}, []);
+```
+
+If the function isn't being:
+
+* passed to a memoized child
+* used as a dependency
+* otherwise benefiting from stable identity
+
+then `useCallback` may provide no meaningful benefit.
+
+### Interview line
+
+> "`useCallback` memoizes a function reference. I mainly use it when referential equality matters, such as passing callbacks to `React.memo` components or using callbacks as dependencies of other hooks."
+
+---
+
+# 3. `useContext`
+
+`useContext` is different from the first two.
+
+It's not primarily a performance optimization. Its purpose is **sharing data across a component tree without manually passing props through every level**.
+
+For example:
+
+```text
+App
+ └── Dashboard
+      └── Sidebar
+           └── UserProfile
+```
+
+Suppose `UserProfile` needs the logged-in user.
+
+Without Context:
+
+```tsx
+<App user={user}>
+  <Dashboard user={user}>
+    <Sidebar user={user}>
+      <UserProfile user={user} />
+    </Sidebar>
+  </Dashboard>
+</App>
+```
+
+That's **prop drilling**.
+
+With Context:
+
+```tsx
+const UserContext = createContext<User | null>(null);
+```
+
+Provider:
+
+```tsx
+<UserContext.Provider value={user}>
+  <App />
+</UserContext.Provider>
+```
+
+Consumer:
+
+```tsx
+const user = useContext(UserContext);
+```
+
+Now `UserProfile` can directly access the user.
+
+---
+
+## When should I use Context?
+
+Good examples:
+
+* authenticated user
+* theme
+* language/locale
+* permissions
+* application configuration
+* feature flags
+* relatively global UI state
+
+For example:
+
+```tsx
+const ThemeContext = createContext("light");
+
+function Button() {
+  const theme = useContext(ThemeContext);
+
+  return <button className={theme}>Submit</button>;
+}
+```
+
+---
+
+## When NOT to use Context?
+
+This is particularly important for interviews.
+
+### Don't use Context for everything
+
+For local state:
+
+```tsx
+function LoginForm() {
+  const [email, setEmail] = useState("");
+}
+```
+
+There's no reason to create Context.
+
+### Be careful with frequently changing state
+
+Suppose:
+
+```tsx
+<UserContext.Provider value={{ user, mousePosition }}>
+```
+
+If `mousePosition` changes constantly, consumers of this context can re-render frequently.
+
+It's often better to split contexts:
+
+```tsx
+<UserContext.Provider value={user}>
+  <MousePositionContext.Provider value={mousePosition}>
+    ...
+  </MousePositionContext.Provider>
+</UserContext.Provider>
+```
+
+Or use a more appropriate state-management approach depending on the application.
+
+---
+
+# The important difference
+
+A good way to remember them:
+
+```text
+useMemo
+   ↓
+"I want to cache a VALUE"
+
+useCallback
+   ↓
+"I want to cache a FUNCTION"
+
+useContext
+   ↓
+"I want to SHARE DATA across components"
+```
+
+For example:
+
+```tsx
+const expensiveValue = useMemo(() => calculate(data), [data]);
+
+const handleSubmit = useCallback(() => {
+  submit(data);
+}, [data]);
+
+const user = useContext(UserContext);
+```
+
+---
+
+## One common interview trap
+
+**`useMemo` does NOT prevent a component from rendering.**
+
+It only prevents the calculation from being repeated unnecessarily.
+
+Similarly:
+
+**`useCallback` does NOT prevent a component from rendering.**
+
+It only gives you a stable function reference.
+
+If you want to prevent unnecessary child renders, you might combine:
+
+```tsx
+React.memo
++
+useCallback
+```
+
+For example:
+
+```tsx
+const Child = React.memo(({ onClick }) => {
+  console.log("Child rendered");
+
+  return <button onClick={onClick}>Click</button>;
+});
+
+function Parent() {
+  const handleClick = useCallback(() => {
+    console.log("clicked");
+  }, []);
+
+  return <Child onClick={handleClick} />;
+}
+```
+
+### why you should **not** be using these hooks everytime
+
+Because **hooks like `useMemo` and `useCallback` are not free**. They themselves add bookkeeping and complexity. You should use them when they solve an actual problem, not as a default coding pattern.
+
+A good interview answer would be:
+
+> **"I don't use `useMemo` and `useCallback` everywhere because memoization has its own cost. React has to store the previous value/function and compare dependencies on every render. If the calculation is cheap or the function doesn't need a stable reference, memoization can actually make the code more complex without providing a meaningful performance benefit."**
+
+### 1. `useMemo` has overhead
+
+Instead of:
+
+```tsx
+const fullName = `${firstName} ${lastName}`;
+```
+
+doing:
+
+```tsx
+const fullName = useMemo(
+  () => `${firstName} ${lastName}`,
+  [firstName, lastName]
+);
+```
+
+doesn't make much sense.
+
+React now has to:
+
+1. Store the memoized value
+2. Store the dependencies
+3. Compare dependencies on subsequent renders
+4. Decide whether to reuse or recalculate
+
+For a simple string concatenation, that's unnecessary overhead.
+
+---
+
+### 2. `useCallback` also has overhead
+
+Instead of:
+
+```tsx
+const handleClick = () => {
+  console.log("clicked");
+};
+```
+
+you might write:
+
+```tsx
+const handleClick = useCallback(() => {
+  console.log("clicked");
+}, []);
+```
+
+But if you're not passing this function to a memoized child or using its reference as a dependency, **there may be no benefit**.
+
+You're just adding:
+
+* dependency tracking
+* memoization bookkeeping
+* more code
+* potentially more cognitive complexity
+
+---
+
+### 3. It can make code harder to understand
+
+Compare:
+
+```tsx
+const handleSubmit = () => {
+  submitForm();
+};
+```
+
+with:
+
+```tsx
+const handleSubmit = useCallback(() => {
+  submitForm();
+}, []);
+```
+
+Someone reviewing the second version may reasonably ask:
+
+> "Why does this callback need to be stable?"
+
+If there isn't a good answer, the optimization is probably unnecessary.
+
+---
+
+### 4. Incorrect dependencies can create bugs
+
+This is even more important.
+
+```tsx
+const handleSearch = useCallback(() => {
+  search(query);
+}, []);
+```
+
+If `query` changes, this callback can capture a stale value.
+
+You would need:
+
+```tsx
+const handleSearch = useCallback(() => {
+  search(query);
+}, [query]);
+```
+
+So excessive use of `useCallback` increases the number of dependency relationships you have to reason about.
+
+---
+
+### 5. `useContext` is different
+
+You **can** use Context whenever you genuinely have shared state/data.
+
+But don't put everything into one giant Context:
+
+```tsx
+<AppContext.Provider
+  value={{
+    user,
+    theme,
+    cart,
+    notifications,
+    search,
+    mousePosition
+  }}
+>
+```
+
+Now a change to frequently changing data can cause many consumers to update.
+
+Instead, separate concerns:
+
+```tsx
+<UserContext.Provider>
+  <ThemeContext.Provider>
+    <CartContext.Provider>
+      ...
+    </CartContext.Provider>
+  </ThemeContext.Provider>
+</UserContext.Provider>
+```
+
+Or use another state-management approach when the application's state becomes complex.
+
+---
+
+## The easiest way to explain it in an interview
+
+Think of it like this:
+
+**Without memoization:**
+
+```text
+Render
+  ↓
+Calculate value/function
+```
+
+**With memoization:**
+
+```text
+Render
+  ↓
+Check dependencies
+  ↓
+Did dependencies change?
+  ├── Yes → Calculate again
+  └── No  → Use cached result
+```
+
+That dependency checking and caching **also costs something**.
+
+So the principle is:
+
+> **Don't optimize code just because you can. Optimize when the cost of the computation/re-render is greater than the cost and complexity of memoization.**
+
+And one important modern React nuance: **with newer React versions and the React Compiler, some manual `useMemo`/`useCallback` usage can become less necessary because the compiler can automatically optimize certain cases.** So in a modern codebase, I'd first follow the project's compiler/configuration conventions rather than blindly adding these hooks.
+
+
+Here `React.memo` is responsible for **skipping the child render**, while `useCallback` helps by ensuring `onClick` has the same reference.
+
+### Senior-level answer
+
+> "I don't treat `useMemo` and `useCallback` as hooks that I should use everywhere. They are optimization tools, and I use them when there is a measurable or architectural reason—expensive computation, referential equality, memoized children, or hook dependencies. `useContext` is primarily for dependency sharing across a component tree, especially when prop drilling becomes a problem. For frequently changing or highly granular state, I would be careful with Context because context updates can cause many consumers to re-render."
+
 # Frequently Asked Interview Follow-up Questions or Advanced React Questions
 
 ## 1. Why is React faster?
