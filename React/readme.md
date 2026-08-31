@@ -8,7 +8,7 @@
 | 2   | [What is Flux Architecture?](#2-what-is-flux-architecture)                                                                                                  |
 | 3   | [Explain Redux concepts: store, action, reducer, dispatch](#3-explain-redux-concepts-store-action-reducer-dispatch)                                         |
 | 4   | [What are Higher Order Components (HOC)?](#4-what-are-higher-order-components-hoc)                                                                          |
-| 5   | [What is `super` in React?](#5-what-is-super-in-react-and-javaScript)                                                                                                      |
+| 5   | [What is `super` in React?](#5-what-is-super-in-react-and-javascript)                                                                                                      |
 | 6   | [Difference between Stateful and Stateless Components](#6-difference-between-stateful-and-stateless-components)                                             |
 | 7   | [What is React Router?](#7-what-is-react-router)                                                                                                            |
 | 8   | [What is Jest?](#8-what-is-jest)                                                                                                                            |
@@ -180,7 +180,7 @@ Important Rules of HOCs:
 
 ---
 
-## 5. What is `super` in React & JavaScript?
+## 5. What is `super` in React and JavaScript?
 
 ### 1. `super` in JavaScript
 
