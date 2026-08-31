@@ -8,7 +8,7 @@
 | 2   | [What is Flux Architecture?](#2-what-is-flux-architecture)                                                                                                  |
 | 3   | [Explain Redux concepts: store, action, reducer, dispatch](#3-explain-redux-concepts-store-action-reducer-dispatch)                                         |
 | 4   | [What are Higher Order Components (HOC)?](#4-what-are-higher-order-components-hoc)                                                                          |
-| 5   | [What is `super` in React?](#5-what-is-super-in-react)                                                                                                      |
+| 5   | [What is `super` in React?](#5-what-is-super-in-react-and-javaScript)                                                                                                      |
 | 6   | [Difference between Stateful and Stateless Components](#6-difference-between-stateful-and-stateless-components)                                             |
 | 7   | [What is React Router?](#7-what-is-react-router)                                                                                                            |
 | 8   | [What is Jest?](#8-what-is-jest)                                                                                                                            |
@@ -180,17 +180,109 @@ Important Rules of HOCs:
 
 ---
 
-## 5. What is `super` in React?
+## 5. What is `super` in React & JavaScript?
 
-In class components, `super(props)` is used inside the constructor to access `this.props`.
+### 1. `super` in JavaScript
+
+`super` is used inside a **class** to access the parent class.
 
 ```js
-constructor(props) {
-  super(props);
+class Animal {
+  constructor(name) {
+    this.name = name;
+  }
+
+  speak() {
+    console.log(`${this.name} makes a sound`);
+  }
+}
+
+class Dog extends Animal {
+  constructor(name, breed) {
+    super(name); // calls Animal's constructor
+    this.breed = breed;
+  }
+
+  speak() {
+    super.speak(); // calls Animal's speak()
+    console.log("Dog barks");
+  }
+}
+
+const dog = new Dog("Tommy", "Labrador");
+dog.speak();
+```
+
+Here:
+
+* `extends Animal` → `Dog` inherits from `Animal`
+* `super(name)` → calls the **parent constructor**
+* `super.speak()` → calls the **parent method**
+
+**Important:** In a derived class constructor, you generally need to call `super()` before using `this`.
+
+---
+
+### 2. `super` in React
+
+You mainly see `super(props)` in **older/class-based React components**:
+
+```js
+class MyComponent extends React.Component {
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      count: 0
+    };
+  }
+
+  render() {
+    return <h1>{this.state.count}</h1>;
+  }
 }
 ```
 
-Without `super(props)`, `this.props` will be undefined.
+Why?
+
+`React.Component` is the parent class:
+
+```text
+React.Component
+      ↑
+MyComponent
+```
+
+So:
+
+```js
+super(props);
+```
+
+calls the constructor of `React.Component` and passes the props to it.
+
+This allows you to safely use:
+
+```js
+this.props
+```
+
+inside the constructor.
+
+### 3. Do we use `super` in modern React?
+
+With **functional components and Hooks**, you don't use `super`:
+
+```jsx
+function MyComponent({ name }) {
+  return <h1>Hello {name}</h1>;
+}
+```
+
+So if you're learning modern React, you'll mostly encounter `super` when studying **JavaScript classes or older React class components**.
+
+**In one line:** `super` means **"access/call something from my parent class."**
+
 
 ---
 
