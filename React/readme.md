@@ -1404,16 +1404,6 @@ React is a UI library that focuses only on the view layer, while Angular is a fu
 
 ## 47. Why are Keys Important in React Lists?
 
-Keys help React identify which item changed.
-
-```js
-items.map(item => <li key={item.id}>{item.name}</li>)
-```
-
-Never use array index if list changes dynamically.
-
-## 47. Why are Keys Important in React Lists?
-
 In React, **keys help React identify which items in a list have changed, been added, removed, or reordered.**
 
 For example:
