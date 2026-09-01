@@ -1037,17 +1037,112 @@ Handled using `useEffect`.
 
 ## 28. How to Pass Data Using React Router?
 
-React Router allows data to flow between routes via URL parameters, query strings, or route state.
+In React Router, there are several common ways to pass data from one route/component to another:
 
-```js
-navigate('/profile', { state: { userId: 1 } });
+1. **URL Parameters**
+2. **Query Parameters**
+3. **Location State**
+4. **Global State / Context**
+
+#### 1. URL Parameters
+
+Useful when the data is part of the URL, such as an ID.
+
+```jsx
+// Route
+<Route path="/user/:id" element={<User />} />
+
+// Navigate
+<Link to="/user/123">User</Link>
 ```
 
-Access:
+Read the parameter with `useParams()`:
 
-```js
-const location = useLocation();
+```jsx
+import { useParams } from "react-router-dom";
+
+function User() {
+  const { id } = useParams();
+
+  return <h1>User ID: {id}</h1>;
+}
 ```
+
+---
+
+#### 2. Query Parameters
+
+Useful for filters, search terms, sorting, pagination, etc.
+
+```jsx
+<Link to="/products?category=books">Books</Link>
+```
+
+Read them using `useSearchParams()`:
+
+```jsx
+import { useSearchParams } from "react-router-dom";
+
+function Products() {
+  const [searchParams] = useSearchParams();
+
+  const category = searchParams.get("category");
+
+  return <h1>Category: {category}</h1>;
+}
+```
+
+---
+
+#### 3. Location State
+
+You can pass arbitrary state while navigating without putting it in the URL.
+
+```jsx
+<Link
+  to="/profile"
+  state={{ name: "Pratik", age: 25 }}
+>
+  Profile
+</Link>
+```
+
+Retrieve it with `useLocation()`:
+
+```jsx
+import { useLocation } from "react-router-dom";
+
+function Profile() {
+  const location = useLocation();
+
+  console.log(location.state);
+
+  return <h1>{location.state?.name}</h1>;
+}
+```
+
+You can also pass state with `navigate()`:
+
+```jsx
+const navigate = useNavigate();
+
+navigate("/profile", {
+  state: { name: "Pratik" }
+});
+```
+
+---
+
+### Which approach should you use?
+
+| Method                    | Best for                        |
+| ------------------------- | ------------------------------- |
+| `useParams()`             | Resource IDs, e.g. `/users/123` |
+| `useSearchParams()`       | Search, filters, pagination     |
+| `location.state`          | Temporary navigation state      |
+| Context / Redux / Zustand | Shared application-wide state   |
+
+**Important:** Don't put sensitive information in URL parameters or query strings, since URLs can be visible in browser history, logs, and analytics.
 
 ---
 
@@ -2570,3 +2665,169 @@ function handleClick() {
 ### Summary Checklist
   - Use a callback in useState(() => ...) when parsing large local storage items, processing heavy arrays, or running complex initial data setups.
   - Use a callback in setCount(prev => ...) whenever your new state calculation explicitly relies on what the previous state value currently is.
+
+## 11. Where is the redux & context api data is actually getting stored in an application.
+
+The key idea is: **both Context API and Redux store data in JavaScript memory inside your running React application**. They don't automatically save data to a database or browser storage.
+
+### Context API
+
+When you create a Context and put a value in its Provider:
+
+```jsx
+const UserContext = createContext();
+
+function App() {
+  const [user, setUser] = useState({ name: "Pratik" });
+
+  return (
+    <UserContext.Provider value={{ user, setUser }}>
+      <Dashboard />
+    </UserContext.Provider>
+  );
+}
+```
+
+The data is essentially held by the **React component/state system in memory**.
+
+```text
+Browser
+  ↓
+JavaScript memory
+  ↓
+React App
+  ↓
+Context Provider
+  ↓
+{ user: { name: "Pratik" } }
+```
+
+Any component under the Provider can access that value using `useContext()`.
+
+If you **refresh the page**, that in-memory state normally disappears and React starts again from its initial state.
+
+---
+
+### Redux
+
+Redux works similarly, but Redux maintains a dedicated **store object in JavaScript memory**.
+
+```jsx
+const store = configureStore({
+  reducer: {
+    user: userReducer
+  }
+});
+```
+
+Conceptually:
+
+```text
+Browser
+  ↓
+JavaScript memory
+  ↓
+Redux Store
+  ↓
+{
+  user: {
+    name: "Pratik",
+    age: 25
+  },
+  cart: {
+    items: [...]
+  }
+}
+```
+
+When you do:
+
+```jsx
+dispatch(setUser({ name: "Pratik" }));
+```
+
+Redux updates its in-memory store.
+
+Components using:
+
+```jsx
+const user = useSelector(state => state.user);
+```
+
+receive the updated data.
+
+---
+
+### So where is it *physically* stored?
+
+In normal usage:
+
+**RAM (memory allocated to the browser's JavaScript runtime).**
+
+Not automatically:
+
+* ❌ MySQL
+* ❌ MongoDB
+* ❌ Server
+* ❌ `localStorage`
+* ❌ Cookies
+* ❌ A physical Redux/Context file
+
+Think of it like this:
+
+```text
+                 Browser
+                    │
+              JavaScript RAM
+                    │
+          ┌─────────┴─────────┐
+          │                   │
+      Context              Redux
+          │                   │
+      React state          Store
+          │                   │
+          └─────────┬─────────┘
+                    │
+              React Components
+```
+
+### What happens on refresh?
+
+Suppose Redux contains:
+
+```js
+{
+  user: {
+    name: "Pratik"
+  }
+}
+```
+
+You press **F5**:
+
+```text
+Before refresh:
+Redux Store → { user: { name: "Pratik" } }
+
+             ↓ F5
+
+Browser reloads JavaScript
+
+             ↓
+
+Redux Store → initialState
+```
+
+The data is gone **unless you explicitly *persist* it**.
+
+For example, you can use `localStorage` yourself or a persistence library such as Redux Persist:
+
+```text
+Redux Store
+     ↕
+localStorage
+```
+
+Then after a refresh, the application can restore the Redux state from `localStorage`.
+
+**One important distinction:** Context API doesn't actually have its own independent "database/store." It distributes whatever value you give to the Provider. Redux, on the other hand, has an explicit centralized store containing the application state.
