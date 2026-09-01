@@ -751,9 +751,178 @@ MyComponent.propTypes = {
 | Uses React state               | Uses DOM directly        |
 | Value controlled by `useState` | Value accessed using ref |
 
+
+In React, the simplest rule is:
+
+> **Use controlled components by default. Use uncontrolled components when you don't need React to manage the input value continuously.**
+
+### 1. Controlled component
+
+React owns the input's value.
+
 ```jsx
-<input value={name} onChange={e => setName(e.target.value)} />
+function Form() {
+  const [name, setName] = useState("");
+
+  return (
+    <input
+      value={name}
+      onChange={(e) => setName(e.target.value)}
+    />
+  );
+}
 ```
+
+Flow:
+
+```text
+User types
+   ↓
+onChange
+   ↓
+React state updates
+   ↓
+Component re-renders
+   ↓
+input gets new value
+```
+
+**Use controlled when:**
+
+* You need the value elsewhere in the UI.
+* You need validation while the user types.
+* You need to conditionally enable/disable buttons.
+* You need to transform or restrict input.
+* Multiple fields depend on each other.
+* You want React to be the **single source of truth**.
+* You're building complex forms.
+
+Example:
+
+```jsx
+<button disabled={!email.includes("@")}>
+  Submit
+</button>
+```
+
+Here, controlled is convenient because React already has the current value.
+
+---
+
+### 2. Uncontrolled component
+
+The DOM owns the input's value.
+
+```jsx
+function Form() {
+  const inputRef = useRef(null);
+
+  function handleSubmit() {
+    console.log(inputRef.current.value);
+  }
+
+  return (
+    <>
+      <input ref={inputRef} />
+      <button onClick={handleSubmit}>Submit</button>
+    </>
+  );
+}
+```
+
+Here React doesn't update state on every keystroke. The browser manages the value.
+
+**Use uncontrolled when:**
+
+* You only need the value when submitting.
+* You don't need to react to every keystroke.
+* You have a simple form.
+* You're integrating with non-React/DOM-based code.
+* You want less state/event-handler boilerplate.
+* You're working with `<input type="file">`, which is naturally uncontrolled.
+
+---
+
+### Practical decision rule
+
+Think about **who needs to know the current value**.
+
+| Situation                             | Prefer           |
+| ------------------------------------- | ---------------- |
+| Just collect value on submit          | **Uncontrolled** |
+| Show value somewhere else immediately | **Controlled**   |
+| Live validation                       | **Controlled**   |
+| Enable/disable UI based on input      | **Controlled**   |
+| Input formatting/transformation       | **Controlled**   |
+| Complex multi-field form              | **Controlled**   |
+| File input                            | **Uncontrolled** |
+| Integrating with DOM/library          | **Uncontrolled** |
+| Very simple form                      | **Either**       |
+
+### The key mental model
+
+**Controlled:**
+
+```text
+React state → DOM
+      ↑
+   onChange
+```
+
+React is in charge.
+
+**Uncontrolled:**
+
+```text
+User → DOM
+        ↓
+      ref.value
+```
+
+The DOM is in charge.
+
+### One important misconception
+
+Uncontrolled doesn't mean **"bad"** or **"less React-like."**
+
+Both are valid React patterns.
+
+For example, if you have a login form and only care about the values when the user clicks **Submit**, an uncontrolled form can be perfectly reasonable:
+
+```jsx
+function Login() {
+  const formRef = useRef(null);
+
+  function handleSubmit(e) {
+    e.preventDefault();
+
+    const formData = new FormData(formRef.current);
+
+    console.log(formData.get("email"));
+    console.log(formData.get("password"));
+  }
+
+  return (
+    <form ref={formRef} onSubmit={handleSubmit}>
+      <input name="email" />
+      <input name="password" type="password" />
+      <button>Login</button>
+    </form>
+  );
+}
+```
+
+You don't necessarily need:
+
+```jsx
+const [email, setEmail] = useState("");
+const [password, setPassword] = useState("");
+```
+
+for every form.
+
+**My general recommendation:** start with **controlled** when the UI needs to respond to input changes; choose **uncontrolled** when the input is basically just collecting data for a later read.
+
 
 ---
 
@@ -792,6 +961,7 @@ It is introduced with React Fiber
 Concurrent Rendering allows React to interrupt rendering and prioritize important updates.
 It improves responsiveness.
 
+Refer [Concurrent Rendering vs Incremental Rendering in React](#6-concurrent-rendering-vs-incremental-rendering-in-react) 
 ---
 
 ## 23. What are React Server Components (RSCs)?
