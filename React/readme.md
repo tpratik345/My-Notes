@@ -1412,6 +1412,165 @@ items.map(item => <li key={item.id}>{item.name}</li>)
 
 Never use array index if list changes dynamically.
 
+## 47. Why are Keys Important in React Lists?
+
+In React, **keys help React identify which items in a list have changed, been added, removed, or reordered.**
+
+For example:
+
+```jsx
+const users = [
+  { id: 1, name: "John" },
+  { id: 2, name: "Alice" },
+  { id: 3, name: "Bob" }
+];
+
+function Users() {
+  return (
+    <ul>
+      {users.map(user => (
+        <li key={user.id}>{user.name}</li>
+      ))}
+    </ul>
+  );
+}
+```
+
+Here:
+
+```jsx
+key={user.id}
+```
+
+gives each list item a **stable identity**.
+
+### Why does React need this?
+
+Imagine the initial list:
+
+```text
+A
+B
+C
+```
+
+Then `A` is removed:
+
+```text
+B
+C
+```
+
+React needs to figure out:
+
+> "Is this the old B and C, or are these completely new elements?"
+
+Keys tell React:
+
+```text
+Before:        After:
+
+A (key=1)      B (key=2)
+B (key=2)  →   C (key=3)
+C (key=3)
+```
+
+React can recognize:
+
+```text
+key=1 → removed
+key=2 → same element
+key=3 → same element
+```
+
+So React can update the DOM efficiently rather than unnecessarily recreating everything.
+
+---
+
+### What happens without keys?
+
+If you write:
+
+```jsx
+users.map(user => (
+  <li>{user.name}</li>
+))
+```
+
+React will show:
+
+> Each child in a list should have a unique "key" prop.
+
+More importantly, React loses the stable identity of those elements, which can cause incorrect component state to be associated with items when lists are reordered, inserted into, or deleted from.
+
+---
+
+### Why shouldn't we use array index as key?
+
+You might see:
+
+```jsx
+users.map((user, index) => (
+  <li key={index}>{user.name}</li>
+))
+```
+
+This is okay **only when the list is static and never reordered, inserted into, or deleted from**.
+
+For example:
+
+```text
+Initial:
+
+0 → A
+1 → B
+2 → C
+```
+
+Remove A:
+
+```text
+0 → B
+1 → C
+```
+
+Now React thinks:
+
+```text
+key=0 → A became B
+key=1 → B became C
+```
+
+rather than recognizing that A was removed and B/C remained the same items.
+
+This becomes especially problematic when list items contain **local component state, inputs, animations, or DOM state**.
+
+### Best practice
+
+Use a **stable, unique identifier from the data**:
+
+```jsx
+key={user.id}
+```
+
+instead of:
+
+```jsx
+key={index}
+```
+
+And don't use something random like:
+
+```jsx
+key={Math.random()}
+```
+
+because that creates a new key on every render and can cause React to treat elements as entirely new components.
+
+### Interview answer
+
+> **Keys are important in React lists because they provide a stable identity for each element. React uses keys during reconciliation to determine which items have been added, removed, changed, or moved. This allows React to update the DOM correctly and efficiently. Keys should ideally be stable and unique IDs from the data, rather than array indexes, especially when the list can change.**
+
 ---
 
 ## 48. What is the difference between `useMemo` and `useCallback`?
