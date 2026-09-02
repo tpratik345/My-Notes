@@ -232,7 +232,7 @@ if (typeof response === "object" && response !== null ) {
 This prevents runtime errors.
 
 3. `never`
-`never` means: "This value can never happen."
+   - `never` means: "This value can never happen."
 
 Usually used for:
 - Functions that never return

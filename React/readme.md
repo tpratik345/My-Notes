@@ -1741,7 +1741,67 @@ document.querySelector("button").addEventListener("click", (e) => {
 
 ## 61. What is Batching in React?
 
-React groups multiple state updates into one re-render for better performance.
+**Batching** in React is the process of **grouping multiple state updates into a single re-render** instead of re-rendering the component after every individual update.
+
+For example:
+
+```jsx
+function App() {
+  const [count, setCount] = useState(0);
+  const [name, setName] = useState("");
+
+  const handleClick = () => {
+    setCount(1);
+    setName("John");
+  };
+
+  return (
+    <>
+      <p>{count}</p>
+      <p>{name}</p>
+    </>
+  );
+}
+```
+
+Here, React **batches both `setCount()` and `setName()` together**, causing only **one re-render**.
+
+### Why is batching useful?
+
+Without batching:
+
+```text
+setCount() → re-render
+setName()  → re-render
+```
+
+With batching:
+
+```text
+setCount()
+setName()
+    ↓
+One re-render
+```
+
+This improves **performance** by reducing unnecessary renders.
+
+### React 18+
+
+In **React 18**, automatic batching was expanded so that updates are generally batched not only inside React event handlers but also inside things such as promises, timeouts, and native event handlers.
+
+```jsx
+setTimeout(() => {
+  setCount(c => c + 1);
+  setName("John");
+}, 1000);
+```
+
+In React 18+, these updates are normally **batched into a single render**.
+
+**In short:**
+
+> **Batching = combining multiple state updates into one render to improve performance.**
 
 ---
 
