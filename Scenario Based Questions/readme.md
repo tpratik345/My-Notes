@@ -2431,3 +2431,33 @@ A strong answer is:
 > "First, I would reproduce and measure the production request using Chrome Network and curl/Postman. I'd determine whether the latency is TTFB or response download time. If TTFB is high, I'd use backend logs/APM to break the request into database, business logic, external services, and serialization timings. If the database is the bottleneck, I'd inspect the actual production execution plan, indexes, joins, N+1 queries, and pagination strategy. I'd avoid returning unnecessary data and introduce pagination or cursor-based pagination for large datasets. If the DB is fine, I'd investigate backend CPU/memory, connection pools, external service latency, and infrastructure. Finally, I'd use React DevTools to determine whether frontend rendering is contributing to the remaining latency. After the fix, I'd validate it against production-sized data and monitor the API latency, throughput, errors, and database metrics."
 
 That's a much stronger answer than simply saying **"add an index"**, because you first **measure where the time is actually going**.
+
+
+## 7. Why have you chose react over angular and vue.js?
+
+If you're preparing for an **interview**, a strong answer should focus less on saying React is "better" and more on explaining why it was the right choice for your project.
+
+I chose React over Angular and Vue.js mainly because of its flexibility, component-based architecture, and the ecosystem around it.
+
+React allowed us to build the application using reusable components and manage UI state efficiently. I also found React's approach easier to integrate with other libraries and existing services because it doesn't force a specific project structure or set of tools.
+
+Compared with Angular, React has a lighter and more flexible approach. Angular is a complete framework with many built-in features, which is great for large applications, but for our project we didn't need that level of opinionated structure.
+
+Vue.js is also a very good option and has a relatively simple learning curve. However, React had a stronger ecosystem and better alignment with the team's existing experience and the libraries we were planning to use.
+
+So, my decision wasn't that React is universally better than Angular or Vue. **For our project, React provided the right balance of flexibility, reusability, ecosystem support, and team familiarity.**
+
+### If the interviewer asks: "What exactly is the difference?"
+
+You can summarize it like this:
+
+|                       | React                          | Angular                    | Vue                                   |
+| --------------------- | ------------------------------ | -------------------------- | ------------------------------------- |
+| Type                  | UI library                     | Full framework             | Progressive framework                 |
+| Flexibility           | ⭐⭐⭐⭐⭐                   | ⭐⭐⭐                   | ⭐⭐⭐⭐                            |
+| Structure/opinionated | Low                            | High                       | Medium                                |
+| Learning curve        | Moderate                       | Steeper                    | Easier                                |
+| Ecosystem             | Very large                     | Large                      | Large                                 |
+| Best suited for       | Flexible, component-based apps | Structured enterprise apps | Flexible apps with simpler onboarding |
+
+**A good interview tip:** Don't say *"React is better than Angular/Vue."* Say *"React was a better fit for our requirements."* Then explain the requirements. That sounds much more practical and experienced.
