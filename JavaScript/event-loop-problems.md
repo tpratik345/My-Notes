@@ -490,7 +490,7 @@ console.log("13");
 ```
 
 <details>
-  <summary>Output<summary>
+  <summary>Output</summary>
 
 ### 1, 13, 5, 10, 11, 8, 9, 6, 7, 2, 3, 4, 12
 
