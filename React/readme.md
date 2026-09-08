@@ -69,6 +69,8 @@
 | 63  | [What is the use of `dangerouslySetInnerHTML`?](#63-what-is-the-use-of-dangerouslysetinnerhtml)                                                             |
 | 64  | [What is the difference between `npm` and `npx`?](#64-what-is-the-difference-between-npm-and-npx)                                                           |
 | 65  | [How useRef can be used to handle previous value](#65-how-useRef-can-be-used-to-handle-previous-value)                                                      |
+| 66  | [What are web vitals?](#66-what-are-web-vitals)                                                                                                             |
+| 67  | [What are Micro-frontend architectures and Module Federation?](#67-what-are-micro-frontend-architectures-and-module-federation?)                            |
 
 ---
 
@@ -1936,7 +1938,7 @@ useEffect(() => {
 
 ---
 
-## 1. `useMemo`
+### 1. `useMemo`
 
 `useMemo` memoizes the **result of a computation**.
 
@@ -1950,7 +1952,7 @@ Without `useMemo`, filtering runs on **every render**.
 
 With `useMemo`, React recalculates only when `users` or `search` changes.
 
-### When should I use it?
+#### When should I use it?
 
 **1. Expensive calculations**
 
@@ -1981,7 +1983,7 @@ Now `options` maintains the same reference between renders.
 
 This can matter when passing it to a `React.memo` child or using it as a dependency.
 
-### When NOT to use it?
+#### When NOT to use it?
 
 Don't do this everywhere:
 
@@ -1994,13 +1996,13 @@ const fullName = useMemo(() => `${firstName} ${lastName}`, [
 
 That's a very cheap calculation. The overhead of `useMemo` may not be worth it.
 
-### Interview line
+#### Interview line
 
 > "`useMemo` is primarily a performance optimization. I use it when a computation is expensive or when I specifically need a stable object/array reference. I don't use it for every calculation because memoization itself has a cost."
 
 ---
 
-# 2. `useCallback`
+### 2. `useCallback`
 
 `useCallback` memoizes the **function reference**, not the result of the function.
 
@@ -2012,7 +2014,7 @@ const handleDelete = useCallback((id: number) => {
 
 The function reference remains stable between renders unless its dependencies change.
 
-### Why is this useful?
+#### Why is this useful?
 
 Consider:
 
@@ -2048,7 +2050,7 @@ const handleClick = useCallback(() => {
 
 Now the reference is stable.
 
-### Another important use case
+#### Another important use case
 
 When a function is a dependency of another hook:
 
@@ -2065,7 +2067,7 @@ useEffect(() => {
 
 Without `useCallback`, `fetchUsers` gets recreated on every render, potentially causing the effect to run again.
 
-### When NOT to use it?
+#### When NOT to use it?
 
 Don't blindly do:
 
@@ -2083,13 +2085,13 @@ If the function isn't being:
 
 then `useCallback` may provide no meaningful benefit.
 
-### Interview line
+#### Interview line
 
 > "`useCallback` memoizes a function reference. I mainly use it when referential equality matters, such as passing callbacks to `React.memo` components or using callbacks as dependencies of other hooks."
 
 ---
 
-# 3. `useContext`
+### 3. `useContext`
 
 `useContext` is different from the first two.
 
@@ -2144,7 +2146,7 @@ Now `UserProfile` can directly access the user.
 
 ---
 
-## When should I use Context?
+#### When should I use Context?
 
 Good examples:
 
@@ -2170,11 +2172,11 @@ function Button() {
 
 ---
 
-## When NOT to use Context?
+#### When NOT to use Context?
 
 This is particularly important for interviews.
 
-### Don't use Context for everything
+#### Don't use Context for everything
 
 For local state:
 
@@ -2186,7 +2188,7 @@ function LoginForm() {
 
 There's no reason to create Context.
 
-### Be careful with frequently changing state
+#### Be careful with frequently changing state
 
 Suppose:
 
@@ -2210,7 +2212,7 @@ Or use a more appropriate state-management approach depending on the application
 
 ---
 
-# The important difference
+### The important difference
 
 A good way to remember them:
 
@@ -2242,7 +2244,7 @@ const user = useContext(UserContext);
 
 ---
 
-## One common interview trap
+### One common interview trap
 
 **`useMemo` does NOT prevent a component from rendering.**
 
@@ -2434,7 +2436,7 @@ Or use another state-management approach when the application's state becomes co
 
 ---
 
-## The easiest way to explain it in an interview
+### The easiest way to explain it in an interview
 
 Think of it like this:
 
@@ -2502,6 +2504,55 @@ useEffect(() => {
    * It can cause incorrect UI updates if list order changes.
 
 ## 6. Concurrent Rendering vs Incremental Rendering in React
+
+### Incremental Rendering
+
+Incremental Rendering means rendering the UI in smaller chunks or steps instead of rendering everything at once.
+The idea is to split a large rendering task into smaller pieces so that the browser can stay responsive.
+React may render part of the tree first and then continue with the remaining parts.
+
+#### Example
+
+Imagine a page with:
+
+* Header
+* Sidebar
+* Large dashboard with 10,000 rows
+
+Instead of waiting for all 10,000 rows to render before showing anything, incremental rendering may:
+
+1. Render the header first
+2. Then render the sidebar
+3. Then gradually render the large table
+
+This gives the user faster visual feedback.
+
+Incremental Rendering is often seen with:
+
+* Lazy loaded components
+* `Suspense`
+* Streaming server rendering
+* Rendering large lists in chunks
+
+```jsx
+const Dashboard = React.lazy(() => import('./Dashboard'));
+
+function App() {
+  return (
+    <Suspense fallback={<p>Loading dashboard...</p>}>
+      <Dashboard />
+    </Suspense>
+  );
+}
+```
+
+In this case:
+
+* The main page appears immediately
+* The dashboard loads later
+* UI is shown incrementally
+
+---
 
 ### Concurrent Rendering
 
@@ -2579,83 +2630,22 @@ Here:
 
 ---
 
-### Incremental Rendering
-
-Incremental Rendering means rendering the UI in smaller chunks or steps instead of rendering everything at once.
-The idea is to split a large rendering task into smaller pieces so that the browser can stay responsive.
-React may render part of the tree first and then continue with the remaining parts.
-
-#### Example
-
-Imagine a page with:
-
-* Header
-* Sidebar
-* Large dashboard with 10,000 rows
-
-Instead of waiting for all 10,000 rows to render before showing anything, incremental rendering may:
-
-1. Render the header first
-2. Then render the sidebar
-3. Then gradually render the large table
-
-This gives the user faster visual feedback.
-
-Incremental Rendering is often seen with:
-
-* Lazy loaded components
-* `Suspense`
-* Streaming server rendering
-* Rendering large lists in chunks
-
-```jsx
-const Dashboard = React.lazy(() => import('./Dashboard'));
-
-function App() {
-  return (
-    <Suspense fallback={<p>Loading dashboard...</p>}>
-      <Dashboard />
-    </Suspense>
-  );
-}
-```
-
-In this case:
-
-* The main page appears immediately
-* The dashboard loads later
-* UI is shown incrementally
-
----
-
 ### Main Difference
 
-| Feature                   | Concurrent Rendering                    | Incremental Rendering                       |
-| ------------------------- | --------------------------------------- | ------------------------------------------- |
-| Purpose                   | Prioritize and interrupt rendering work | Render UI in smaller chunks                 |
-| Focus                     | Scheduling and priority                 | Breaking work into stages                   |
-| Can pause/resume?         | Yes                                     | Usually no explicit priority handling       |
-| Can cancel outdated work? | Yes                                     | No                                          |
-| Improves                  | Responsiveness during user interaction  | Faster initial display of UI                |
-| Common APIs               | `useTransition`, `useDeferredValue`     | `Suspense`, lazy loading, chunked rendering |
+| Feature                   | Incremental Rendering                       | Concurrent Rendering                    |
+| ------------------------- | ------------------------------------------- | --------------------------------------- |
+| Purpose                   | Render UI in smaller chunks                 | Prioritize and interrupt rendering work |
+| Focus                     | Breaking work into stages                   | Scheduling and priority                 |
+| Can pause/resume?         | Usually no explicit priority handling       | Yes                                     |
+| Can cancel outdated work? | No                                          | Yes                                     |
+| Improves                  | Faster initial display of UI                | Responsiveness during user interaction  |
+| Common APIs               | `Suspense`, lazy loading, chunked rendering | `useTransition`, `useDeferredValue`     |
 
 ---
 
 ### Simple Analogy
 
 Imagine a chef preparing food.
-
-#### Concurrent Rendering
-
-The chef is cooking several dishes and can stop making one dish if an urgent order comes in.
-
-Example:
-
-* Chef starts cooking pasta
-* Suddenly an urgent coffee order comes
-* Chef pauses pasta and makes coffee first
-
-This is like React prioritizing urgent UI updates.
 
 #### Incremental Rendering
 
@@ -2668,6 +2658,18 @@ Example:
 * Then the main course
 
 This is like React showing part of the UI first and the rest later.
+
+#### Concurrent Rendering
+
+The chef is cooking several dishes and can stop making one dish if an urgent order comes in.
+
+Example:
+
+* Chef starts cooking pasta
+* Suddenly an urgent coffee order comes
+* Chef pauses pasta and makes coffee first
+
+This is like React prioritizing urgent UI updates.
 
 ---
 
@@ -3040,3 +3042,1144 @@ localStorage
 Then after a refresh, the application can restore the Redux state from `localStorage`.
 
 **One important distinction:** Context API doesn't actually have its own independent "database/store." It distributes whatever value you give to the Provider. Redux, on the other hand, has an explicit centralized store containing the application state.
+
+## 66. What are web vitals?
+
+**Web Vitals** are a set of metrics from Google that help measure the **real-world user experience and performance of a web application**.
+
+The most important ones are **Core Web Vitals**:
+
+| Metric  | What it measures                                | Good target |
+| ------- | ----------------------------------------------- | ----------- |
+| **LCP** | How quickly the main content appears            | ≤ **2.5s**  |
+| **INP** | How responsive the page is to user interactions | ≤ **200ms** |
+| **CLS** | How much the page layout unexpectedly moves     | ≤ **0.1**   |
+
+### 1. LCP — Largest Contentful Paint
+
+Measures **loading performance**.
+
+For example, when a user opens your website, LCP measures how long it takes for the largest important piece of content—such as a hero image, heading, or paragraph—to appear.
+
+```text
+User opens page
+      ↓
+████████████████  ← Main content appears
+      ↑
+     LCP
+```
+
+**Good:** ≤ 2.5 seconds
+
+---
+
+### 2. INP — Interaction to Next Paint
+
+Measures **responsiveness**.
+
+Suppose a user clicks a button:
+
+```js
+button.addEventListener("click", () => {
+  // some expensive JavaScript
+});
+```
+
+INP looks at how quickly the browser responds visually after the interaction.
+
+**Good:** ≤ 200 ms
+
+> INP replaced **FID (First Input Delay)** as a Core Web Vital in 2024.
+
+---
+
+### 3. CLS — Cumulative Layout Shift
+
+Measures **visual stability**.
+
+Imagine you're about to click a button:
+
+```text
+Before:
+[ Buy Now ]
+
+After an image loads:
+[ Product Image ]
+
+[ Buy Now ]  ← button moved!
+```
+
+That unexpected movement contributes to CLS.
+
+**Good:** ≤ 0.1
+
+---
+
+### Other Web Vitals
+
+There are also metrics that can help diagnose performance:
+
+* **TTFB** — Time to First Byte → server response time
+* **FCP** — First Contentful Paint → when the first content appears
+* **TBT** — Total Blocking Time → how long the main thread is blocked, especially useful in lab testing
+
+### Interview answer
+
+If an interviewer asks **"What are Web Vitals?"**, you can say:
+
+> **Web Vitals are a set of metrics used to measure the performance and user experience of a web application. The three Core Web Vitals are LCP for loading performance, INP for responsiveness, and CLS for visual stability. As a React developer, I can monitor these metrics and optimize things like images, JavaScript execution, rendering, and layout shifts to improve the user experience.**
+
+**Easy memory trick:**
+
+```text
+LCP → Loading
+INP → Interaction
+CLS → Stability
+```
+
+## 67. What are Micro-frontend architectures and Module Federation?
+
+Absolutely. The easiest way to understand **Micro-frontends** and **Module Federation** is to think of them as the frontend equivalent of **microservices**.
+
+---
+
+### 1. What is a Micro-frontend?
+
+A **micro-frontend architecture** means splitting a large frontend application into **smaller, independently developed and deployed frontend applications**.
+
+For example, imagine an e-commerce application:
+
+```text
+                    E-commerce Website
+                           │
+        ┌──────────────────┼──────────────────┐
+        ↓                  ↓                  ↓
+   Product Team       Cart Team          Checkout Team
+        │                  │                  │
+   Product App         Cart App          Checkout App
+        │                  │                  │
+     React              React              React
+```
+
+Instead of one huge frontend owned by one team, different teams own different parts.
+
+#### Traditional frontend
+
+```text
+                 ONE BIG APPLICATION
+                        │
+        ┌───────────────┼───────────────┐
+        │               │               │
+     Products          Cart          Checkout
+        │               │               │
+        └───────────────┼───────────────┘
+                        │
+                  One deployment
+```
+
+#### Micro-frontend
+
+```text
+                  HOST / SHELL APP
+                         │
+       ┌─────────────────┼─────────────────┐
+       ↓                 ↓                 ↓
+   Products MF       Cart MF          Checkout MF
+       │                 │                 │
+    Team A             Team B             Team C
+       │                 │                 │
+   Deploy separately  Deploy separately  Deploy separately
+```
+
+The important idea is:
+
+> **Each business domain can be developed, tested, and deployed independently.**
+
+---
+
+#### 2. Why do we need Micro-frontends?
+
+Imagine a company has 100 frontend developers working on one React application.
+
+The application might look like:
+
+```text
+src/
+├── products/
+├── cart/
+├── checkout/
+├── payments/
+├── profile/
+├── orders/
+├── admin/
+├── authentication/
+└── ...
+```
+
+Over time, this can become difficult to manage.
+
+You might have:
+
+* large codebase
+* many teams modifying the same repository
+* difficult deployments
+* tightly coupled modules
+* long CI/CD pipelines
+* difficult ownership
+* one team's change potentially affecting another team
+
+Micro-frontends try to solve some of these organizational and deployment problems.
+
+---
+
+#### 3. Real-world example
+
+Suppose you're working for a large e-commerce company.
+
+Different teams own:
+
+```text
+Product Team
+    ↓
+Product listing
+Product details
+Search
+
+Cart Team
+    ↓
+Shopping cart
+Coupons
+
+Checkout Team
+    ↓
+Address
+Payment
+Order confirmation
+
+Account Team
+    ↓
+Profile
+Orders
+Settings
+```
+
+Each team can have its own application.
+
+```text
+                  Main Website
+                       │
+       ┌───────────────┼────────────────┐
+       ↓               ↓                ↓
+    Products          Cart           Checkout
+       │               │                │
+    Team A           Team B           Team C
+```
+
+Now Team A can deploy product changes without necessarily redeploying the entire application.
+
+---
+
+#### 4. How does the browser see it?
+
+To the user, it should still look like **one application**.
+
+For example:
+
+```text
+example.com/products
+example.com/cart
+example.com/checkout
+```
+
+The user shouldn't necessarily know that:
+
+```text
+/products     → Product micro-frontend
+/cart         → Cart micro-frontend
+/checkout     → Checkout micro-frontend
+```
+
+The architecture is split internally, while the user experiences one application.
+
+---
+
+### 5. What is Module Federation?
+
+Now we come to **Module Federation**.
+
+Module Federation is a technology provided by **Webpack 5** and supported by modern bundling ecosystems that allows one JavaScript application to **load modules from another application at runtime**.
+
+This is extremely useful for micro-frontends.
+
+Think of it as:
+
+> **"Application A can consume a component/module that is owned and deployed by Application B."**
+
+For example:
+
+```text
+Host Application
+       │
+       │ loads at runtime
+       ↓
+Remote Application
+       │
+       └── ProductList component
+```
+
+The host doesn't necessarily need to contain the ProductList code at build time.
+
+---
+
+#### 6. Host and Remote
+
+Module Federation commonly uses two concepts:
+
+#### Host
+
+The application that consumes another application's module.
+
+```text
+Host
+ ↓
+Consumes remote modules
+```
+
+#### Remote
+
+The application that exposes modules.
+
+```text
+Remote
+ ↓
+Exposes modules
+```
+
+For example:
+
+```text
+                HOST
+          E-commerce App
+                │
+        ┌───────┼────────┐
+        ↓       ↓        ↓
+     Product   Cart   Checkout
+      Remote  Remote    Remote
+```
+
+---
+
+#### 7. Simple example
+
+Suppose the Product team owns:
+
+```text
+Product App
+```
+
+and exposes:
+
+```text
+ProductList
+```
+
+The Checkout team doesn't own that component.
+
+But the main application can consume it:
+
+```text
+Host App
+   │
+   └──────→ Product Remote
+                │
+                └── ProductList
+```
+
+So the host can effectively do something conceptually similar to:
+
+```js
+import ProductList from "productApp/ProductList";
+```
+
+The important part is that `ProductList` can come from another independently deployed application.
+
+---
+
+#### 8. Why is this powerful?
+
+Normally, when you write:
+
+```js
+import Button from "./Button";
+```
+
+the bundler knows about `Button` during the application's build.
+
+With Module Federation, you can have something conceptually like:
+
+```js
+import Button from "designSystem/Button";
+```
+
+where `Button` is provided by another application.
+
+The consuming application can load it **at runtime**.
+
+This means:
+
+```text
+Application A
+      │
+      │ runtime dependency
+      ↓
+Application B
+```
+
+---
+
+#### 9. Module Federation architecture
+
+A common architecture looks like this:
+
+```text
+                         Browser
+                            │
+                            ↓
+                    ┌──────────────┐
+                    │  Host App    │
+                    │              │
+                    │ Shell/Header │
+                    │ Navigation   │
+                    └──────┬───────┘
+                           │
+             ┌─────────────┼──────────────┐
+             ↓             ↓              ↓
+        Product MF     Cart MF       Checkout MF
+             │             │              │
+             ↓             ↓              ↓
+         Team A          Team B         Team C
+```
+
+The Host is sometimes called the **Shell application**.
+
+It handles things such as:
+
+* routing
+* authentication
+* global layout
+* navigation
+* loading micro-frontends
+
+---
+
+#### 10. Example with React
+
+Suppose we have two applications.
+
+#### Product application
+
+```text
+product-app/
+```
+
+It exposes:
+
+```text
+ProductList
+```
+
+#### Main application
+
+```text
+host-app/
+```
+
+It consumes:
+
+```text
+ProductList
+```
+
+Conceptually:
+
+```text
+product-app
+     │
+     │ exposes
+     ↓
+ProductList
+     │
+     │
+     ↓
+host-app
+     │
+     └── renders ProductList
+```
+
+The Product team can deploy a new version of `ProductList` independently.
+
+---
+
+#### 11. `remoteEntry.js`
+
+One important Module Federation concept is the **remote entry**.
+
+A remote application typically publishes something like:
+
+```text
+remoteEntry.js
+```
+
+Think of it as a **manifest/entry point** that tells the host how to access the modules exposed by that remote.
+
+Conceptually:
+
+```text
+Product Application
+       │
+       ├── remoteEntry.js
+       │
+       ├── ProductList
+       ├── ProductDetails
+       └── ...
+```
+
+The host knows where the remote is located:
+
+```text
+https://products.example.com/remoteEntry.js
+```
+
+Then it can load exposed modules.
+
+---
+
+#### 12. Module Federation configuration
+
+A simplified Webpack configuration might look like:
+
+#### Remote
+
+```js
+new ModuleFederationPlugin({
+  name: "productApp",
+
+  filename: "remoteEntry.js",
+
+  exposes: {
+    "./ProductList": "./src/ProductList"
+  }
+});
+```
+
+This means:
+
+```text
+productApp
+    │
+    └── exposes
+           │
+           └── ProductList
+```
+
+The host can then configure the remote:
+
+```js
+new ModuleFederationPlugin({
+  remotes: {
+    productApp: "productApp@https://products.example.com/remoteEntry.js"
+  }
+});
+```
+
+Then conceptually:
+
+```js
+import ProductList from "productApp/ProductList";
+```
+
+---
+
+### 13. Module Federation vs Micro-frontends
+
+This distinction is **very important in interviews**.
+
+They are **not the same thing**.
+
+### Micro-frontends
+
+Micro-frontend is an **architectural approach**.
+
+It answers:
+
+> How should we organize a large frontend application and teams?
+
+### Module Federation
+
+Module Federation is a **technical mechanism/tool**.
+
+It answers:
+
+> How can independently built applications share/load code at runtime?
+
+So:
+
+```text
+Micro-frontends
+      ↓
+Architecture / strategy
+
+Module Federation
+      ↓
+Technology that can implement that strategy
+```
+
+You can build micro-frontends **without Module Federation**.
+
+For example:
+
+```text
+Micro-frontends
+     │
+     ├── Module Federation
+     ├── Web Components
+     ├── iframe
+     ├── server-side composition
+     └── routing-based composition
+```
+
+Module Federation is simply one popular approach.
+
+---
+
+### 14. Micro-frontends are similar to microservices
+
+This analogy is useful.
+
+### Monolithic backend
+
+```text
+             Backend
+                │
+     ┌──────────┼──────────┐
+     ↓          ↓          ↓
+   Users      Orders     Payments
+```
+
+One large application.
+
+### Microservices
+
+```text
+ Users Service
+ Orders Service
+ Payments Service
+```
+
+Each service can be independently developed and deployed.
+
+Micro-frontends apply a similar idea to the frontend:
+
+```text
+ Product Frontend
+ Cart Frontend
+ Checkout Frontend
+```
+
+So:
+
+```text
+Microservices       → Backend
+Micro-frontends     → Frontend
+```
+
+But remember: they're analogous, **not identical**.
+
+---
+
+### 15. Benefits of Micro-frontends
+
+### 1. Independent deployment
+
+Team A can deploy:
+
+```text
+Product v10
+```
+
+without rebuilding the entire application.
+
+### 2. Team ownership
+
+Each team owns a business domain.
+
+```text
+Product Team → Product MF
+Cart Team    → Cart MF
+Payment Team → Payment MF
+```
+
+### 3. Smaller codebases
+
+Instead of:
+
+```text
+1 huge frontend
+```
+
+you have:
+
+```text
+Product
+Cart
+Checkout
+Account
+```
+
+### 4. Independent technology choices
+
+Depending on the architecture, different teams can potentially use different frameworks.
+
+For example:
+
+```text
+Product → React
+Checkout → Vue
+Legacy Admin → Angular
+```
+
+However, **I wouldn't recommend mixing frameworks without a strong reason** because it adds complexity.
+
+### 5. Independent releases
+
+A product team can release frequently without coordinating every release with every other team.
+
+---
+
+# 16. Disadvantages
+
+Micro-frontends are **not automatically better**.
+
+They introduce significant complexity.
+
+### 1. Duplicate dependencies
+
+You might accidentally load:
+
+```text
+React
+React
+React
+```
+
+from multiple micro-frontends.
+
+Module Federation can help with shared dependencies.
+
+---
+
+### 2. Communication between micro-frontends
+
+Suppose:
+
+```text
+Cart MF
+```
+
+needs to tell:
+
+```text
+Header MF
+```
+
+that the cart count changed.
+
+You need a communication mechanism.
+
+Possibilities include:
+
+```text
+Custom events
+Shared state
+Context
+URL/state
+Event bus
+Shared libraries
+```
+
+You need to avoid creating excessive coupling.
+
+---
+
+### 3. Consistent UI
+
+Imagine:
+
+```text
+Product → blue button
+Cart    → green button
+Checkout → red button
+```
+
+The application becomes inconsistent.
+
+Therefore, organizations often create a shared:
+
+```text
+Design System
+     │
+     ├── Button
+     ├── Input
+     ├── Modal
+     ├── Table
+     └── Typography
+```
+
+This can also be shared through Module Federation or an npm package.
+
+---
+
+### 4. Performance
+
+You potentially have:
+
+```text
+Host
+ ↓
+Product
+ ↓
+Cart
+ ↓
+Checkout
+```
+
+Each may introduce JavaScript, dependencies, network requests, etc.
+
+Poorly designed micro-frontends can actually make performance **worse**.
+
+---
+
+### 5. Debugging becomes harder
+
+Instead of:
+
+```text
+One application
+     ↓
+One deployment
+```
+
+you might have:
+
+```text
+Host
+Product
+Cart
+Checkout
+Auth
+Design System
+```
+
+A production issue may involve multiple applications.
+
+---
+
+# 17. Shared dependencies
+
+This is one of the important Module Federation concepts.
+
+Suppose:
+
+```text
+Host → React 19
+Product → React 19
+Cart → React 19
+```
+
+You don't necessarily want three copies of React loaded.
+
+You can configure dependencies to be shared.
+
+Conceptually:
+
+```text
+             React
+               ↑
+       ┌───────┼────────┐
+       │       │        │
+      Host   Product   Cart
+```
+
+Module Federation supports concepts such as:
+
+```js
+shared: {
+  react: {
+    singleton: true
+  },
+  "react-dom": {
+    singleton: true
+  }
+}
+```
+
+`singleton: true` is particularly important for libraries where multiple instances can cause problems.
+
+---
+
+# 18. Runtime loading
+
+This is one of the biggest differences from a normal frontend.
+
+Imagine:
+
+```text
+Host deployed on Monday
+```
+
+Product team deploys:
+
+```text
+Product MF v5
+```
+
+on Wednesday.
+
+The host doesn't necessarily have to be rebuilt just because Product MF changed.
+
+The host can load the new remote at runtime, depending on the deployment/versioning strategy.
+
+```text
+Monday
+Host ────────────────→ Product v4
+
+Wednesday
+Host ────────────────→ Product v5
+```
+
+That's where Module Federation becomes very powerful.
+
+---
+
+# 19. How routing can work
+
+You might have:
+
+```text
+example.com/products
+example.com/cart
+example.com/checkout
+```
+
+The host can route requests:
+
+```text
+/products
+    ↓
+Product Micro-frontend
+
+/cart
+    ↓
+Cart Micro-frontend
+
+/checkout
+    ↓
+Checkout Micro-frontend
+```
+
+The user still sees one website.
+
+---
+
+# 20. Authentication
+
+Usually, authentication is handled centrally.
+
+For example:
+
+```text
+                  Host
+                   │
+              Authentication
+                   │
+        ┌──────────┼──────────┐
+        ↓          ↓          ↓
+     Product      Cart     Checkout
+```
+
+The micro-frontends need access to the authenticated user's context.
+
+But you should avoid every micro-frontend implementing authentication independently.
+
+---
+
+# 21. How micro-frontends communicate
+
+Suppose a user adds a product to the cart.
+
+```text
+Product MF
+    │
+    │ "PRODUCT_ADDED"
+    ↓
+Event
+    │
+    ↓
+Cart MF
+```
+
+One approach is browser custom events:
+
+```js
+window.dispatchEvent(
+  new CustomEvent("product-added", {
+    detail: {
+      productId: 123
+    }
+  })
+);
+```
+
+Another micro-frontend can listen:
+
+```js
+window.addEventListener("product-added", (event) => {
+  console.log(event.detail.productId);
+});
+```
+
+The exact approach depends on your architecture.
+
+---
+
+# 22. When should you use Micro-frontends?
+
+Micro-frontends make sense when you have:
+
+```text
+Large organization
+       +
+Multiple teams
+       +
+Large application
+       +
+Independent releases
+       +
+Clear business domains
+```
+
+For example:
+
+```text
+100+ frontend developers
+        ↓
+Multiple teams
+        ↓
+Different business domains
+        ↓
+Frequent independent releases
+        ↓
+Micro-frontends may make sense
+```
+
+But for:
+
+```text
+5 developers
+1 application
+1 business domain
+```
+
+Micro-frontends may be unnecessary complexity.
+
+A well-structured monolithic React application could be much better.
+
+---
+
+# 23. Micro-frontends vs normal React components
+
+This is another common interview question.
+
+A normal React component:
+
+```text
+Button
+Navbar
+Modal
+ProductCard
+```
+
+is usually part of the **same application/build**.
+
+A micro-frontend is generally:
+
+```text
+Independently owned
+Independently built
+Potentially independently deployed
+```
+
+For example:
+
+```text
+Normal component:
+
+Host
+ └── ProductCard
+      └── same build
+
+
+Micro-frontend:
+
+Host
+ └── Product MF
+      └── independently built/deployed
+```
+
+---
+
+# 24. Simple mental model
+
+Remember these three levels:
+
+```text
+                 MICRO-FRONTEND
+                       │
+              Architecture pattern
+                       │
+          "Split frontend by domain"
+                       │
+                       ↓
+              MODULE FEDERATION
+                       │
+                 Technology
+                       │
+          "Load modules at runtime"
+                       │
+                       ↓
+                 REACT / ANGULAR
+                       │
+                    Framework
+```
+
+So if an interviewer asks:
+
+### "What is Micro-frontend?"
+
+Say:
+
+> **Micro-frontend is an architectural approach where a large frontend is divided into smaller, independently developed and deployed applications, usually aligned with business domains or teams.**
+
+### "What is Module Federation?"
+
+Say:
+
+> **Module Federation is a technology that allows independently built frontend applications to expose and consume modules at runtime. It is commonly used to implement micro-frontends and supports concepts such as remote modules and shared dependencies.**
+
+### "Are they the same?"
+
+Say:
+
+> **No. Micro-frontends are an architectural pattern, while Module Federation is a technology that can be used to implement that architecture.**
+
+That distinction is probably the **most important thing to remember for an interview**.
